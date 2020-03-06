@@ -10,6 +10,9 @@ from error import InputError
 #assume register works
 #asumme users_all works and we are able to check emails of existing users
 #assumes that a check is in place to see if an email is valid or not
+#assumes that there will be a dictionary that contains all of users account details, i.e their email
+#and their password which is checked before a user is able to login (currently in the users_all dict there is 
+#no place to log that information
 def test_login1():
     result1 = auth.register('abcde@gmail.com', '12345','John', 'Smithh')
     result2 = auth.login('abcde@gmail.com', '12345')
@@ -18,17 +21,22 @@ def test_login1():
     assert result2['token'] == result2['token']
 
 def test_invalid_email_login():
+    result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     with pytest.raises(InputError):
-        result1 = auth.register('John.smith@com', 'password1', 'John', 'Smith')
+        result2 = auth.login('John.smith@com', 'password1')
 
 
 def test_wrong_email():
+    result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     with pytest.raises(InputError):
-        results1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+        results2 = auth.login('Smith.john@gmail.com', 'password1')
     
 
 def test_wrong_pass():
-    pass
+    result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    with pytest.raises(InputError):
+        result2 = auth.login('John.smith@gmail.com', 'password2')
+    
 
 
 '''
@@ -38,14 +46,21 @@ def test_wrong_pass():
 '''
 # assume register and login works
 # assume that users_all functions, and is able to generate u_id
+
 def test_logout1():
-    assert auth.logout("12345")['is_success'] == True
+    result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    result2 = auth.login('John.smith@gmail.com', 'password1')
+    user1_tk = result2['token']
+    assert auth.logout(user1_tk)['is_success'] == True
     
 
 def test_bad_token():
-    with pytest.raises(InputError):
-        result1 = auth.logout("54321")['is_success']
-    pass
+    result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    result2 = auth.login('John.smith@gmail.com', 'password1')
+    user1_tk = result2['token']
+    
+    assert auth.logout('54321')['is_success'] == False
+
 
 
 

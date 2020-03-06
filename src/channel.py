@@ -23,7 +23,7 @@ def details(token, channel_id):
 
 def messages(token, channel_id, start):
     return {
-        'messages': 
+        'messages': 0, 
         'start': 0,
         'end': 50,
     }

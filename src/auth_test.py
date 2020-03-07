@@ -1,5 +1,7 @@
 import auth
+import user
 import pytest
+import other
 from error import InputError
 
 '''
@@ -58,8 +60,10 @@ def test_bad_token():
     result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     result2 = auth.login('John.smith@gmail.com', 'password1')
     user1_tk = result2['token']
+
+    bad_tk = str(int(user1_tk) + 1)
     
-    assert auth.logout('54321')['is_success'] == False
+    assert auth.logout(bad_tk)['is_success'] == False
 
 
 
@@ -79,8 +83,14 @@ def test_bad_token():
 
 def test_register1():
     result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    result2 = {'u_id':1, 'token':12345}
-    assert result1['u_id'] == result2['u_id']
+    result2 = other.users_all(result1['token'])
+    
+    registered = 0
+
+    if any(d['u_id'] for d in result2):
+        registered = 1
+    
+    assert registered == 1
     
 
 def test_invalid_email_reg():

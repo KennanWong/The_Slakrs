@@ -1,4 +1,6 @@
 import auth
+import channel
+import channels
 import pytest
 from error import InputError
 

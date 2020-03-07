@@ -14,6 +14,7 @@ from error import InputError,AccessError
 #storing the message_id
 
 def test_send1():
+    # an owner of a channel sends a message
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -24,6 +25,7 @@ def test_send1():
     assert message_test['message_id'] == 1
 
 def test_send2():
+    # a member of a channel sends a message
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -43,7 +45,7 @@ def test_send2():
     
 
 def test_long_msg():
-    #input error
+    #sending a message more thatn 1000 characters, should raise an Input error
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -54,10 +56,9 @@ def test_long_msg():
     
 
 def test_unauthorised():
-    #access error
-    #assumes that each user has a list of channel_id's in which they are members
-    #of. a loop would be used to check whether or not the channel_id they are
-    #requesting to post to is part of that list
+    # a user sending a message intoa  channel in which they are not a 
+    # part of causing an access error
+
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -90,7 +91,13 @@ def test_remove1():
     msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
 
     message.remove(user1_tk,msg1_id)
-    pass
+
+    successRemove = 0
+
+    if not any(d['message_id'] == msg1_id for d in messages):
+        successRemove = 1
+
+    assert successRemove == 1 
 
 def test_remove2():
     #the admin of a channel is attempting to remove a message
@@ -111,10 +118,18 @@ def test_remove2():
     msg2_id = message.send(user2_tk,channel_id1,'testing')['message_id']
     
     message.remove(user1_tk,msg2_id)
-    pass
+
+    successRemove = 0
+
+    if not any(d['message_id'] == msg2_id for d in messages):
+        successRemove = 1
+
+    assert successRemove == 1 
+    
 
 def test_no_msg():
-    #input error
+    # attempting to remove a message that has been already removed or does
+    # not exist causing an input error
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -122,15 +137,15 @@ def test_no_msg():
     channel_id1 = channels.create(user1_tk,'firstchannel',True)
     msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
 
-    msg2_id = 2
+    msg2_id = msg1_id + 1
 
     with pytest.raises(InputError):
         message.remove(user1_tk,msg2_id)
     
 
 def test_unauth_remove1():
-    #if someone is trying to remove another person message
-    #access error
+    # if someone is trying to remove another person message causing
+    # an access error
 
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
@@ -149,7 +164,7 @@ def test_unauth_remove1():
 
     with pytest.raises(AccessError):
         message.remove(user2_tk,msg1_id)
-    pass
+    
 
 
 '''
@@ -159,6 +174,7 @@ def test_unauth_remove1():
 '''
 
 def test_edit1():
+    # an admin is editing their own message
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -166,9 +182,17 @@ def test_edit1():
     channel_id1 = channels.create(user1_tk,'firstchannel',True)
     msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
     message.edit(user1_tk, msg1_id, 'testing-edit')
-    pass
+
+    successEdit = 0
+
+    if any(d['message'] == 'testing-edit' for d in messages):
+        successEdit = 1 
+
+    assert successEdit == 1
+    
 
 def test_edit2():
+    # a member is editing their own message
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']   
@@ -182,7 +206,54 @@ def test_edit2():
     channel.channel_join(user2_tk, channel_id1)
     msg2_id = message.send(user2_tk,channel_id1,'testing')['message_id']
     message.edit(user2_tk, msg2_id, 'testing-edit')
-    pass
+
+    successEdit = 0
+
+    if any(d['message'] == 'testing-edit' for d in messages):
+        successEdit = 1 
+
+    assert successEdit == 1
+
+def test_edit3():
+    # someone attempts to edit a message by replacing it witha a blank string
+    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth.login('John.smith@gmail.com','password1')
+    user1_tk = user1['token']
+    
+    channel_id1 = channels.create(user1_tk,'firstchannel',True)
+    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+    message.edit(user1_tk, msg1_id, '')
+
+    successRemove = 0
+
+    if not any(d['message_id'] == msg1_id for d in messages):
+        successRemove = 1
+
+    assert successRemove == 1 
+
+def test_edit4():
+    # an owner of a channel is editing a message that one of its members had sent
+    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth.login('John.smith@gmail.com','password1')
+    user1_tk = user1['token']   
+    
+    user2 = auth.register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
+    user2 = auth.login('dean.yu@gmail.com','password2')
+    user2_tk = user2['token']
+    
+    
+    channel_id1 = channels.create(user1_tk,'firstchannel',True)
+    channel.channel_join(user2_tk, channel_id1)
+    msg2_id = message.send(user2_tk,channel_id1,'testing')['message_id']
+    message.edit(user1_tk, msg2_id, 'testing-edit')
+
+    successEdit = 0
+    
+    if any(d['message'] == 'testing-edit' for d in messages):
+        successEdit = 1 
+
+    assert successEdit == 1
+
 
 def test_unauth_edit1():
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
@@ -201,7 +272,7 @@ def test_unauth_edit1():
 
     with pytest.raises(AccessError):
         message.edit(user2_tk, msg1_id, 'testing-edit')
-    pass
+    
 
 
 

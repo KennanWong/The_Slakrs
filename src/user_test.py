@@ -18,7 +18,7 @@ def test_profile_normal():
     name_first1 = "Varun"
     name_last1 = "Kashyap"
     
-    details1 = auth_register(email1, "password1 ", name_first1, name_last1)
+    details = auth_register(email1, "password1 ", name_first1, name_last1)
     
     token1 = details['token']    
     uid1 = details['u_id']
@@ -63,8 +63,6 @@ def test_profile_invalid_uID3():
 '''
 
 
-
-    
     
     
     

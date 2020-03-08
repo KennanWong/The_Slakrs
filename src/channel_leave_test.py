@@ -17,6 +17,7 @@ AccessError when
 '''
 
 def test_channel_leave_successful():
+    # CASE 1: Leaving channel
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith') 
     token1 = user1['token']
     u_id1 = user1['u_id']
@@ -30,7 +31,7 @@ def test_channel_leave_successful():
 
     channel_leave(token1, channel_id)
 
-    # Check user has left
+    # Check user2 has left
     results = [
         {
             "name": 'The Slakrs',
@@ -41,6 +42,7 @@ def test_channel_leave_successful():
     assert channel_details(token1, channel_id) == results
 
 def test_channel_leave_invalid_channel():
+    # CASE 2: Leaving an invalid channel
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith') 
     token1 = user1['token']
 
@@ -48,11 +50,12 @@ def test_channel_leave_invalid_channel():
     channel_id = channelInfo['channel_id']
     invalidChannelID = 1
 
+    # InputError when user tries to leave an invalid channel
     with pytest.raises(InputError) as e:
         channel_leave(token1, invalidChannelID)
 
 def test_channel_leave_unauthorised():
-    # Authorised user is not a member of channel
+    # CASE 3: Authorised user is not a member of channel
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith') 
     token1 = user1['token']
 
@@ -62,5 +65,6 @@ def test_channel_leave_unauthorised():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
     
+    # AccessError when authorised user is not a member of channel they are trying to leave from
     with pytest.raises(AccessError) as e:
         channel_leave(token2, channel_id)

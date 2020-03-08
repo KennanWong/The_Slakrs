@@ -56,7 +56,7 @@ def test_long_msg():
     
 
 def test_unauthorised():
-    # a user sending a message intoa  channel in which they are not a 
+    # a user sending a message into a  channel in which they are not a 
     # part of causing an access error
 
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
@@ -74,6 +74,17 @@ def test_unauthorised():
     with pytest.raises(InputError):
         message_test = message.send(user2_tk, channel_id1,'testing')
     
+def test_badtoken1():
+    # if a invalid token is provided when message.send is called
+    # it should cause an input error
+    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth.login('John.smith@gmail.com','password1')
+    bad_tk = user1['token'] + 1
+
+    channel_id1 = channels.create(user1_tk,'firstchannel',True)
+
+    with pytest.raises(InputError):
+        message_test = message.send(bad_tk, channel_id1,'testing')
 
 '''
 #############################################################
@@ -94,8 +105,10 @@ def test_remove1():
 
     successRemove = 0
 
-    if not any(d['message_id'] == msg1_id for d in messages):
-        successRemove = 1
+    for a in messages['messageDict']:
+        if a['message_id'] == msg1_id:
+            successRemove = 1
+    
 
     assert successRemove == 1 
 
@@ -121,8 +134,10 @@ def test_remove2():
 
     successRemove = 0
 
-    if not any(d['message_id'] == msg2_id for d in messages):
-        successRemove = 1
+    for a in messages['messageDict']:
+        if a['message_id'] == msg2_id:
+            successRemove = 1
+    
 
     assert successRemove == 1 
     
@@ -166,6 +181,21 @@ def test_unauth_remove1():
         message.remove(user2_tk,msg1_id)
     
 
+def test_badtoken2():
+    # if a invalid token is provided when message.remove is called
+    # it should cause an input error
+    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth.login('John.smith@gmail.com','password1')
+    user1_tk = user1['token']
+    bad_tk = user1['token'] + 1
+
+    channel_id1 = channels.create(user1_tk,'firstchannel',True)
+    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+
+    with pytest.raises(InputError):
+        message.remove(bad_tk,msg1_id)
+
+
 
 '''
 #############################################################
@@ -185,8 +215,11 @@ def test_edit1():
 
     successEdit = 0
 
-    if any(d['message'] == 'testing-edit' for d in messages):
-        successEdit = 1 
+
+    for a in messages['messageDict']:
+        if a['message'] == 'testing-edit':
+            successEdit = 1
+    
 
     assert successEdit == 1
     
@@ -209,8 +242,11 @@ def test_edit2():
 
     successEdit = 0
 
-    if any(d['message'] == 'testing-edit' for d in messages):
-        successEdit = 1 
+    
+    for a in messages['messageDict']:
+        if a['message'] == 'testing-edit':
+            successEdit = 1
+    
 
     assert successEdit == 1
 
@@ -224,10 +260,12 @@ def test_edit3():
     msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
     message.edit(user1_tk, msg1_id, '')
 
-    successRemove = 0
+    successRemove = 1
 
-    if not any(d['message_id'] == msg1_id for d in messages):
-        successRemove = 1
+    for a in messages['messageDict']:
+        if a['message'] == 'testing':
+            successRemove == 0
+    
 
     assert successRemove == 1 
 
@@ -248,14 +286,18 @@ def test_edit4():
     message.edit(user1_tk, msg2_id, 'testing-edit')
 
     successEdit = 0
-    
-    if any(d['message'] == 'testing-edit' for d in messages):
-        successEdit = 1 
 
+
+    for a in messages['messageDict']:
+        if a['message'] == 'testing-edit':
+            successEdit = 1
+    
     assert successEdit == 1
 
 
 def test_unauth_edit1():
+    # someone who tried to edit another persons message should cause an
+    # access error
     user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     user1 = auth.login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
@@ -274,5 +316,17 @@ def test_unauth_edit1():
         message.edit(user2_tk, msg1_id, 'testing-edit')
     
 
+def test_badtoken3():
+    # if a invalid token is provided when message.edit is called
+    # it should cause an input error
+    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth.login('John.smith@gmail.com','password1')
+    user1_tk = user1['token']
+    bad_tk = user1['token'] + 1
 
+    channel_id1 = channels.create(user1_tk,'firstchannel',True)
+    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+
+    with pytest.raises(InputError):
+        message.edit(bad_tk,msg1_id,'testing-edit')
 

@@ -38,8 +38,6 @@ def test_wrong_pass():
     result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
     with pytest.raises(InputError):
         result2 = auth.login('John.smith@gmail.com', 'password2')
-    
-
 
 '''
 #############################################################
@@ -87,10 +85,15 @@ def test_register1():
     
     registered = 0
 
-    if any(d['u_id'] for d in result2):
-        registered = 1
+    for a in result2['users']:
+        
+        assert a['u_id'] == result1['u_id']
+
+        if (int(result1['u_id']) == int(a['u_id'])):
+            registered = 1
     
     assert registered == 1
+
     
 
 def test_invalid_email_reg():

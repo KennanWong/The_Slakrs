@@ -9,13 +9,18 @@ from error import InputError
 #                   AUTH_LOGIN                              #      
 #############################################################
 '''
-
+#assume register works
+#asumme users_all works and we are able to check emails of existing users
+#assumes that a check is in place to see if an email is valid or not
+#assumes that there will be a dictionary that contains all of users account details, i.e their email
+#and their password which is checked before a user is able to login (currently in the users_all dict there is 
+#no place to log that information
 def test_login1():
-    
     result1 = auth.register('abcde@gmail.com', '12345','John', 'Smithh')
     result2 = auth.login('abcde@gmail.com', '12345')
     
     assert result2['u_id'] == result1['u_id']
+    assert result2['token'] == result2['token']
 
 def test_invalid_email_login():
     result1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')

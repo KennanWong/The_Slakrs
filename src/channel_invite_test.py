@@ -31,6 +31,7 @@ def test_channel_invite_successful():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
+	# Inviting user2 to channel
     channel_invite(token1, channel_id, u_id2)
     
 def test_channel_invite_invalid_channel():
@@ -45,13 +46,13 @@ def test_channel_invite_invalid_channel():
 
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
-    invalidChannelId = 1
+    invalidChannelID = 1
 
-    # Error when user tries to invite someone to an invalid channel
+    # InputError when user2 is invited to an invalid channel
     with pytest.raises(InputError) as e:
-        channel_invite(token1, invalidChannelId, u_id2)
+        channel_invite(token1, invalidChannelID, u_id2)
 
-def test_channel_invite_invalid_userID():   
+def test_channel_invite_invaliduserID():   
     # CASE 3: Inviting user with invalid userID
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
     token1 = user1['token']
@@ -61,7 +62,7 @@ def test_channel_invite_invalid_userID():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
-    # Error when user tries to invite someone with an invalid user ID
+    # InputError when user tries to invite someone with an invalid user ID
     with pytest.raises(InputError) as e:
         channel_invite(token1, channel_id, invalidUserID)
 
@@ -82,7 +83,7 @@ def test_channel_invite_unauthorised():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
-    # Error when authorised user is not a member of the channel
+    # AccessError when authorised user is not a member of the channel
     with pytest.raises(AccessError) as e:
         channel_invite(token1, channel_id, u_id3)
 
@@ -99,7 +100,6 @@ def test_channel_invite_existing_user():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
-    # Error when user we are trying to invite is already a member of the channel
+    # InputError when user tries to invite someone who is already a member of the channel
     with pytest.raises(InputError) as e:
         channel_invite(token1, channel_id, u_id2)
-

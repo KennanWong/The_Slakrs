@@ -10,8 +10,6 @@ from error import InputError,AccessError
 #                   MESSAGE_SEND                            #      
 #############################################################
 '''
-#assumes that every time message_send is run, it appends to a dictionary
-#storing the message_id
 
 def test_send1():
     # an owner of a channel sends a message

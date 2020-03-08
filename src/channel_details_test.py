@@ -16,7 +16,8 @@ AccessError when:
 ** Authorised user is not a member of channel with channel_id
 '''
 
-def test_channel_details():
+def test_channel_details_successful():
+    # CASE 1: Matching details to expected output
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
@@ -32,10 +33,11 @@ def test_channel_details():
             "all_members": [{"u_id": 1, "name_first": "user1", "name_last": "Smith"}]
         }
     ]
+
     assert channel_details(token1, channel_id) == results
 
 def test_channel_details_invalid_channel():
-    # Invalid channel
+    # CASE 2: Invalid channel
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
     token1 = user1['token']
 
@@ -43,11 +45,12 @@ def test_channel_details_invalid_channel():
     channel_id = channelInfo['channel_id']
     invalidChannelID = 1
 
+    # InputError when we try to get details of an invalid channel
     with pytest.raises(InputError) as e:
         channel_details(token1, invalidChannelID)
 
 def test_channel_details_unauthorised():
-    # Authorised user is not a member of channel with channel_id
+    # CASE 3: Authorised user is not a member of channel with channel_id
     user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
     token1 = user1['token']
 
@@ -57,5 +60,6 @@ def test_channel_details_unauthorised():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
+    # AccessError when we try to get details of channel where user isn't a member
     with pytest.raises(AccessError) as e:
         channel_details(token2, channel_id)

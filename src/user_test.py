@@ -13,23 +13,23 @@ from auth import auth_register
 def test_profile_working():
     #create a user    
     
-    email1 = "varun@gmail.com"
-    name_first1 = "Varun"
-    name_last1 = "Kashyap"
+    email = "varun@gmail.com"
+    name_first = "Varun"
+    name_last = "Kashyap"
     
-    details = auth_register(email1, "password1", name_first1, name_last1)
+    details = auth_register(email, "password1", name_first, name_last)
     
-    token1 = details['token']    
-    uid1 = details['u_id']
+    token = details['token']    
+    uid = details['u_id']
     
     #test that the returned values are correct
     
-    profile = user_profile(token1, uid1)
+    profile = user_profile(token, uid)
     
-    assert(profile['email']) == email1
-    assert(profile['name_first']) == name_first1
-    assert(profile['name_last']) == name_last1
-    assert(profile['handle_str']) == name_first1
+    assert(profile['email'] == email)
+    assert(profile['name_first'] == name_first)
+    assert(profile['name_last'] == name_last)
+
     
 #ending with _ID must be an integer
    
@@ -85,6 +85,7 @@ def test_user_profile_setname_working():
 def test_user_profile_setname_same_name():
     details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
     token = details['token']
+    uid = details['u_id']
     user_profile_setname(token, "Varun", "Kashyap") 
     
     profile2 = user_profile(token, uid)
@@ -202,8 +203,9 @@ def test_user_profile_setemail_already_used():
     details1 = auth_register(email1, "password1", "Varun", "Kashyap")
     token1 = details1['token']
     uid1 = details1['u_id']
-    
+        
     email2 = "email2@gmail.com"
+    details2 = auth_register(email2, "password2", "Vince", "Kash")
     token2 = details2['token']
     uid2 = details2['u_id']
      

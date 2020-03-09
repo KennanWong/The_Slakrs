@@ -101,6 +101,9 @@ def test_channel_invite_existing_user():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
+	# Invite user2
+    channel_invite(token1, channel_id, u_id2)
+
     # InputError when user tries to invite someone who is already a member of the channel
     with pytest.raises(InputError) as e:
         channel_invite(token1, channel_id, u_id2)

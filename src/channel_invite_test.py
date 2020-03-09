@@ -30,8 +30,8 @@ def test_channel_invite_successful():
     # Create a channel, takes in token, name, is_public
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
-
-	# Inviting user2 to channel
+    
+    # Inviting user2 to channel
     channel_invite(token1, channel_id, u_id2)
     
 def test_channel_invite_invalid_channel():

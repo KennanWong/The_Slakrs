@@ -6,7 +6,7 @@ from channels import channels_create
 
 '''
 #############################################################
-#                       CHANNEL_LEAVE                       #      
+#                       CHANNEL_LEAVE                       #  
 #############################################################
 
 InputError when any of:
@@ -26,6 +26,7 @@ def test_channel_leave_successful():
     token2 = user2['token']
     u_id2 = user2['u_id']
 
+    # Create channel
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
@@ -36,8 +37,10 @@ def test_channel_leave_successful():
     results = [
         {
             "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}]
+            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
+                               "name_last": "Smith"}],
+            "all_members": [{"u_id": 1, "name_first": "Hayden", 
+                             "name_last": "Smith"}]
         }
     ]
 
@@ -67,7 +70,8 @@ def test_channel_leave_unauthorised():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
     
-    # AccessError when authorised user is not a member of channel they are trying to leave from,
-    # user2
+    # AccessError when authorised user is not a member of channel they are 
+    # trying to leave from
+    # user2 isn't a member
     with pytest.raises(AccessError) as e:
         channel_leave(token2, channel_id)

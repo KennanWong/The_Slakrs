@@ -7,7 +7,7 @@ from message import message_send
 
 '''
 #############################################################
-#                     CHANNEL_MESSAGES                      #      
+#                     CHANNEL_MESSAGES                      #  
 #############################################################
 
 InputError when any of:
@@ -23,6 +23,7 @@ def test_channel_messages_clean():
     user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
 
+    # Create channel
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
@@ -44,7 +45,7 @@ def test_channel_messages_invalid_channel():
     # Send message
     message_send(token1, channel_id, "hello")
 
-	# InputError when we check messages in an invalid channel
+	# InputError when we try to check messages in an invalid channel
     with pytest.raises(InputError) as e:
         channel_messages(token1, invalidChannelID, 0)
 
@@ -77,6 +78,7 @@ def test_channel_messages_unauthorised():
     # Send message
     message_send(token1, channel_id, "hello")
     
-	# AccessError when user sends message to channel they aren't a member of, user2
+	# AccessError when user sends message to channel they aren't a member of
+    # user2 isn't a member
     with pytest.raises(AccessError) as e:
         channel_messages(token2, channel_id, 0)

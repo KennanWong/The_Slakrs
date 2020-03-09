@@ -6,11 +6,12 @@ from channels import channels_create
 
 '''
 #############################################################
-#                      CHANNEL_INVITE                       #      
+#                      CHANNEL_INVITE                       #     
 #############################################################
 
 InputError when any of:
-**  channel_id does not refer to a valid channel that the authorised user is part of.
+**  channel_id does not refer to a valid channel that the authorised user is 
+    part of
 **  u_id does not refer to a valid user
 
 AccessError when:
@@ -67,7 +68,8 @@ def test_channel_invite_invaliduserID():
         channel_invite(token1, channel_id, invalidUserID)
 
 def test_channel_invite_unauthorised():
-    # CASE 4: Inviting a user when the authorised user is not a member of channel
+    # CASE 4: Inviting a user when the authorised user is not a member of 
+    #         channel
     user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
@@ -104,6 +106,7 @@ def test_channel_invite_existing_user():
 	# Invite user2
     channel_invite(token1, channel_id, u_id2)
 
-    # InputError when user tries to invite someone who is already a member of the channel
+    # InputError when user tries to invite someone who is already a member of 
+    # the channel
     with pytest.raises(InputError) as e:
         channel_invite(token1, channel_id, u_id2)

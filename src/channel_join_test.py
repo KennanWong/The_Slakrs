@@ -6,14 +6,15 @@ from channels import channels_create
 
 '''
 #############################################################
-#                       CHANNEL_JOIN                        #      
+#                       CHANNEL_JOIN                        #     
 #############################################################
 
 InputError when any of:
 ** Channel ID is not a valid channel
 
 AccessError when
-** channel_id refers to a channel that is private (when the authorised user is not an admin)
+** channel_id refers to a channel that is private (when the authorised user is 
+   not an admin)
 '''
 
 def test_channel_join_successful():
@@ -21,6 +22,7 @@ def test_channel_join_successful():
     user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
     token1 = user1['token']
 
+    # Create channel
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
@@ -31,8 +33,10 @@ def test_channel_join_successful():
     results = [
         {
             "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}]
+            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
+                               "name_last": "Smith"}],
+            "all_members": [{"u_id": 1, "name_first": "Hayden", 
+                             "name_last": "Smith"}]
         }
     ]
 
@@ -50,7 +54,7 @@ def test_channel_join_invalid_channel():
     channel_id = channelInfo['channel_id']
     invalidChannelID = 1
 
-    # InputError when user2 tries to join and invalid channel
+    # InputError when user2 tries to join an invalid channel
     with pytest.raises(InputError) as e:
         channel_join(token2, invalidChannelID)
 
@@ -66,6 +70,7 @@ def test_channel_join_private():
     channelInfo = channels_create(token1, 'The Slakrs', False)
     channel_id = channelInfo['channel_id']
     
-    # AccessError when user2 tries to join when authorised user isn't an admin of channel 
+    # AccessError when user2 tries to join channel where the authorised user 
+    # isn't an admin
     with pytest.raises(AccessError) as e:
         channel_join(token2, channel_id)

@@ -31,8 +31,8 @@ def test_channel_join_successful():
     results = [
         {
             "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "user1", "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "user1", "name_last": "Smith"}]
+            "owner_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}],
+            "all_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}]
         }
     ]
 

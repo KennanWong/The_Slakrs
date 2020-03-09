@@ -39,6 +39,7 @@ def channel_messages(token, channel_id, start):
 
 def channel_leave(token, channel_id):
     return {
+
     }
 
 def channel_join(token, channel_id):

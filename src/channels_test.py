@@ -10,26 +10,18 @@ from error import InputError, AccessError
 #                   CHANNELS_LIST                           #      
 #############################################################
 '''
-def test_list_and_details():
+def test_list_channel_one():
     results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
     token1 = results['token']
     u_id1 = results['u_id']
 
     #returns channel_id
-    channel_info1 = channels_create(token1, 'Slakrs', False)
+    channel_info1 = channels_create(token1, 'Slakrs', True)
 
-    channel = channel_details(token1, channel_info1)
+    my_channel_id1 = channel_info1['channel_id']
 
-    #returns channels user with associated token is part of 
+    assert (channels_list(token1)["channels"][0]['channel_id']) == my_channel_id1
 
-    member = channels_list(token1)
-    channel_member = member['channel_id']
-    flag = 0
-    
-    if any(c[channel_info1] for c in channel_member):
-        flag = 1
-
-    assert flag == 1
 
 '''
 #############################################################
@@ -48,16 +40,16 @@ def test_listall_and_details():
     channel_info1 = channels_create(token1, 'Slakrs', True)
     channel_info2 = channels_create(token2, 'Kings Landing' , True)
 
-    channel1 = channel_details(token1, channel_info1)
-    channel2 = channel_details(token2, channel_info2)
+    #channel1 = channel_details(token1, channel_info1)
+    #channel2 = channel_details(token2, channel_info2)
 
-    member1 = channels_listall(token2)
+    all_channels = channels_listall(token2)
     
     flag = 0
     j = 0
 
-    for i in member1:
-        if (channel_info1 or channel_info2) == member1[j]:
+    for i in all_channels:
+        if (channel_info1 or channel_info2) == all_channels[j]:
             flag = 1
         j =+ 1
     

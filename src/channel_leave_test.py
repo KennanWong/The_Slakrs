@@ -6,7 +6,7 @@ from channels import channels_create
 
 '''
 #############################################################
-#                       CHANNEL_LEAVE                       #      
+#                       CHANNEL_LEAVE                       #  
 #############################################################
 
 InputError when any of:

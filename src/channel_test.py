@@ -1,41 +1,177 @@
-import channel
-import auth
-import channels
 import pytest
-from error import InputError
+from auth import auth_register, auth_login
+from channel import channel_details, channel_addowner, channel_removeowner
+from channels import channels_create
+from error import InputError, AccessError
+
 
 '''
 #############################################################
-#                   CHANNEL_ADDOWNER                        #      
+#                   CHANNEL_ADDOWNER                       #      
 #############################################################
 '''
 
+def test_channel_add_owner():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    token1 = results['token']
 
-def test_addowner():
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2= results2['u_id']
+    token2 = results2['token']
 
-    user2 = auth.register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth.login('dean.yu@gmail.com','password2')
-    user2_id = user2['u_id']
-    user2_tk = user2['token']
-        
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+
+    channel_addowner(token1, channel_info3, u_id2)
+
+    owners = channel_details(token2, channel_info3)['owner_members']
+
+    print(channel_details(token2, channel_info3))
+    print(owners[0]['u_id'])
+
+    is_owner = 0
+    j = 0
+
+    for i in owners:
+        if u_id2 == owners[j]['u_id']:
+            is_owner = 1
+        j =+ 1
+
+    assert is_owner == 1
+
+def test_already_owner():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    u_id1 = results['u_id']
+    token1 = results['token']
+
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2= results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+
+    with pytest.raises(InputError):
+        channel_addowner(token1, channel_info3, u_id1)
+
+def test_not_owner():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    token1 = results['token']
+
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2= results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+
+    with pytest.raises(AccessError):
+        channel_addowner(token2, channel_info3, u_id2)
+
+
+def test_invalid_channel():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    token1 = results['token']
+
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2= results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+    invalidChannelID = 1
     
-    channel.addowner(user2_tk, channel_id1, user2_id)
+    with pytest.raises(InputError):
+        channel_addowner(token2, invalidChannelID, u_id2)
+'''
+#############################################################
+#                   CHANNEL_REMOVEOWNER                    #      
+#############################################################
+'''
+def test_channel_remove_owner():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    u_id1 = results['u_id']
+    token1 = results['token']
 
-    channel_owners = channel.details(user2_tk, channel_id1)['owner_members']
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2= results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+
+    channel_addowner(token1, channel_info3, u_id2)
+
+    channel_removeowner(token2 ,channel_info3, u_id1)
     
-    print(channel.details(user2_tk, channel_id1))
-    print(channel_owners[0]['u_id'])
+    owners = channel_details(token2, channel_info3)['owner_members']
 
-    inList = 0
-    counter = 0
+    print(channel_details(token2, channel_info3))
+    print(owners[0]['u_id'])
 
-    for i in channel_owners:
-        if user2_id == channel_owners[counter]['u_id']:
-            inList = 1
-        counter=+ 1
+    is_owner = 0
+    j = 0
 
-    assert inList == 1
+    for i in owners:
+        if u_id2 == owners[j]['u_id']:
+            is_owner = 0
+        j =+ 1
+
+    assert is_owner == 0
+
+def test_invalid_channel2():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    u_id1 = results['u_id']
+    token1 = results['token']
+
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2= results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+    channel_addowner(token1, channel_info3, u_id2)
+    invalidChannelID = 1
+    
+    with pytest.raises(InputError):
+        channel_removeowner(token2, invalidChannelID, u_id1)
+
+def test_userid_not_owner():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    token1 = results['token']
+
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2 = results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+    channel_addowner(token1, channel_info3, u_id2)
+    invalidUser_id = 1
+    with pytest.raises(InputError):
+        channel_removeowner(token2, channel_info3, invalidUser_id)
+
+def test_not_owner2():
+    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
+    results = auth_login('guest123@gmail.com', '123!Asdf')
+    u_id1 = results['u_id']
+    token1 = results['token']
+
+    results2 = auth_register('bobbuilder@gmail.com', 'zxc123asd','Bob', 'Builder')
+    results2 = auth_login('bobbuilder@gmail.com','zxc123asd')
+    u_id2 = results2['u_id']
+    token2 = results2['token']
+
+    channel_info3 = channels_create(token1, 'Slakrs', True)
+
+    with pytest.raises(AccessError):
+        channel_removeowner(token2, channel_info3, u_id1)
+    
+    

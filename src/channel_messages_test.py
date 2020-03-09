@@ -7,7 +7,7 @@ from message import message_send
 
 '''
 #############################################################
-#                     CHANNEL_MESSAGES                      #      
+#                     CHANNEL_MESSAGES                      #     
 #############################################################
 
 InputError when any of:

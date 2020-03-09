@@ -13,7 +13,8 @@ InputError when any of:
 ** Channel ID is not a valid channel
 
 AccessError when
-** channel_id refers to a channel that is private (when the authorised user is not an admin)
+** channel_id refers to a channel that is private (when the authorised user is 
+   not an admin)
 '''
 
 def test_channel_join_successful():
@@ -32,8 +33,10 @@ def test_channel_join_successful():
     results = [
         {
             "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}]
+            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
+                               "name_last": "Smith"}],
+            "all_members": [{"u_id": 1, "name_first": "Hayden", 
+                             "name_last": "Smith"}]
         }
     ]
 
@@ -67,6 +70,7 @@ def test_channel_join_private():
     channelInfo = channels_create(token1, 'The Slakrs', False)
     channel_id = channelInfo['channel_id']
     
-    # AccessError when user2 tries to join channel where the authorised user isn't an admin
+    # AccessError when user2 tries to join channel where the authorised user 
+    # isn't an admin
     with pytest.raises(AccessError) as e:
         channel_join(token2, channel_id)

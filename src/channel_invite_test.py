@@ -19,11 +19,11 @@ AccessError when:
 
 def test_channel_invite_successful():
     # CASE 1: Successful invite
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com"'', '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com"', 'zcvb*&234', 'John', 'Berry')
     token2 = user2['token']
     u_id2 = user2['u_id']
 
@@ -36,11 +36,11 @@ def test_channel_invite_successful():
     
 def test_channel_invite_invalid_channel():
     # CASE 2: Inviting user to invalid channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com"'', '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Berry')
     token2 = user2['token']
     u_id2 = user2['u_id']
 
@@ -54,7 +54,7 @@ def test_channel_invite_invalid_channel():
 
 def test_channel_invite_invaliduserID():   
     # CASE 3: Inviting user with invalid userID
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com"'', '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
     invalidUserID = 1
@@ -68,15 +68,15 @@ def test_channel_invite_invaliduserID():
 
 def test_channel_invite_unauthorised():
     # CASE 4: Inviting a user when the authorised user is not a member of channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com"'', '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Berry')
     token2 = user2['token']
     u_id2 = user2['u_id']
     
-    user3 = auth_register("user3@gmail.com", 'nkoim$#475', 'user3', 'Shelby')
+    user3 = auth_register("tommy@gmail.com", 'nkoim$#475', 'Tommy', 'Shelby')
     token3 = user3['token']
     u_id3 = user3['u_id']
 
@@ -89,11 +89,11 @@ def test_channel_invite_unauthorised():
 
 def test_channel_invite_existing_user(): 
     # CASE 5: Inviting a user who is already a member of channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com"'', '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Berry')
     token2 = user2['token']
     u_id2 = user2['u_id']
 

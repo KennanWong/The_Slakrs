@@ -18,12 +18,13 @@ AccessError when
 
 def test_channel_join_successful():
     # CASE 1: Joining channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith') 
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
     token1 = user1['token']
 
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
+    # user1 joins
     channel_join(token1, channel_id)
 
     # Check user1 has joined
@@ -39,10 +40,10 @@ def test_channel_join_successful():
 
 def test_channel_join_invalid_channel():
     # CASE 2: Joining an invalid channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith') 
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
     token1 = user1['token']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
     token2 = user2['token']
 
     channelInfo = channels_create(token1, 'The Slakrs', True)
@@ -55,10 +56,10 @@ def test_channel_join_invalid_channel():
 
 def test_channel_join_private():
 	# CASE 3: Authorised user is not admin, private channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith') 
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
     token1 = user1['token']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
     token2 = user2['token']
 
     # is_public is false as channel is private

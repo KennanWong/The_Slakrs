@@ -84,8 +84,9 @@ def test_channel_invite_unauthorised():
     channel_id = channelInfo['channel_id']
 
     # AccessError when authorised user is not a member of the channel
+    # user2 invites user3 after user1 creates the channel
     with pytest.raises(AccessError) as e:
-        channel_invite(token1, channel_id, u_id3)
+        channel_invite(token2, channel_id, u_id3)
 
 def test_channel_invite_existing_user(): 
     # CASE 5: Inviting a user who is already a member of channel

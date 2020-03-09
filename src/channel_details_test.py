@@ -18,7 +18,7 @@ AccessError when:
 
 def test_channel_details_successful():
     # CASE 1: Matching details to expected output
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
 
@@ -38,7 +38,7 @@ def test_channel_details_successful():
 
 def test_channel_details_invalid_channel():
     # CASE 2: Invalid channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
 
     channelInfo = channels_create(token1, 'The Slakrs', True)
@@ -51,10 +51,10 @@ def test_channel_details_invalid_channel():
 
 def test_channel_details_unauthorised():
     # CASE 3: Authorised user is not a member of channel with channel_id
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
     token2 = user2['token']
 
     channelInfo = channels_create(token1, 'The Slakrs', True)

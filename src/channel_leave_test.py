@@ -40,7 +40,7 @@ def test_channel_leave_successful():
             "all_members": [{"u_id": 1, "name_first": "Hayden", "name_last": "Smith"}]
         }
     ]
-    
+
     assert channel_details(token1, channel_id) == results
 
 def test_channel_leave_invalid_channel():
@@ -67,6 +67,7 @@ def test_channel_leave_unauthorised():
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
     
-    # AccessError when authorised user is not a member of channel they are trying to leave from
+    # AccessError when authorised user is not a member of channel they are trying to leave from,
+    # user2
     with pytest.raises(AccessError) as e:
         channel_leave(token2, channel_id)

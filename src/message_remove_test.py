@@ -1,7 +1,7 @@
-import message
-import auth
-import channel
-import channels
+from message import *
+from auth import *
+from channel import *
+from channels import *
 import pytest
 from error import InputError,AccessError
 
@@ -13,14 +13,14 @@ from error import InputError,AccessError
 
 def test_remove1():
     #the person who sent the message is trying to remove the message
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
+    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth_login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
     
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
-    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+    channel_id1 = channels_create(user1_tk,'firstchannel',True)
+    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
 
-    message.remove(user1_tk,msg1_id)
+    message_remove(user1_tk,msg1_id)
 
     successRemove = 0
 
@@ -34,22 +34,22 @@ def test_remove1():
 def test_remove2():
     #the admin of a channel is attempting to remove a message
 
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
+    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth_login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
     
     
-    user2 = auth.register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth.login('dean.yu@gmail.com','password2')
+    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
+    user2 = auth_login('dean.yu@gmail.com','password2')
     user2_tk = user2['token']
     
     
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
-    channel.channel_join(user2_tk, channel_id1)
+    channel_id1 = channels_create(user1_tk,'firstchannel',True)
+    channel_join(user2_tk, channel_id1)
 
-    msg2_id = message.send(user2_tk,channel_id1,'testing')['message_id']
+    msg2_id = message_send(user2_tk,channel_id1,'testing')['message_id']
     
-    message.remove(user1_tk,msg2_id)
+    message_remove(user1_tk,msg2_id)
 
     successRemove = 0
 
@@ -62,40 +62,40 @@ def test_remove2():
 def test_no_msg():
     # attempting to remove a message that has been already removed or does
     # not exist causing an input error
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
+    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth_login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
     
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
-    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+    channel_id1 = channels_create(user1_tk,'firstchannel',True)
+    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
 
     msg2_id = msg1_id + 1
 
     with pytest.raises(InputError):
-        message.remove(user1_tk,msg2_id)
+        message_remove(user1_tk,msg2_id)
     
 
 def test_unauth_remove1():
     # if someone is trying to remove another person message causing
     # an access error
 
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
+    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    user1 = auth_login('John.smith@gmail.com','password1')
     user1_tk = user1['token']
     
     
-    user2 = auth.register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth.login('dean.yu@gmail.com','password2')
+    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
+    user2 = auth_login('dean.yu@gmail.com','password2')
     user2_tk = user2['token']
     
     
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
-    channel.channel_join(user2_tk, channel_id1)
+    channel_id1 = channels_create(user1_tk,'firstchannel',True)
+    channel_join(user2_tk, channel_id1)
 
-    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
 
     with pytest.raises(AccessError):
-        message.remove(user2_tk,msg1_id)
+        message_remove(user2_tk,msg1_id)
     
 '''
 def test_badtoken2():

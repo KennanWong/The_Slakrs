@@ -16,9 +16,6 @@ def test_listall_and_details():
     channel_info1 = channels_create(token1, 'Slakrs', True)
     channel_info2 = channels_create(token2, 'Kings Landing' , True)
 
-    #channel1 = channel_details(token1, channel_info1)
-    #channel2 = channel_details(token2, channel_info2)
-
     all_channels = channels_listall(token2)
     
     flag = 0

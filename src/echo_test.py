@@ -1,12 +1,19 @@
-import echo
+import json
+import urllib.request
+from urllib.error import HTTPError
 import pytest
-from error import InputError
 
-def test_echo():
-    assert echo.echo("1") == "1", "1 == 1"
-    assert echo.echo("abc") == "abc", "abc == abc"
-    assert echo.echo("trump") == "trump", "trump == trump"
+def test_echo_success():
+    response = urllib.request.urlopen('http://127.0.0.1:8080/echo?data=hi')
+    payload = json.load(response)
+    assert payload['data'] == 'hi'
 
+<<<<<<< HEAD
 def test_echo_except():
     with pytest.raises(InputError):
         assert echo.echo("echo")
+=======
+def test_echo_failure():
+    with pytest.raises(HTTPError):
+        response = urllib.request.urlopen('http://127.0.0.1:8080/echo?data=echo')
+>>>>>>> dab19b281b2fd115c4c568667dd3bf3269450103

@@ -10,9 +10,6 @@ LOGGED_ON = 1
 LOGGED_OFF = 0
 is_success = True
 
-users = [
-]
-
 channels_store = [
     #new_channel_info
     #{
@@ -43,20 +40,21 @@ channels_store = [
 
 auth_data = [
     # user_data :{
-    #     'u_id',
-    #     'email',
-    #     'password',
-    #     'token'
-    #     'status'
+    #     'u_id' : u_id,
+    #     'email': email,
+    #     'name_first': first_name,
+    #     'name_last': last_name,
+    #     'handle_str': handle.lower(),
+    #     'password': password,
+    #     'token': token,
+    #     'status' : LOGGED_ON
     # }
 ]
 
 def users_rest():
-    global users
-    users = []
     global auth_data
     auth_data = []
-    return users
+    return 
 
 
 '''
@@ -64,11 +62,6 @@ def users_rest():
 #                GENERATE DATA STORES                       #      
 #############################################################
 '''
-
-# to generate global users
-def get_user_store():
-    global users
-    return users
 
 # to generate gloabl auth_data store
 def get_auth_data_store():
@@ -155,7 +148,6 @@ def users_reset():
 #register a user and add it to the userStore
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
-    users_store = get_user_store()
     auth_store = get_auth_data_store()
     payload = request.get_json()
     handle = (payload['name_first']+payload['name_last'])
@@ -182,31 +174,25 @@ def auth_register():
     else:
         raise InputError(description='Not a valid last name')
 
-    u_id = int(len(users_store)+1)
+    u_id = int(len(auth_store)+1)
     token = generate_token(u_id)
 
-    new_user = {
-        'u_id': u_id,
-        'email': email,
-        'name_first': first_name,
-        'name_last': last_name,
-        'handle_str': handle.lower(),
-    }
 
     new_user_auth = {
         'u_id' : u_id,
         'email': email,
         'password': password,
+        'name_first': first_name,
+        'name_last': last_name,
+        'handle_str': handle.lower(),
         'token': token,
         'status' : LOGGED_ON
     }
 
     #test if an email is alread taken
-    for i in users_store:
+    for i in auth_store:
         if i['email'] == email:
             raise InputError(description='Email is already in use')
-
-    users_store.append(new_user)
     auth_store.append(new_user_auth)
 
     return dumps({
@@ -289,6 +275,8 @@ def channels_create():
    
     for i in auth_store:
         if i['token'] == payload['token']:
+            print(i)
+            channel_owner_info = {}
             channel_owner_info = {
                 'u_id': i['u_id'],
                 'name_first': i['name_first'],

@@ -55,7 +55,15 @@ def test_email(email):
 def generate_token(u_id):
     return hashlib.sha256(str(u_id).encode()).hexdigest()
 
-
+# function to validate a token
+def validate_token(token):
+    auth_store = get_auth_data_store()
+    for i in auth_store:
+        if i['token'] == token:
+            return True
+    
+    else:
+        return False
 
 def defaultHandler(err):
     response = err.get_response()
@@ -211,7 +219,7 @@ def auth_logout():
 
 
     for i in auth_store:
-        if i['token'] == payload['token']:
+        if validate_token(payload['token']):
 
             if i['status'] == LOGGED_ON:
 

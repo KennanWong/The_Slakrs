@@ -13,6 +13,7 @@ is_success = True
 users = [
 ]
 
+
 auth_data = [
     # user_data :{
     #     'u_id',
@@ -177,14 +178,13 @@ def auth_login():
     passwordMatch = 0 # if match, password = 1
 
     user_auth_data = {}
-
     for i in auth_store:
         if i['email'] == email:
             emailMatch = 1
             if i['status'] == LOGGED_OFF:
                 if i['password'] == payload['password']:
                     user_auth_data = i
-                    i['status'] == LOGGED_ON
+                    i['status'] = LOGGED_ON
                 else:
                     raise InputError(description="Incorrect password")
             else: 
@@ -193,6 +193,7 @@ def auth_login():
     if emailMatch == 0:
         raise InputError(description="Email entered does not belong to a user")
     
+    print(i)
     return dumps({
         'u_id' : user_auth_data['u_id'],
         'token' : user_auth_data['token']

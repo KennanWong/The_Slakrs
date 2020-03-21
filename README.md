@@ -21,7 +21,10 @@ A video describing this project and the background here can be found here.
   * All "between" references clarified to be inclusive
   * Clarity on how search results are sorted
   * password reset, message sendlater, message react/pin, profile pic uploads, standups, and permision changes added
-
+* 14/03: PLEASE READ
+  * Added "reacts, is_pinned" to messages data type
+  * Added "reacts" data type
+  * Permission ID's clarified for global permissions
 ## Overview
 
 An overview of this background and this project can be found in a short video found [HERE](https://youtu.be/Mzg3UGv3TSw). **Please note that this video is from 19T3, so the marking breakdown has changed slightly. This video should be used to supplement explanations in the lecture, which can be found in lecture 2 of week 2.**
@@ -166,9 +169,19 @@ When you demonstrate this iteration in your week 4 lab (week 5 for monday tutes)
 |has suffix **start**|integer|
 |(outputs only) named exactly **user**|Dictionary containing u_id, email, name_first, name_last, handle_str|
 |(outputs only) named exactly **users**|List of dictionaries, where each dictionary contains types u_id, email, name_first, name_last, handle_str|
-|(outputs only) named exactly **messages**|List of dictionaries, where each dictionary contains types { message_id, u_id, message, time_created  }|
+|(outputs only) named exactly **messages**|List of dictionaries, where each dictionary contains types { message_id, u_id, message, time_created, reacts, is_pinned  }|
 |(outputs only) named exactly **channels**|List of dictionaries, where each dictionary contains types { channel_id, name }|
 |(outputs only) name ends in **members**|List of dictionaries, where each dictionary contains types { u_id, name_first, name_last }|
+|(outputs only) name ends in **reacts**|List of dictionaries, where each dictionary contains types { react_id, u_ids, is_this_user_reacted } where react_id is the id of a react, and u_ids is a list of user id's of people who've reacted for that react. is_this_user_reacted is whether or not the authorised user has been one of the reacts to this post|
+
+
+### profile_img_url & image uploads
+
+(Not relevant until iteration 3)
+
+For outputs with data pertaining to a user, a profile_img_url is present. When images are uploaded for a user profile, after processing them you should store them on the server such that your server now locally has a copy of the cropped image of the original file linked. Then, the profile_img_url should be a URL to the server, such as http://localhost:5001/imgurl/adfnajnerkn23k4234.jpg (a unique url you generate).
+
+Note: This is most likely the most challenging part of the project. Don't get lost in this, we would strongly recommend most teams complete this capability *last*.
 
 
 ### profile_img_url & image uploads
@@ -207,11 +220,11 @@ The only React ID currently associated with the frontend is React ID 1, which is
 
 ### Permissions:
  * Members in a channel have one of two channel permissions.
-   1) Owner of the channel (the person who created it, and whoever else that creator adds)
-   2) Members of the channel
+   * 1) Owner of the channel (the person who created it, and whoever else that creator adds)
+   * 2) Members of the channel
  * Slackr user's have two global permissions
-   1) Owners, who can also modify other owners' permissions.
-   2) Members, who do not have any special permissions (permission_id 3)
+   * 1) Owners, who can also modify other owners' permissions. (permission_id 1)
+   * 2) Members, who do not have any special permissions. (permission_id 2)
  * All slackr users are by default members, except for the very first user who signs up, who is an owner
 
 A user's primary permissions are their global permissions. Then the channel permissions are layered on top. For example:

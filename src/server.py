@@ -85,7 +85,7 @@ def get_channel_data_store():
 def generate_token(u_id):
     return hashlib.sha256(str(u_id).encode()).hexdigest()
 
-# function to validate a token
+# function to validate a token and returns the users info
 def validate_token(token):
     auth_store = get_auth_data_store()
     for i in auth_store:

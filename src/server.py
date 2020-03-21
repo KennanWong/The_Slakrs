@@ -13,6 +13,33 @@ is_success = True
 users = [
 ]
 
+channels_store = [
+    #new_channel_info
+    #{
+     #   'channel_id'
+      #  'name'
+       # 'is_public' 
+        #'members': {
+         #   u_id
+          #  name_first
+           # name_last
+        #}
+        #'owners': {
+         #   u_id
+          #  name_first
+           # name_last
+        #}
+        #'messages': {
+         #   message_id
+          #  u_id, message
+           # time_created
+            #reacts
+            #is_pinned
+
+        #}
+    #}
+]
+
 
 auth_data = [
     # user_data :{
@@ -32,24 +59,27 @@ def users_rest():
     return users
 
 
-# to get global users
+'''
+#############################################################
+#                GENERATE DATA STORES                       #      
+#############################################################
+'''
+
+# to generate global users
 def get_user_store():
     global users
     return users
 
-# to get gloabl auth_data store
+# to generate gloabl auth_data store
 def get_auth_data_store():
     global auth_data
     return auth_data
 
-# to test if an email is valid, courtesy of geeksforgeeks.org
-def test_email(email):
-    regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-    
-    if (re.search(regex, email)):
-        return email
-    else:
-        raise InputError(description='Invalid Email')
+# to get channel data store
+def get_channel_data_store():
+    global channels_store
+    return channels_store
+
 
 # to generate a token
 def generate_token(u_id):
@@ -60,10 +90,19 @@ def validate_token(token):
     auth_store = get_auth_data_store()
     for i in auth_store:
         if i['token'] == token:
-            return True
-    
+            return i
     else:
         return False
+
+# to test if an email is valid, courtesy of geeksforgeeks.org
+def test_email(email):
+    regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+    
+    if (re.search(regex, email)):
+        return email
+    else:
+        raise InputError(description='Invalid Email')
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -92,6 +131,12 @@ def echo():
         'data': data
     })
 
+
+'''
+#############################################################
+#                   USER_RESET                              #      
+#############################################################
+'''
 
 # reset all users in a slack
 @APP.route("/users/reset", methods=['POST'])
@@ -193,6 +238,7 @@ def auth_login():
                 if i['password'] == payload['password']:
                     user_auth_data = i
                     i['status'] = LOGGED_ON
+                    i['token'] = generate_token(i['u_id'])
                 else:
                     raise InputError(description="Incorrect password")
             else: 
@@ -219,19 +265,67 @@ def auth_logout():
 
 
     for i in auth_store:
-        if validate_token(payload['token']):
-
+        if i['token'] == payload['token']:
             if i['status'] == LOGGED_ON:
-
                 i['status'] = LOGGED_OFF
- 
-                return dumps({
-                })
+                i['token'] = ''
+                return dumps({})
 
-    return dumps({
+    return dumps({})
+
+
+'''
+#############################################################
+#                   CHANNELS_CREATE                         #      
+#############################################################
+'''
+
+
+@APP.route("/channels/create", methods=['POST'])
+def channels_create():
+    auth_store = get_auth_data_store()
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+   
+    for i in auth_store:
+        if i['token'] == payload['token']:
+            channel_owner_info = {
+                'u_id': i['u_id'],
+                'name_first': i['name_first'],
+                'name_last': i['name_last'],
+                'handle_str': i['handle_str']
+            }
+            if len(payload['name']) < 21:
+                name = payload['name']
+                if payload['is_public']: 
+                    new_channel_info =  {
+                        'channel_id': int(len(channel_store)+1),
+                        'name':  name,
+                        'is_public': True,
+                        'members':[],
+                        'owners':[],
+                        'messages': [],
+                    }
+                else:
+                    new_channel_info = {
+                        'channel_id': int(len(channel_store)+1),
+                        'name': name,
+                        'is_public': False,
+                        'members':[],
+                        'owners':[],
+                        'messages': [],
+                    }
+
+            else: 
+                raise InputError (description='Name is too long')
+                     
+    
+    new_channel_info['owners'].append(channel_owner_info)
+    channel_store.append(new_channel_info)
+   
+    return dumps ({
+        'channel_id': new_channel_info['channel_id']
     })
-
-
 
 
 

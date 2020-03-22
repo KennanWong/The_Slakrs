@@ -197,10 +197,10 @@ def auth_register():
         'status' : LOGGED_ON
     }
 
-    #test if an email is alread taken
+    # Test if an email is already taken
     for i in auth_store:
         if i['email'] == email:
-            raise InputError(description='Email is already in use')
+            raise InputError(description = 'Email is already in use')
     auth_store.append(new_user_auth)
 
     return dumps({
@@ -337,3 +337,120 @@ def channels_create():
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
 
+
+
+
+'''
+#############################################################
+#                   CHANNEL_INVITE                         #      
+#############################################################
+'''
+@APP.route('/channel/invite', methods = ['POST'])
+def channel_invite():
+    '''
+    auth_store = get_auth_data_store()
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    channel_owner_info = {}
+    new_channel_info ={}
+    '''
+    # Information from request
+    token = request.get_json('token')
+    channel_id = int(request.get_json('channel_id'))
+    user_id = int(request.get_json('u_id'))
+
+    # Invite user to channel
+    invite = channel_invite(token, channel_id, user_id)
+   
+    return dumps(invite)
+
+'''
+#############################################################
+#                   CHANNEL_DETAILS                         #      
+#############################################################
+'''
+@APP.route('/channel/details', methods = ['GET'])
+def channel_details():
+    # Information from request
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    user_id = int(request.args.get('u_id'))
+
+    details = channel_details(token, channel_id)
+
+    return dumps(details)
+
+'''
+#############################################################
+#                   CHANNEL_MESSAGES                        #      
+#############################################################
+'''
+@APP.route('/channel/messages', methods = ['GET'])
+def channel_messages():
+    # Information from request
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    user_id = int(request.args.get('u_id'))
+
+    # Send a message
+    messages = channel_messages(token, channel_id, start)
+
+    return dumps(messages)
+'''
+#############################################################
+#                   CHANNEL_LEAVE                           #      
+#############################################################
+'''
+@APP.route('/channel/leave', methods = ['POST'])
+def channel_leave():
+    # Information from request
+    token = request.get_json('token')
+    channel_id = int(request.get_json('channel_id'))
+
+    leave = channel_leave(token, channel_id)
+    
+    return dumps(leave)
+'''
+#############################################################
+#                   CHANNEL_JOIN                            #      
+#############################################################
+'''
+@APP.route('/channel/join', methods = ['POST'])
+def channel_join():
+    # Information from request
+    token = request.get_json('token')
+    channel_id = int(request.get_json('channel_id'))
+
+    join = channel_join(token, channel_id)
+    
+    return dumps(join)
+'''
+#############################################################
+#                   CHANNEL_ADDOWNER                         #      
+#############################################################
+'''
+@APP.route('/channel/addowner', methods = ['POST'])
+def channel_addowner():
+    # Information from request
+    token = request.get_json('token')
+    channel_id = int(request.get_json('channel_id'))
+    user_id_adding = int(request.get_json('u_id'))
+
+    addowner = channel_addowner(token, channel_id)
+    
+    return dumps(addowner)
+'''
+#############################################################
+#                   CHANNEL_REMOVEOWNER                     #      
+#############################################################
+'''
+@APP.route('/channel/removeowner', methods = ['POST'])
+def channel_removeowner():
+    # Information from request
+    token = request.get_json('token')
+    channel_id = int(request.get_json('channel_id'))
+    user_id_removing = int(request.get_json('u_id'))
+  
+    removeowner = channel_removeowner(token, channel_id)
+
+    return dumps(removeowner)

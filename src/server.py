@@ -78,6 +78,14 @@ def get_channel_data_store():
 def generate_token(u_id):
     return hashlib.sha256(str(u_id).encode()).hexdigest()
 
+
+'''
+#############################################################
+#                TESTING VARIABLES                          #      
+#############################################################
+'''
+
+
 # function to validate a token and returns the users info
 def validate_token(token):
     auth_store = get_auth_data_store()
@@ -85,7 +93,7 @@ def validate_token(token):
         if i['token'] == token:
             return i
     else:
-        return False
+        raise InputError(description='Invalid Token')
 
 # to test if an email is valid, courtesy of geeksforgeeks.org
 def test_email(email):
@@ -272,11 +280,12 @@ def channels_create():
     auth_store = get_auth_data_store()
     channel_store = get_channel_data_store()
     payload = request.get_json()
+    channel_owner_info = {}
+    new_channel_info ={}
    
     for i in auth_store:
         if i['token'] == payload['token']:
-            print(i)
-            channel_owner_info = {}
+            print(i)           
             channel_owner_info = {
                 'u_id': i['u_id'],
                 'name_first': i['name_first'],
@@ -311,11 +320,18 @@ def channels_create():
     new_channel_info['owners'].append(channel_owner_info)
     channel_store.append(new_channel_info)
    
+    print (channels_store)
+
     return dumps ({
         'channel_id': new_channel_info['channel_id']
     })
 
 
+'''
+#############################################################
+#                   CHANNELS_CREATE                         #      
+#############################################################
+'''
 
 
 if __name__ == "__main__":

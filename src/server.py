@@ -50,27 +50,6 @@ channels_store = [
         #}
     #}
 ]
-<<<<<<< HEAD
-
-auth_data = [
-    #user_data :{
-    #    'u_id' : u_id,
-    #    'email': email,
-    #    'name_first': first_name,
-    #    'name_last': last_name,
-    #    'handle_str': handle.lower(),
-    #    'password': password,
-    #    'token': token,
-    #    'status' : LOGGED_ON
-    # }
-]
-
-
-def get_auth_data_store():
-    global auth_data
-    return auth_data
-=======
-
 
 def users_rest():
     global users
@@ -78,7 +57,6 @@ def users_rest():
     global auth_data
     auth_data = []
     return users
->>>>>>> 5dbb30a21c754e6c27d9ef0c928f61fdaef0876f
 
 
 # to get global users
@@ -298,26 +276,17 @@ def channels_create():
             }
             if len(payload['name']) < 21:
                 name = payload['name']
-<<<<<<< HEAD
-                if payload['is_public']:
-                    new_channel_info = {
-=======
 
                 if payload['is_public']: 
                     new_channel_info =  {
->>>>>>> 5dbb30a21c754e6c27d9ef0c928f61fdaef0876f
                         'channel_id': int(len(channel_store)+1),
                         'name':  name,
                         'is_public': True,
                         'members':[],
-<<<<<<< HEAD
-                        'owners':[],
-=======
 
                         'owners':[],
                            
                         
->>>>>>> 5dbb30a21c754e6c27d9ef0c928f61fdaef0876f
                         'messages': [],
 
                     }
@@ -327,16 +296,11 @@ def channels_create():
                         'channel_id': int(len(channel_store)+1),
                         'name': name,
                         'is_public': False,
-<<<<<<< HEAD
-                        'members': [],
-                        'owners': [],                        
-=======
                         'members':[],
 
                         'owners':[],
                            
                         
->>>>>>> 5dbb30a21c754e6c27d9ef0c928f61fdaef0876f
                         'messages': [],
 
                     }
@@ -352,18 +316,14 @@ def channels_create():
 
 '''
 #############################################################
-#                   CHANNELS_LIST                           #      
+#                   CHANNELS_LISTALL                          #      
 #############################################################
 '''
 @APP.route("/channels/listall", methods=['GET'])
 def channels_list():
-<<<<<<< HEAD
     auth_store = get_auth_data_store()
     channel_store = get_channel_data_store()
     payload = request.get_json()
-=======
-    return
->>>>>>> 5dbb30a21c754e6c27d9ef0c928f61fdaef0876f
 
    for i in auth_store:
        if i['token'] == payload['token']:

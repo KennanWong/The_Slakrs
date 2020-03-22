@@ -14,10 +14,10 @@ def test_listall_and_details():
     u_id2 = results['u_id']
 
     channel_info1 = channels_create(token1, 'Slakrs', True)
-    channel_info2 = channels_create(token2, 'Kings Landing' , True)
+    channel_info2 = channels_create(token2, 'Kings Landing', True)
 
     all_channels = channels_listall(token2)
-    
+
     flag = 0
     j = 0
 
@@ -25,5 +25,5 @@ def test_listall_and_details():
         if (channel_info1 or channel_info2) == all_channels[j]:
             flag = 1
         j =+ 1
-    
+        s   
     assert flag == 1

@@ -7,7 +7,7 @@ from message import message_send
 
 '''
 #############################################################
-#                     CHANNEL_MESSAGES                      #      
+#                     CHANNEL_MESSAGES                      #  
 #############################################################
 
 InputError when any of:
@@ -20,9 +20,10 @@ AccessError when
 
 def test_channel_messages_clean():
 	# CASE 1: No messages
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
 
+    # Create channel
     channelInfo = channels_create(token1, 'The Slakrs', True)
     channel_id = channelInfo['channel_id']
 
@@ -33,7 +34,7 @@ def test_channel_messages_clean():
 
 def test_channel_messages_invalid_channel():
 	# CASE 2: Messages in an invalid channel
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
     u_id1 = user1['u_id']
 
@@ -44,13 +45,13 @@ def test_channel_messages_invalid_channel():
     # Send message
     message_send(token1, channel_id, "hello")
 
-	# InputError when we check messages in an invalid channel
+	# InputError when we try to check messages in an invalid channel
     with pytest.raises(InputError) as e:
         channel_messages(token1, invalidChannelID, 0)
 
 def test_channel_messages_start_excess():
 	# CASE 3: When start > total messages
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
 
     channelInfo = channels_create(token1, 'The Slakrs', True)
@@ -65,10 +66,10 @@ def test_channel_messages_start_excess():
 
 def test_channel_messages_unauthorised():
 	# CASE 4: Authorised user is not a member of channel with channel_id
-    user1 = auth_register("user1@gmail.com", '123!@asdf', 'user1', 'Smith')
+    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
     token1 = user1['token']
 
-    user2 = auth_register("user2@gmail.com", 'zcvb*&234', 'user2', 'Berry')
+    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
     token2 = user2['token']
 
     channelInfo = channels_create(token1, 'The Slakrs', True)
@@ -77,6 +78,7 @@ def test_channel_messages_unauthorised():
     # Send message
     message_send(token1, channel_id, "hello")
     
-	# AccessError when user sends message to channel they aren't a member of, user2
+	# AccessError when user sends message to channel they aren't a member of
+    # user2 isn't a member
     with pytest.raises(AccessError) as e:
         channel_messages(token2, channel_id, 0)

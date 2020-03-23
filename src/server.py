@@ -11,6 +11,8 @@ LOGGED_ON = 1
 LOGGED_OFF = 0
 is_success = True
 
+msg_count = 1
+
 channels_store = [
     # {
     #     'channel_id'
@@ -56,6 +58,7 @@ auth_data = [
     #     'password': password,
     #     'token': token,
     #     'status' : LOGGED_ON
+    #     'messages' : []
     # }
 ]
 
@@ -143,7 +146,7 @@ def test_in_channel(u_id, channel):
     for i in channel['owners']:
         if i['u_id'] == u_id:
             return True
-    raise AccessError(description='User is not a part of this channel')
+    return False
 
 def defaultHandler(err):
     response = err.get_response()
@@ -234,7 +237,8 @@ def auth_register():
         'name_last': last_name,
         'handle_str': handle.lower(),
         'token': token,
-        'status' : LOGGED_ON
+        'status' : LOGGED_ON,
+        'messages':[]
     }
 
     #test if an email is alread taken
@@ -318,7 +322,7 @@ def auth_logout():
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
-    auth_store = get_auth_data_store()
+
     channel_store = get_channel_data_store()
     payload = request.get_json()
     channel_owner_info = {}
@@ -374,12 +378,12 @@ def channels_create():
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
+    global msg_count
     payload = request.get_json()
     user = validate_token(payload['token'])
     channel = get_channel(payload['channel_id'])
-    test_in_channel(user['u_id'], channel)
-    
-
+    if test_in_channel(user['u_id'], channel) == False:
+        raise InputError(description='User is')
 
     # create a message data type, and fill in details
     # then append to the channels list of messages
@@ -388,19 +392,23 @@ def message_send():
         raise InputError(description='Message is more than 1000 characters')
 
     new_message = create_message()
-    msg_id = int(len(channel['messages'])+1)
+    msg_id = msg_count
     new_message['message_id'] = msg_id
     new_message['u_id'] = user['u_id']
     new_message['message'] = txt
     new_message['time_created'] = datetime.now().time()
     channel['messages'].append(new_message)
 
+    # debugging purposes
     for msg in channel['messages']:
         print(msg['message'])
+
+    msg_count= msg_count + 1
 
     return dumps({
         'message_id': msg_id
     })
+    
 
 
 

@@ -28,7 +28,8 @@ channels_store = [
         #}
         #'messages': {
          #   message_id
-          #  u_id, message
+          #  u_id
+          # message
            # time_created
             #reacts
             #is_pinned
@@ -179,8 +180,6 @@ def users_reset():
 #                   AUTH_REGISTER                           #      
 #############################################################
 '''
-
-
 #register a user and add it to the userStore
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
@@ -304,49 +303,46 @@ def auth_logout():
 #                   CHANNELS_CREATE                         #      
 #############################################################
 '''
-
-
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
-    auth_store = get_auth_data_store()
+    
     channel_store = get_channel_data_store()
     payload = request.get_json()
     channel_owner_info = {}
-    new_channel_info ={}
+    new_channel_info = {}
    
-    for i in auth_store:
-        if i['token'] == payload['token']:
-            print(i)           
-            channel_owner_info = {
-                'u_id': i['u_id'],
-                'name_first': i['name_first'],
-                'name_last': i['name_last'],
-                'handle_str': i['handle_str']
+    i = validate_token(payload['token'])
+    channel_owner_info = {
+        'u_id': i['u_id'],
+        'name_first': i['name_first'],
+        'name_last': i['name_last'],
+        'handle_str': i['handle_str'],
+        'token': i['token']
+    }
+    if len(payload['name']) < 21:
+        name = payload['name']
+        if payload['is_public']: 
+            new_channel_info =  {
+                'channel_id': int(len(channel_store)+1),
+                'name':  name,
+                'is_public': True,
+                'members':[],
+                'owners':[],
+                'messages': [],
             }
-            if len(payload['name']) < 21:
-                name = payload['name']
-                if payload['is_public']: 
-                    new_channel_info =  {
-                        'channel_id': int(len(channel_store)+1),
-                        'name':  name,
-                        'is_public': True,
-                        'members':[],
-                        'owners':[],
-                        'messages': [],
-                    }
-                else:
-                    new_channel_info = {
-                        'channel_id': int(len(channel_store)+1),
-                        'name': name,
-                        'is_public': False,
-                        'members':[],
-                        'owners':[],
-                        'messages': [],
-                    }
+        else:
+            new_channel_info = {
+                'channel_id': int(len(channel_store)+1),
+                'name': name,
+                'is_public': False,
+                'members':[],
+                'owners':[],
+                'messages': [],
+            }
 
-            else: 
-                raise InputError (description='Name is too long')
-                     
+    else: 
+        raise InputError (description='Name is too long')
+                    
     
     new_channel_info['owners'].append(channel_owner_info)
     channel_store.append(new_channel_info)
@@ -360,33 +356,43 @@ def channels_create():
 
 '''
 #############################################################
-#                   CHANNELS_LISTALL                          #      
+#                   CHANNELS_LISTALL                        #      
 #############################################################
 '''
 @APP.route("/channels/listall", methods=['GET'])
-def channels_list():
-    auth_store = get_auth_data_store()
+def channels_listall():
+    
     channel_store = get_channel_data_store()
     payload = request.get_json()
 
-   for i in auth_store:
-       if i['token'] == payload['token']:
-           j = 0
-           while j <= (len(channel_store)+1):
-               info_channels = {
-                   'channel_id': int(channel_store['channel_id'])[j]
-                   'name': channel_store['name'][j]
-               }
-                j = j+1
-
- 
-  
-    return dumps({
-        'channel_id': info_channels['channel_id'][j]
-        'name': info_channels['name'][j]
-    })
+    i = validate_token(payload['token'])
+    
 
 
+'''
+#############################################################
+#                   MESSAGE_PIN                             #      
+#############################################################
+'''
+#/
+#@APP.route("message/pin", methods=['POST'])
+#def channels_listall():
+ #   channel_store = get_channel_data_store()
+ #   payload = request.get_json()
+
+ #   i = validate_token(payload['token'])
+ #   channel_message_info = {
+ #       'message_id'
+        #'u_id' 
+        #'message'
+        #'time_created'
+        #'reacts'
+  #      'is_pinned'
+
+  #  }
+
+   # return dumps ({
+   # })
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))

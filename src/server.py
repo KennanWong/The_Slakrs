@@ -4,7 +4,7 @@ import hashlib
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from error import InputError
+from error import InputError, AccessError
 
 LOGGED_ON = 1
 LOGGED_OFF = 0
@@ -59,7 +59,7 @@ def users_rest():
 
 '''
 #############################################################
-#                GENERATE DATA STORES                       #      
+#                   GENERATE DATA STORES                    #      
 #############################################################
 '''
 
@@ -86,7 +86,7 @@ def generate_token(u_id):
 '''
 
 
-# function to validate a token and returns the users info
+# Function to validate a token and returns the users info
 def validate_token(token):
     auth_store = get_auth_data_store()
     for i in auth_store:
@@ -95,7 +95,7 @@ def validate_token(token):
     else:
         raise InputError(description='Invalid Token')
 
-# to test if an email is valid, courtesy of geeksforgeeks.org
+# To test if an email is valid, courtesy of geeksforgeeks.org
 def test_email(email):
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     
@@ -139,7 +139,7 @@ def echo():
 #############################################################
 '''
 
-# reset all users in a slack
+# Reset all users in a slack
 @APP.route("/users/reset", methods=['POST'])
 def users_reset():
     users_rest()
@@ -153,7 +153,7 @@ def users_reset():
 '''
 
 
-#register a user and add it to the userStore
+# Register a user and add it to the userStore
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
     auth_store = get_auth_data_store()
@@ -162,16 +162,16 @@ def auth_register():
     if len(handle) > 24:
         handle = handle[0:20]
 
-    #test if valid email    
+    # Test if valid email    
     email = test_email(payload['email'])
 
-    #test strength of password
+    # Test strength of password
     if len(payload['password']) > 6:
         password = payload['password']
     else:
-         raise InputError (description='Password is too short')
-    
-    #test length of Last and First names
+        raise InputError (description = 'Password is too short')
+
+    # Test length of first and last names
     if 1 <= len(payload['name_first']) <= 50:
         first_name = payload['name_first']
     else:
@@ -200,12 +200,12 @@ def auth_register():
     # Test if an email is already taken
     for i in auth_store:
         if i['email'] == email:
-            raise InputError(description = 'Email is already in use')
+            raise InputError(description='Email is already in use')
     auth_store.append(new_user_auth)
 
     return dumps({
         'u_id': u_id,
-       'token': token
+        'token': token
     })
 
 '''
@@ -240,7 +240,7 @@ def auth_login():
 
     if emailMatch == 0:
         raise InputError(description="Email entered does not belong to a user")
-    
+   
     print(i)
     return dumps({
         'u_id' : user_auth_data['u_id'],
@@ -339,118 +339,225 @@ if __name__ == "__main__":
 
 
 
-
+#LOOK AT INVALID TOKEN
 '''
 #############################################################
 #                   CHANNEL_INVITE                         #      
 #############################################################
 '''
-@APP.route('/channel/invite', methods = ['POST'])
+@APP.route('/channel/invite', methods=['POST'])
 def channel_invite():
-    '''
-    auth_store = get_auth_data_store()
+    auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
+    '''
     channel_owner_info = {}
     new_channel_info ={}
     '''
+    
+    #channelInfo = channels_create(token, 'The Slakrs', True)
+    #channel_id = channelInfo['channel_id']
+    
+    for i in auth_store:
+        if i['token'] == payload['token']:
+            print(i)
+    
     # Information from request
-    token = request.get_json('token')
-    channel_id = int(request.get_json('channel_id'))
-    user_id = int(request.get_json('u_id'))
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+    
+    #token = request.get_json('token')
+    #channel_id = int(request.get_json('channel_id'))
+    #user_id = int(request.get_json('u_id'))
 
     # Invite user to channel
     invite = channel_invite(token, channel_id, user_id)
    
     return dumps(invite)
+     
+    raise InputError(description='Invting someone to an invalid channel')
+    raise InputError(description='Inviting someone with an invalid u_id')
+    raise AccessError(description='Authorised user is not a member of channel')
 
 '''
 #############################################################
 #                   CHANNEL_DETAILS                         #      
 #############################################################
 '''
-@APP.route('/channel/details', methods = ['GET'])
+@APP.route('/channel/details', methods=['GET'])
 def channel_details():
+    auth_store = get_auth_data_store
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    
     # Information from request
-    token = request.args.get('token')
-    channel_id = int(request.args.get('channel_id'))
-    user_id = int(request.args.get('u_id'))
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+    
+    #token = request.args.get('token')
+    #channel_id = int(request.args.get('channel_id'))
+    #user_id = int(request.args.get('u_id'))
 
     details = channel_details(token, channel_id)
-
+    
+    '''    
+    results = [
+        {
+            "name": 'The Slakrs',
+            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
+                               "name_last": "Smith"}],
+            "all_members": [{"u_id": 1, "name_first": "Hayden", 
+                             "name_last": "Smith"}]
+        }
+    ]
     return dumps(details)
-
+    '''
+    raise InputError(description='Invalid channel')
+    raise AccessError(description='Authorised user is not a member of channel with channel_id')
+    
 '''
 #############################################################
 #                   CHANNEL_MESSAGES                        #      
 #############################################################
 '''
-@APP.route('/channel/messages', methods = ['GET'])
+@APP.route('/channel/messages', methods=['GET'])
 def channel_messages():
+    auth_store = get_auth_data_store
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    
     # Information from request
-    token = request.args.get('token')
-    channel_id = int(request.args.get('channel_id'))
-    user_id = int(request.args.get('u_id'))
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+    
+    #token = request.args.get('token')
+    #channel_id = int(request.args.get('channel_id'))
+    #user_id = int(request.args.get('u_id'))
 
     # Send a message
-    messages = channel_messages(token, channel_id, start)
+    messages = message_send(token, channel_id, start)
 
     return dumps(messages)
+    
+    raise InputError(description='Invalid channel')
+    raise InputError(description='Start is greater than or equal to the total number of messages in the channel')
+    raise AccessError(description='Authorised user is not a member of channel with channel_id')
+    
+    #Refer to messages via index
+    #message id is when u sent in within the entire server
+    #channel['messages'][0] = hello
+    #but hello could have a message id of 3
+    
+    #channel['messages'][start] loop until channel['messages'][end]
 '''
 #############################################################
 #                   CHANNEL_LEAVE                           #      
 #############################################################
 '''
-@APP.route('/channel/leave', methods = ['POST'])
+@APP.route('/channel/leave', methods=['POST'])
 def channel_leave():
+    auth_store = get_auth_data_store
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    
     # Information from request
-    token = request.get_json('token')
-    channel_id = int(request.get_json('channel_id'))
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    #token = request.get_json('token')
+    #channel_id = int(request.get_json('channel_id'))
 
     leave = channel_leave(token, channel_id)
     
     return dumps(leave)
+    
+    raise InputError(description='Invalid channel')
+    raise AccessError(description='Authorised user is not a member of channel with channel_id')
+    
 '''
 #############################################################
 #                   CHANNEL_JOIN                            #      
 #############################################################
 '''
-@APP.route('/channel/join', methods = ['POST'])
+@APP.route('/channel/join', methods=['POST'])
 def channel_join():
+    auth_store = get_auth_data_store
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    
     # Information from request
-    token = request.get_json('token')
-    channel_id = int(request.get_json('channel_id'))
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    #token = request.get_json('token')
+    #channel_id = int(request.get_json('channel_id'))
 
     join = channel_join(token, channel_id)
-    
+
     return dumps(join)
+    
+    raise InputError(description='Invalid channel')
+    raise AccessError(description='Authorised user is not a member of channel with channel_id')
+        
 '''
 #############################################################
 #                   CHANNEL_ADDOWNER                         #      
 #############################################################
 '''
-@APP.route('/channel/addowner', methods = ['POST'])
+@APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner():
+    auth_store = get_auth_data_store
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    
     # Information from request
-    token = request.get_json('token')
-    channel_id = int(request.get_json('channel_id'))
-    user_id_adding = int(request.get_json('u_id'))
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id_adding = int(payload['u_id'])
+    
+    #token = request.get_json('token')
+    #channel_id = int(request.get_json('channel_id'))
+    #user_id_adding = int(request.get_json('u_id'))
 
-    addowner = channel_addowner(token, channel_id)
+    # Add owner with user_id to owner members
+    addowner = channel_addowner(token, channel_id, user_id_adding)
     
     return dumps(addowner)
+    
+    raise InputError(description='Invalid channel')
+    raise InputError(description='User with user id u_id is not an owner of channel')
+    # cnat add an owner when ur not owner
+    raise AccessError(description='User is not an owner of the slackr, or an owner of this channel')
+    
 '''
 #############################################################
 #                   CHANNEL_REMOVEOWNER                     #      
 #############################################################
 '''
-@APP.route('/channel/removeowner', methods = ['POST'])
+@APP.route('/channel/removeowner', methods=['POST'])
 def channel_removeowner():
+    auth_store = get_auth_data_store
+    channel_store = get_channel_data_store()
+    payload = request.get_json()
+    
     # Information from request
-    token = request.get_json('token')
-    channel_id = int(request.get_json('channel_id'))
-    user_id_removing = int(request.get_json('u_id'))
-  
-    removeowner = channel_removeowner(token, channel_id)
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id_removing = int(payload['u_id'])
+    
+    #token = request.get_json('token')
+    #channel_id = int(request.get_json('channel_id'))
+    #user_id_removing = int(request.get_json('u_id'))
+    
+    # Remove owner with user_id from owner members
+    removeowner = channel_removeowner(token, channel_id, user_id_removing)
 
     return dumps(removeowner)
+    
+    raise InputError(description='Invalid channel')
+    raise InputError(description='User with user id u_id is not an owner of channel')
+    # cant remove an owner when ur not owner
+    raise AccessError(description='User is not an owner of the slackr, or an owner of this channel')

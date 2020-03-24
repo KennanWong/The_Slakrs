@@ -24,6 +24,7 @@ channels_store = [
     #     ]
     #     'messages': [
     #         {
+    #             channel_id
     #             message_id
     #             u_id, 
     #             message
@@ -47,9 +48,19 @@ auth_data = [
     #     'token': token,
     #     'status' : LOGGED_ON
     #     'messages' : []
+    #     'channels': []
     # }
 ]
 
+messages_store = [
+    # 'channel_id'
+    # 'message_id'
+    # 'u_id, 
+    # 'message'
+    # 'time_created'
+    # 'reacts'
+    # 'is_pinned'
+]
 
 
 # Function to generate gloabl auth_data store
@@ -61,3 +72,8 @@ def get_auth_data_store():
 def get_channel_data_store():
     global channels_store
     return channels_store
+
+# Function to get the mssage_data store
+def get_messages_store():
+    global messages_store
+    return messages_store

@@ -1,6 +1,7 @@
 import sys
 import re
 import hashlib
+from datetime import datetime
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
@@ -11,30 +12,37 @@ LOGGED_OFF = 0
 is_success = True
 
 channels_store = [
-    #new_channel_info
-    #{
-     #   'channel_id'
-      #  'name'
-       # 'is_public' 
-        #'members': {
-         #   u_id
-          #  name_first
-           # name_last
-        #}
-        #'owners': {
-         #   u_id
-          #  name_first
-           # name_last
-        #}
-        #'messages': {
-         #   message_id
-          #  u_id, message
-           # time_created
-            #reacts
-            #is_pinned
-
-        #}
-    #}
+    # {
+    #     'channel_id'
+    #     'name'
+    #     'is_public'
+    #     'members':[
+ 	# 	    {
+    #             u_id
+    #             name_first
+    #             Name_last
+ 	# 	        Handle_str
+ 	# 	    }
+    #     ] 
+    #     'owners':[
+ 	#         {
+    #             u_id
+    #             name_first
+    #             Name_last
+ 	# 	        Handle_str
+ 	# 	    }
+    #     ]
+    #     'messages': [
+    #         {
+    #             message_id
+    #             u_id, 
+    #             message
+    #             time_created
+    #             reacts
+    #             is_pinned
+    #         }
+ 	#     ]
+    # }
 ]
 
 
@@ -59,25 +67,45 @@ def users_rest():
 
 '''
 #############################################################
-#                   GENERATE DATA STORES                    #      
+#                GENERATE/GETTING FUNCTIONS                 #      
 #############################################################
 '''
 
-# to generate gloabl auth_data store
+# Function to generate gloabl auth_data store
 def get_auth_data_store():
     global auth_data
     return auth_data
 
-# to get channel data store
+# Function to get channel data store
 def get_channel_data_store():
     global channels_store
     return channels_store
 
 
-# to generate a token
+# Function to generate a token
 def generate_token(u_id):
     return hashlib.sha256(str(u_id).encode()).hexdigest()
 
+# Function to generate a blank message dictionary
+def create_message():
+    message = {
+        'message_id' : 0,
+        'u_id' : 0, 
+        'message': '',
+        'time_created':0,
+        'reacts': [],
+        'is_pinned': False,
+    }
+    return message
+
+# Function to return the channel data using a channel_id
+def get_channel(channel_id):
+    all_channels = get_channel_data_store()
+    channel = {}
+    for i in all_channels:
+        if i['channel_id'] == int(channel_id):
+            return i
+    raise InputError(description='Invalid channel_id')
 
 '''
 #############################################################
@@ -85,25 +113,36 @@ def generate_token(u_id):
 #############################################################
 '''
 
-
-# Function to validate a token and returns the users info
+# Function to validate a token and returns the users info otherwise raises an 
+# error
 def validate_token(token):
     auth_store = get_auth_data_store()
+    user = {}
     for i in auth_store:
         if i['token'] == token:
-            return i
+            user = i
+    if user != {}:
+        return user
     else:
         raise InputError(description='Invalid Token')
 
 # To test if an email is valid, courtesy of geeksforgeeks.org
 def test_email(email):
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-    
     if (re.search(regex, email)):
         return email
     else:
         raise InputError(description='Invalid Email')
 
+# Function to test if a user is part of a channel
+def test_in_channel(u_id, channel):
+    for i in channel['members']:
+        if i['u_id'] == u_id:
+            return True
+    for i in channel['owners']:
+        if i['u_id'] == u_id:
+            return True
+    raise AccessError(description='User is not a part of this channel')
 
 def defaultHandler(err):
     response = err.get_response()
@@ -214,6 +253,7 @@ def auth_register():
 #############################################################
 '''
 
+# to login a user and return a token
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
     auth_store = get_auth_data_store()
@@ -283,38 +323,37 @@ def channels_create():
     channel_owner_info = {}
     new_channel_info ={}
    
-    for i in auth_store:
-        if i['token'] == payload['token']:
-            print(i)           
-            channel_owner_info = {
-                'u_id': i['u_id'],
-                'name_first': i['name_first'],
-                'name_last': i['name_last'],
-                'handle_str': i['handle_str']
-            }
-            if len(payload['name']) < 21:
-                name = payload['name']
-                if payload['is_public']: 
-                    new_channel_info =  {
-                        'channel_id': int(len(channel_store)+1),
-                        'name':  name,
-                        'is_public': True,
-                        'members':[],
-                        'owners':[],
-                        'messages': [],
-                    }
-                else:
-                    new_channel_info = {
-                        'channel_id': int(len(channel_store)+1),
-                        'name': name,
-                        'is_public': False,
-                        'members':[],
-                        'owners':[],
-                        'messages': [],
-                    }
+    user = validate_token(payload['token'])
 
-            else: 
-                raise InputError (description='Name is too long')
+    channel_owner_info = {
+        'u_id': user['u_id'],
+        'name_first': user['name_first'],
+        'name_last': user['name_last'],
+        'handle_str': user['handle_str']
+    }
+    
+    if len(payload['name']) < 21:
+        name = payload['name']
+        if payload['is_public']: 
+            new_channel_info = {
+                'channel_id': int(len(channel_store)+1),
+                'name':  name,
+                'is_public': True,
+                'members':[],
+                'owners':[],
+                'messages': [],
+            }
+        else:
+            new_channel_info = {
+                'channel_id': int(len(channel_store)+1),
+                'name': name,
+                'is_public': False,
+                'members':[],
+                'owners':[],
+                'messages': [],
+            }
+    else: 
+        raise InputError (description='Name is too long')
                      
     
     new_channel_info['owners'].append(channel_owner_info)
@@ -326,12 +365,42 @@ def channels_create():
         'channel_id': new_channel_info['channel_id']
     })
 
+'''
+#############################################################
+#                   MESSAGE_SEND                            #      
+#############################################################
+'''
 
-'''
-#############################################################
-#                   CHANNELS_CREATE                         #      
-#############################################################
-'''
+@APP.route("/message/send", methods=['POST'])
+def message_send():
+    payload = request.get_json()
+    user = validate_token(payload['token'])
+    channel = get_channel(payload['channel_id'])
+    test_in_channel(user['u_id'], channel)
+    
+
+
+    # create a message data type, and fill in details
+    # then append to the channels list of messages
+    txt = payload['message']
+    if len(txt) > 1000:
+        raise InputError(description='Message is more than 1000 characters')
+
+    new_message = create_message()
+    msg_id = int(len(channel['messages'])+1)
+    new_message['message_id'] = msg_id
+    new_message['u_id'] = user['u_id']
+    new_message['message'] = txt
+    new_message['time_created'] = datetime.now().time()
+    channel['messages'].append(new_message)
+
+    for msg in channel['messages']:
+        print(msg['message'])
+
+    return dumps({
+        'message_id': msg_id
+    })
+
 
 
 if __name__ == "__main__":
@@ -342,43 +411,24 @@ if __name__ == "__main__":
 #LOOK AT INVALID TOKEN
 '''
 #############################################################
-#                   CHANNEL_INVITE                         #      
+#                   CHANNEL_INVITE                          #      
 #############################################################
 '''
 @APP.route('/channel/invite', methods=['POST'])
-def channel_invite():
+def channel_invite_server():
     auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
+    channel_info = get_channel()
     payload = request.get_json()
-    '''
-    channel_owner_info = {}
-    new_channel_info ={}
-    '''
-    
-    #channelInfo = channels_create(token, 'The Slakrs', True)
-    #channel_id = channelInfo['channel_id']
-    
-    for i in auth_store:
-        if i['token'] == payload['token']:
-            print(i)
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
     user_id = int(payload['u_id'])
-    
-    #token = request.get_json('token')
-    #channel_id = int(request.get_json('channel_id'))
-    #user_id = int(request.get_json('u_id'))
 
     # Invite user to channel
     invite = channel_invite(token, channel_id, user_id)
-   
+    
     return dumps(invite)
-     
-    raise InputError(description='Invting someone to an invalid channel')
-    raise InputError(description='Inviting someone with an invalid u_id')
-    raise AccessError(description='Authorised user is not a member of channel')
 
 '''
 #############################################################
@@ -386,7 +436,7 @@ def channel_invite():
 #############################################################
 '''
 @APP.route('/channel/details', methods=['GET'])
-def channel_details():
+def channel_details_server():
     auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
@@ -395,10 +445,6 @@ def channel_details():
     token = payload['token']
     channel_id = int(payload['channel_id'])
     user_id = int(payload['u_id'])
-    
-    #token = request.args.get('token')
-    #channel_id = int(request.args.get('channel_id'))
-    #user_id = int(request.args.get('u_id'))
 
     details = channel_details(token, channel_id)
     
@@ -412,10 +458,8 @@ def channel_details():
                              "name_last": "Smith"}]
         }
     ]
-    return dumps(details)
     '''
-    raise InputError(description='Invalid channel')
-    raise AccessError(description='Authorised user is not a member of channel with channel_id')
+    return dumps(details)
     
 '''
 #############################################################
@@ -423,7 +467,7 @@ def channel_details():
 #############################################################
 '''
 @APP.route('/channel/messages', methods=['GET'])
-def channel_messages():
+def channel_messages_server():
     auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
@@ -432,19 +476,12 @@ def channel_messages():
     token = payload['token']
     channel_id = int(payload['channel_id'])
     user_id = int(payload['u_id'])
-    
-    #token = request.args.get('token')
-    #channel_id = int(request.args.get('channel_id'))
-    #user_id = int(request.args.get('u_id'))
+    start = int(payload['start'])
 
     # Send a message
-    messages = message_send(token, channel_id, start)
+    #######messages = message_send(token, channel_id, start)
 
-    return dumps(messages)
-    
-    raise InputError(description='Invalid channel')
-    raise InputError(description='Start is greater than or equal to the total number of messages in the channel')
-    raise AccessError(description='Authorised user is not a member of channel with channel_id')
+    ###return dumps(messages)
     
     #Refer to messages via index
     #message id is when u sent in within the entire server
@@ -458,7 +495,7 @@ def channel_messages():
 #############################################################
 '''
 @APP.route('/channel/leave', methods=['POST'])
-def channel_leave():
+def channel_leave_server():
     auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
@@ -467,15 +504,10 @@ def channel_leave():
     token = payload['token']
     channel_id = int(payload['channel_id'])
 
-    #token = request.get_json('token')
-    #channel_id = int(request.get_json('channel_id'))
-
+    # Leave the channel
     leave = channel_leave(token, channel_id)
     
     return dumps(leave)
-    
-    raise InputError(description='Invalid channel')
-    raise AccessError(description='Authorised user is not a member of channel with channel_id')
     
 '''
 #############################################################
@@ -483,7 +515,7 @@ def channel_leave():
 #############################################################
 '''
 @APP.route('/channel/join', methods=['POST'])
-def channel_join():
+def channel_join_server():
     auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
@@ -492,15 +524,10 @@ def channel_join():
     token = payload['token']
     channel_id = int(payload['channel_id'])
 
-    #token = request.get_json('token')
-    #channel_id = int(request.get_json('channel_id'))
-
+    # Join the channel
     join = channel_join(token, channel_id)
 
     return dumps(join)
-    
-    raise InputError(description='Invalid channel')
-    raise AccessError(description='Authorised user is not a member of channel with channel_id')
         
 '''
 #############################################################
@@ -508,7 +535,7 @@ def channel_join():
 #############################################################
 '''
 @APP.route('/channel/addowner', methods=['POST'])
-def channel_addowner():
+def channel_addowner_server():
     auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
@@ -517,20 +544,11 @@ def channel_addowner():
     token = payload['token']
     channel_id = int(payload['channel_id'])
     user_id_adding = int(payload['u_id'])
-    
-    #token = request.get_json('token')
-    #channel_id = int(request.get_json('channel_id'))
-    #user_id_adding = int(request.get_json('u_id'))
 
     # Add owner with user_id to owner members
     addowner = channel_addowner(token, channel_id, user_id_adding)
     
     return dumps(addowner)
-    
-    raise InputError(description='Invalid channel')
-    raise InputError(description='User with user id u_id is not an owner of channel')
-    # cnat add an owner when ur not owner
-    raise AccessError(description='User is not an owner of the slackr, or an owner of this channel')
     
 '''
 #############################################################
@@ -538,7 +556,7 @@ def channel_addowner():
 #############################################################
 '''
 @APP.route('/channel/removeowner', methods=['POST'])
-def channel_removeowner():
+def channel_removeowner_server():
     auth_store = get_auth_data_store
     channel_store = get_channel_data_store()
     payload = request.get_json()
@@ -547,17 +565,8 @@ def channel_removeowner():
     token = payload['token']
     channel_id = int(payload['channel_id'])
     user_id_removing = int(payload['u_id'])
-    
-    #token = request.get_json('token')
-    #channel_id = int(request.get_json('channel_id'))
-    #user_id_removing = int(request.get_json('u_id'))
-    
+
     # Remove owner with user_id from owner members
     removeowner = channel_removeowner(token, channel_id, user_id_removing)
 
     return dumps(removeowner)
-    
-    raise InputError(description='Invalid channel')
-    raise InputError(description='User with user id u_id is not an owner of channel')
-    # cant remove an owner when ur not owner
-    raise AccessError(description='User is not an owner of the slackr, or an owner of this channel')

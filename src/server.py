@@ -74,7 +74,7 @@ def users_rest():
 #############################################################
 '''
 
-# Function to generate gloabl auth_data store
+# Function to generate global auth_data store
 def get_auth_data_store():
     global auth_data
     return auth_data
@@ -450,7 +450,6 @@ def channel_details_server():
     payload = request.get_json()
     
     # Information from request
-    token = payload['token']
     channel_id = int(payload['channel_id'])
     user_id = int(payload['u_id'])
 
@@ -578,3 +577,4 @@ def channel_removeowner_server():
     removeowner = channel_removeowner(token, channel_id, user_id_removing)
 
     return dumps(removeowner)
+    

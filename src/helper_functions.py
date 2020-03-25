@@ -1,4 +1,3 @@
-
 import re
 import hashlib
 from datetime import datetime
@@ -60,3 +59,12 @@ def test_in_channel(u_id, channel):
         if i['u_id'] == u_id:
             return True
     return False
+
+# Function to check valid userID
+def is_valid_user_id(u_id):
+    auth_store = get_data_auth_store
+    for user in auth_store:
+        if user['u_id'] == u_id:
+            return 1
+    else:
+        raise InputError(description='Invalid u_id')

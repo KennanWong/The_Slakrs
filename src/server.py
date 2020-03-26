@@ -1,7 +1,8 @@
 import sys
 import re
-import hashlib
-from datetime import datetime
+import auth
+import message
+import channels
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
@@ -169,10 +170,11 @@ APP.register_error_handler(Exception, defaultHandler)
 def echo():
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })
+
 
 
 '''
@@ -188,17 +190,14 @@ def users_reset():
     return dumps({})
 
 
-'''
 #############################################################
 #                   AUTH_REGISTER                           #      
 #############################################################
-'''
 
 
 # Register a user and add it to the userStore
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
-    auth_store = get_auth_data_store()
     payload = request.get_json()
     handle = (payload['name_first']+payload['name_last'])
     if len(handle) > 24:
@@ -249,19 +248,25 @@ def auth_register():
     return dumps({
         'u_id': u_id,
         'token': token
+
+    new_user = auth.register(payload)
+
+    return dumps({
+        'u_id': new_user['u_id'],
+       'token': new_user['token'],
     })
 
-'''
+
 #############################################################
 #                   AUTH_LOGIN                              #      
 #############################################################
-'''
+
 
 # to login a user and return a token
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
-    auth_store = get_auth_data_store()
     payload = request.get_json()
+<<<<<<< HEAD
 
     email = test_email(payload['email'])
 
@@ -286,126 +291,61 @@ def auth_login():
         raise InputError(description="Email entered does not belong to a user")
    
     print(i)
+
+    user = auth.login(payload)
+
     return dumps({
-        'u_id' : user_auth_data['u_id'],
-        'token' : user_auth_data['token']
+        'u_id' : user['u_id'],
+        'token' : user['token']
     })
 
-'''
+
 #############################################################
 #                   AUTH_LOGOUT                             #      
 #############################################################
-'''
+
 @APP.route("/auth/logout", methods=['POST'])
 def auth_logout():
-    auth_store = get_auth_data_store()
     payload = request.get_json()
+    if auth.logout(payload):
+        return dumps({
+            'is_succes':True
+        })
+    else:
+        return dumps ({
+            'is_success':False
+        }) 
 
 
-    for i in auth_store:
-        if i['token'] == payload['token']:
-            if i['status'] == LOGGED_ON:
-                i['status'] = LOGGED_OFF
-                i['token'] = ''
-                return dumps({})
 
-    return dumps({})
-
-
-'''
 #############################################################
 #                   CHANNELS_CREATE                         #      
 #############################################################
-'''
+
 
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
-
-    channel_store = get_channel_data_store()
+    
     payload = request.get_json()
-    channel_owner_info = {}
-    new_channel_info ={}
-   
-    user = validate_token(payload['token'])
-
-    channel_owner_info = {
-        'u_id': user['u_id'],
-        'name_first': user['name_first'],
-        'name_last': user['name_last'],
-        'handle_str': user['handle_str']
-    }
-    
-    if len(payload['name']) < 21:
-        name = payload['name']
-        if payload['is_public']: 
-            new_channel_info = {
-                'channel_id': int(len(channel_store)+1),
-                'name':  name,
-                'is_public': True,
-                'members':[],
-                'owners':[],
-                'messages': [],
-            }
-        else:
-            new_channel_info = {
-                'channel_id': int(len(channel_store)+1),
-                'name': name,
-                'is_public': False,
-                'members':[],
-                'owners':[],
-                'messages': [],
-            }
-    else: 
-        raise InputError (description='Name is too long')
-                     
-    
-    new_channel_info['owners'].append(channel_owner_info)
-    channel_store.append(new_channel_info)
-   
-    print (channels_store)
-
+    new_channel = channels.create(payload)
     return dumps ({
-        'channel_id': new_channel_info['channel_id']
+        'channel_id': new_channel['channel_id']
     })
 
-'''
+
 #############################################################
 #                   MESSAGE_SEND                            #      
 #############################################################
-'''
+
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
-    global msg_count
     payload = request.get_json()
-    user = validate_token(payload['token'])
-    channel = get_channel(payload['channel_id'])
-    if test_in_channel(user['u_id'], channel) == False:
-        raise InputError(description='User is')
-
-    # create a message data type, and fill in details
-    # then append to the channels list of messages
-    txt = payload['message']
-    if len(txt) > 1000:
-        raise InputError(description='Message is more than 1000 characters')
-
-    new_message = create_message()
-    msg_id = msg_count
-    new_message['message_id'] = msg_id
-    new_message['u_id'] = user['u_id']
-    new_message['message'] = txt
-    new_message['time_created'] = datetime.now().time()
-    channel['messages'].append(new_message)
-
-    # debugging purposes
-    for msg in channel['messages']:
-        print(msg['message'])
-
-    msg_count= msg_count + 1
+    new_message = message.send(payload)
 
     return dumps({
-        'message_id': msg_id
+        'message_id': new_message['message_id']
     })
     
 
@@ -485,17 +425,16 @@ def channel_messages_server():
     user_id = int(payload['u_id'])
     start = int(payload['start'])
 
-    # Send a message
-    #######messages = message_send(token, channel_id, start)
+    messages = channel_messages(token, channel_id, start)
 
-    ###return dumps(messages)
-    
     #Refer to messages via index
     #message id is when u sent in within the entire server
     #channel['messages'][0] = hello
     #but hello could have a message id of 3
     
     #channel['messages'][start] loop until channel['messages'][end]
+
+    return dumps(messages)
 '''
 #############################################################
 #                   CHANNEL_LEAVE                           #      
@@ -578,3 +517,13 @@ def channel_removeowner_server():
 
     return dumps(removeowner)
     
+#############################################################
+#                   MESSAGE_REMOVE                          #      
+#############################################################
+
+@APP.route("/message/remove", methods=['DELETE'])
+def message_remove():
+    payload = request.get_json()
+    message.remove(payload)
+
+    return dumps({})

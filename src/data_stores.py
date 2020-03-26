@@ -62,7 +62,6 @@ messages_store = [
     # 'is_pinned'
 ]
 
-
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
     global auth_data
@@ -77,3 +76,4 @@ def get_channel_data_store():
 def get_messages_store():
     global messages_store
     return messages_store
+    

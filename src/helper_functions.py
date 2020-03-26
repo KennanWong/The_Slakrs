@@ -82,3 +82,13 @@ def check_owner(user, channel):
             return True
     
     return False
+    
+#function to see if a u_id is valid
+def validate_uid(u_id):
+    user_store = get_auth_data_store()
+    for i in user_store:
+        if i['u_id'] == u_id:
+            return True
+    
+    return False
+    

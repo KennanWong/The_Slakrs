@@ -11,6 +11,9 @@ LOGGED_OFF = 0
 is_success = True
 
 
+# is this message on vlab
+
+
 
 #############################################################
 #                   AUTH_REGISTER                           #      

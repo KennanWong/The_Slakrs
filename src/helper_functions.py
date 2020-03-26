@@ -109,3 +109,17 @@ def user_details(u_id):
                 'name_first': user['name_first'],
                 'name_last': user['name_last']
             }
+    return False
+'''
+# function to format a list of dictionaries into a members data type
+def format_to_members(members):
+    members = []
+    for i in members:
+        add = {
+            'u_id':i['u_id'],
+            'name_first':i['name_first'],
+            'name_last':i['name_last']
+        }
+        members.append(add)
+    return members
+'''

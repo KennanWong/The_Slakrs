@@ -74,7 +74,6 @@ def pin(payload):
 
     channel = get_channel(message['channel_id'])
     
-    
     if message['is_pinned'] is True:
         raise InputError(description='Message is already pinned')
 

@@ -74,7 +74,8 @@ def find_message(message_id):
             return i
     
     raise InputError(description='Message not found')
-
+            
+     
 # function to see if a user is an owner of a channel
 def check_owner(user, channel):
     for i in channel['owners']:
@@ -82,3 +83,9 @@ def check_owner(user, channel):
             return True
     
     return False
+
+#to get current time and add seconds, courtesy of stackoverflow
+def addSecs(tm, secs):
+    fulldate = datetime.datetime(100, 1, 1, tm.hour, tm.minute, tm.second)
+    fulldate - fulldate + datetime.timedelta(seconds=secs)
+    return fulldate.time()

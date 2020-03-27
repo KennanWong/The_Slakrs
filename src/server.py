@@ -129,10 +129,10 @@ def message_send():
 def message_sendlater():
     payload = request.get_json()
     
-    new_message = message.sendlater(payload)
+    new_message_id = message.sendlater(payload)
 
     return dumps({
-        'message_id':new_message['message_id']
+        'message_id':new_message_id
     })
 
 

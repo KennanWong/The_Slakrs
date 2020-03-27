@@ -3,7 +3,7 @@
 import datetime
 import sched
 import threading
-from data_stores import get_messages_store
+from data_stores import get_messages_store, get_channel_data_store
 from error import InputError, AccessError
 from helper_functions import create_message, get_channel, test_in_channel, get_user_token, find_message, check_owner, append_later, get_message_count
 

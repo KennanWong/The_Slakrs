@@ -80,5 +80,16 @@ def check_owner(user, channel):
     for i in channel['owners']:
         if i['u_id'] == user['u_id']:
             return True
-    
     return False
+
+# function to format a list of dictionaries into a members data type
+def format_to_members(members):
+    members = []
+    for i in members:
+        add = {
+            'u_id':i['u_id'],
+            'name_first':i['name_first'],
+            'name_last':i['name_last']
+        }
+        members.append(add)
+    return members

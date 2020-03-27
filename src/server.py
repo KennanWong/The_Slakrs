@@ -3,11 +3,13 @@ import re
 import auth
 import message
 import channels
+import datetime
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from error import InputError
 
+#test
 
 def defaultHandler(err):
     response = err.get_response()
@@ -112,12 +114,12 @@ def channels_create():
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
     
-    payload = request.get.json()
-    chann_inf = channels.List(payload)
+    token = request.args.get('token')
+    chann_inf = channels.List(token)
     
-    return dumps({
+    return dumps(
         chann_inf
-    })
+    )
 
 
 #############################################################
@@ -127,19 +129,19 @@ def channels_list():
 @APP.route("/channels/listall", methods=['GET'])
 def channels_listall():
     
-    payload = request.get_json()
-    chann_inf2 = channels.Listall(payload)
+    token = request.args.get('token')
+    chann_inf2 = channels.Listall(token)
 
-    return  dumps({
+    return  dumps(
         chann_inf2
-    })
+    )
 
 
 #############################################################
 #                   MESSAGE_PIN                             #      
 #############################################################
 
-@APP.route("message/pin", methods=['POST'])
+@APP.route("/message/pin", methods=['POST'])
 def message_pin():
     
     payload = request.get_json()
@@ -151,7 +153,7 @@ def message_pin():
 #                   MESSAGE_UNPIN                             #      
 #############################################################
 
-@APP.route("message/pinall", methods=['POST'])
+@APP.route("/message/unpin", methods=['POST'])
 def message_unpin():
     
     payload = request.get_json()
@@ -174,6 +176,19 @@ def message_send():
         'message_id': new_message['message_id']
     })
     
+#############################################################
+#                   MESSAGE_SENDLATER                       #      
+#############################################################
+@APP.route("/message/sendlater", methods=['POST'])
+def message_sendlater():
+    payload = request.get_json()
+    
+    new_message = message.sendlater(payload)
+
+    return dumps({
+        'message_id':new_message['message_id']
+    })
+
 
 
 #############################################################
@@ -192,7 +207,40 @@ def message_remove():
 #############################################################
 #@APP.route("/standup/start", methods=['POST'])
 #def standup_start():
-    
+
+#############################################################    
+#                   MESSAGE_EDIT                            #      
+#############################################################
+@APP.route("/message/edit", methods=['PUT'])
+def message_edit():
+    payload = request.get_json()
+
+    message.edit(payload)
+
+    return dumps({})
+
+
+#############################################################
+#                    MESSAGE_REACT                          #      
+#############################################################
+@APP.route("/message/react", methods=['PUT'])
+def message_react():
+    payload = request.get_json()
+    message.react(payload)
+
+    return dumps({})
+
+
+#############################################################
+#                   MESSAGE_UNREACT                         #      
+#############################################################
+@APP.route("/message/unreact", methods=['POST'])
+def message_unreact():
+    payload = request.get_json()
+    message.unreact(payload)
+
+    return dumps({})
+
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))

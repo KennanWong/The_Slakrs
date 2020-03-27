@@ -56,14 +56,13 @@ def create(payload):
 #                   CHANNELS_LIST                           #      
 #############################################################
 
-def List(payload):
+def List(token):
     channel_store = get_channel_data_store()
    
     channels = []
     channel_info = {}
 
-    user = get_user_token(payload['token'])
-    
+    user = get_user_token(token)
 
     u_id = user['u_id']
 
@@ -73,7 +72,8 @@ def List(payload):
                 'channel_id': channel['channel_id'],
                 'name': channel['name'],
             }
-        channels.append(channel_info)
+        if channel_info != {}:
+            channels.append(channel_info)
     
     return channels
 
@@ -82,28 +82,25 @@ def List(payload):
 #############################################################
 
 
-def Listall(payload):
-    
+def Listall(token):
     channel_store = get_channel_data_store()
 
     channels_return = []
     channel_info = {}
 
-    user = get_user_token(payload['token'])
+    user = get_user_token(token)
 
     u_id = user['u_id']
+
+    if len(channel_store) == 0:
+        # the channel store is empty
+        return channels_return
 
     for channel in channel_store:
         channel_info = {
             'channel_id': channel['channel_id'],
             'name': channel['name']
         }
-   
         channels_return.append(channel_info)
 
     return channels_return
-
-
-
-
-

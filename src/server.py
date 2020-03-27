@@ -5,10 +5,11 @@ import message
 import channels
 import datetime
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from error import InputError
 
+#test
 
 def defaultHandler(err):
     response = err.get_response()
@@ -97,7 +98,6 @@ def auth_logout():
 #############################################################
 
 
-
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
     
@@ -107,11 +107,9 @@ def channels_create():
         'channel_id': new_channel['channel_id']
     })
 
-
 #############################################################
 #                   MESSAGE_SEND                            #      
 #############################################################
-
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
@@ -129,10 +127,10 @@ def message_send():
 def message_sendlater():
     payload = request.get_json()
     
-    new_message = message.sendlater(payload)
+    new_message_id = message.sendlater(payload)
 
     return dumps({
-        'message_id':new_message['message_id']
+        'message_id':new_message_id
     })
 
 
@@ -148,7 +146,7 @@ def message_remove():
 
     return dumps({})
 
-#############################################################
+#############################################################    
 #                   MESSAGE_EDIT                            #      
 #############################################################
 @APP.route("/message/edit", methods=['PUT'])
@@ -183,4 +181,4 @@ def message_unreact():
 
 
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

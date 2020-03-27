@@ -4,6 +4,7 @@ import datetime
 import sched
 import threading
 from data_stores import get_messages_store, get_channel_data_store
+from data_stores import get_messages_store
 from error import InputError, AccessError
 from helper_functions import create_message, get_channel, test_in_channel, get_user_token, find_message, check_owner, append_later, get_message_count
 
@@ -41,6 +42,10 @@ def send(payload):
     # debugging purposes
     for msg in channel['messages']:
         print(msg['message'])
+        if msg['is_pinned'] == True:
+            print('*** '+ msg['message'] + ' ***')
+        else:
+            print(msg['message'])
 
     return new_message
 
@@ -83,11 +88,20 @@ def sendlater(payload):
 
     timer.start()
 
+
     # debugging purposes
     for msg in channel['messages']:
         print(msg['message'])
 
     return new_message['message_id']
+        if msg['is_pinned'] == True:
+            print("PINNED MESSAGE: ")
+            print('*** '+ msg['message'] + ' ***')
+        else:
+            print(msg['message'])
+
+
+    return new_message
 
 #############################################################
 #                   MESSAGE_REMOVE                          #      
@@ -114,6 +128,26 @@ def remove(payload):
 #############################################################
 def pin(payload):
 
+    user = get_user_token(payload['token'])
+    message = find_message(payload['message_id'])
+    channel = get_channel(message['channel_id'])
+
+    if message['is_pinned'] is True:
+        raise InputError(description='Message is already pinned')
+
+    else:
+        if check_owner(user, channel) is True:
+            message['is_pinned'] = True
+            print (message)
+        else:
+            raise InputError(description='You do not have permission')
+
+    return
+
+#############################################################
+#                   MESSAGE_UNPIN                           #      
+#############################################################
+def unpin(payload):
     channel_store = get_channel_data_store()
     messages = get_messages_store()
 
@@ -129,11 +163,18 @@ def pin(payload):
     else:
         if check_owner(user, channel) is True:
             message['is_pinned'] = True
+    if message['is_pinned'] is False:
+        raise InputError(description='Message is already unpinned')
+
+    else:
+        if check_owner(user, channel) is True:
+            message['is_pinned'] = False
         else:
             raise InputError(description='You do not have permission')
 
     return
     
+
 #############################################################
 #                   MESSAGE_EDIT                            #      
 #############################################################

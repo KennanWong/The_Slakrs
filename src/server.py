@@ -114,12 +114,12 @@ def channels_create():
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
     
-    payload = request.get.json()
-    chann_inf = channels.List(payload)
+    token = request.args.get('token')
+    chann_inf = channels.List(token)
     
-    return dumps({
+    return dumps(
         chann_inf
-    })
+    )
 
 
 #############################################################
@@ -129,19 +129,19 @@ def channels_list():
 @APP.route("/channels/listall", methods=['GET'])
 def channels_listall():
     
-    payload = request.get_json()
-    chann_inf2 = channels.Listall(payload)
+    token = request.args.get('token')
+    chann_inf2 = channels.Listall(token)
 
-    return  dumps({
+    return  dumps(
         chann_inf2
-    })
+    )
 
 
 #############################################################
 #                   MESSAGE_PIN                             #      
 #############################################################
 
-@APP.route("message/pin", methods=['POST'])
+@APP.route("/message/pin", methods=['POST'])
 def message_pin():
     
     payload = request.get_json()
@@ -153,7 +153,7 @@ def message_pin():
 #                   MESSAGE_UNPIN                             #      
 #############################################################
 
-@APP.route("message/pinall", methods=['POST'])
+@APP.route("/message/unpin", methods=['POST'])
 def message_unpin():
     
     payload = request.get_json()
@@ -190,6 +190,9 @@ def message_sendlater():
     })
 
     
+
+
+#############################################################
 #                   MESSAGE_REMOVE                          #      
 #############################################################
 

@@ -94,14 +94,9 @@ def sendlater(payload):
         print(msg['message'])
 
     return new_message['message_id']
-        if msg['is_pinned'] == True:
-            print("PINNED MESSAGE: ")
-            print('*** '+ msg['message'] + ' ***')
-        else:
-            print(msg['message'])
 
 
-    return new_message
+        
 
 #############################################################
 #                   MESSAGE_REMOVE                          #      
@@ -148,6 +143,7 @@ def pin(payload):
 #                   MESSAGE_UNPIN                           #      
 #############################################################
 def unpin(payload):
+
     channel_store = get_channel_data_store()
     messages = get_messages_store()
 
@@ -156,13 +152,6 @@ def unpin(payload):
 
     channel = get_channel(message['channel_id'])
     
-
-    if message['is_pinned'] is True:
-        raise InputError(description='Message is already pinned')
-
-    else:
-        if check_owner(user, channel) is True:
-            message['is_pinned'] = True
     if message['is_pinned'] is False:
         raise InputError(description='Message is already unpinned')
 
@@ -172,8 +161,8 @@ def unpin(payload):
         else:
             raise InputError(description='You do not have permission')
 
-    return
     
+    return
 
 #############################################################
 #                   MESSAGE_EDIT                            #      
@@ -194,30 +183,6 @@ def edit(payload):
     return
     
 
-#############################################################
-#                   MESSAGE_UNPIN                           #      
-#############################################################
-def unpin(payload):
-
-    channel_store = get_channel_data_store()
-    messages = get_messages_store()
-
-    user = get_user_token(payload['token'])
-    message = find_message(payload['message_id'])
-
-    channel = get_channel(message['channel_id'])
-    
-    if message['is_pinned'] is False:
-        raise InputError(description='Message is already unpinned')
-
-    else:
-        if check_owner(user, channel) is True:
-            message['is_pinned'] = False
-        else:
-            raise InputError(description='You do not have permission')
-
-    
-    return
 
 
 #############################################################

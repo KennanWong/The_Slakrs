@@ -93,3 +93,23 @@ def format_to_members(members):
         }
         members.append(add)
     return members
+
+# get message count
+def get_message_count():
+    global msg_count
+    return msg_count
+
+# helper function for send later, to automatically generate a message 
+# and append it
+def append_later(argument):
+    message_id = argument
+    message = find_message(message_id)
+    channel = get_channel(message['channel_id'])
+
+    # append it to the channels file
+    channel['messages'].append(message)
+
+    for msg in channel['messages']:
+        print(msg['message'])
+
+    return

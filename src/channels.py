@@ -21,7 +21,6 @@ def create(payload):
         'u_id': user['u_id'],
         'name_first': user['name_first'],
         'name_last': user['name_last'],
-        'handle_str': user['handle_str']
     }
         
     if len(payload['name']) < 21:
@@ -46,7 +45,10 @@ def create(payload):
              }
     else: 
         raise InputError (description='Name is too long')
+    
     new_channel_info['owners'].append(channel_owner_info)
+    
     channel_store.append(new_channel_info)
 
     return new_channel_info
+

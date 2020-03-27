@@ -2,9 +2,10 @@
 # server
 import datetime
 import sched
+import threading
 from data_stores import get_messages_store
 from error import InputError, AccessError
-from helper_functions import create_message, get_channel, test_in_channel, get_user_token, find_message, check_owner
+from helper_functions import create_message, get_channel, test_in_channel, get_user_token, find_message, check_owner, append_later, get_message_count
 
 
 react_ids = [1]
@@ -39,8 +40,7 @@ def send(payload):
 
     # debugging purposes
     for msg in channel['messages']:
-        if msg['time_created'] < datetime.datetime.now().time():
-            print(msg['message'])
+        print(msg['message'])
 
     return new_message
 
@@ -50,6 +50,7 @@ def send(payload):
 def sendlater(payload):
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
+    messages = get_messages_store()
     if test_in_channel(user['u_id'], channel) == False:
         raise InputError(description='User is not in channel')
 
@@ -60,15 +61,11 @@ def sendlater(payload):
         raise InputError(description='Message is more than 1000 characters')
 
     # create the message dictionary
-    time = datetime.datetime.fromtimestamp(payload['time_sent']).time()
+    time = datetime.datetime.fromtimestamp(payload['time_sent'])
 
-    print (time)
-    print(datetime.datetime.now().time())
-
-    if time < datetime.datetime.now().time():
+    if time < datetime.datetime.now():
         raise InputError(description='Unable to send as '+
             'Time sent is a time in the past')
-
 
     new_message = create_message()
     new_message['time_created'] = time
@@ -76,20 +73,21 @@ def sendlater(payload):
     new_message['message'] = txt
     new_message['channel_id'] = payload['channel_id']
 
-    # append it to the messages_store
-    messages = get_messages_store()
+    # append it to the messages_store first
     messages.append(new_message)
 
-    # append it to the channels file
-    # threading.timer
-    channel['messages'].append(new_message)
+    interval = (time - datetime.datetime.now()).total_seconds()
+
+    # append to the channel message store at a later time
+    timer = threading.Timer(interval, append_later, args = [new_message['message_id']])
+
+    timer.start()
 
     # debugging purposes
     for msg in channel['messages']:
-        if msg['time_created'] < datetime.datetime.now().time():
-            print(msg['message'])
+        print(msg['message'])
 
-    return new_message
+    return new_message['message_id']
 
 #############################################################
 #                   MESSAGE_REMOVE                          #      

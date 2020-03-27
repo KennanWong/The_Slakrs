@@ -83,7 +83,5 @@ def send(payload):
         raise InputError(description='Active standup is not running')
 
 
-    standup_message.append(standup_info)
-
     return 
     

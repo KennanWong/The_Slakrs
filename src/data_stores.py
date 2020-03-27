@@ -33,7 +33,13 @@ channels_store = [
     #             is_pinned
     #         }
  	#     ]
-    # }
+   #       'standup': [
+   #           {
+   #              is_active
+   #              length
+   #           }
+   #        ]
+   #     }
 ]
 
 

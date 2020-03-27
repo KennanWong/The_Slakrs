@@ -2,8 +2,9 @@
 # server
 
 from error import InputError
-from helper_functions import get_user_token
+from helper_functions import get_user_token, test_in_channel
 from data_stores import get_channel_data_store
+
 
 #############################################################
 #                   CHANNELS_CREATE                         #      

@@ -11,7 +11,6 @@ channels_store = [
     #             u_id
     #             name_first
     #             Name_last
- 	# 	        Handle_str
  	# 	    }
     #     ] 
     #     'owners':[
@@ -19,7 +18,6 @@ channels_store = [
     #             u_id
     #             name_first
     #             Name_last
- 	# 	        Handle_str
  	# 	    }
     #     ]
     #     'messages': [
@@ -65,6 +63,11 @@ messages_store = [
     # 'message'
     # 'time_created'
     # 'reacts'
+        # {
+        #     'react_id'
+        #     'u_ids' # a list of u_id
+        #     'is_user_reacted'
+        # }
     # 'is_pinned'
 ]
 

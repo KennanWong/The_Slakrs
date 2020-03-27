@@ -89,3 +89,36 @@ def addSecs(tm, secs):
     fulldate = datetime.datetime(100, 1, 1, tm.hour, tm.minute, tm.second)
     fulldate - fulldate + datetime.timedelta(seconds=secs)
     return fulldate.time()
+    return False
+
+# function to format a list of dictionaries into a members data type
+def format_to_members(members):
+    members = []
+    for i in members:
+        add = {
+            'u_id':i['u_id'],
+            'name_first':i['name_first'],
+            'name_last':i['name_last']
+        }
+        members.append(add)
+    return members
+
+# get message count
+def get_message_count():
+    global msg_count
+    return msg_count
+
+# helper function for send later, to automatically generate a message 
+# and append it
+def append_later(argument):
+    message_id = argument
+    message = find_message(message_id)
+    channel = get_channel(message['channel_id'])
+
+    # append it to the channels file
+    channel['messages'].append(message)
+
+    for msg in channel['messages']:
+        print(msg['message'])
+
+    return

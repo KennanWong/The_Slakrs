@@ -191,8 +191,6 @@ def message_unreact():
 '''
 @APP.route('/channel/invite', methods=['POST'])
 def channel_invite_server():
-    auth_store = get_auth_data_store
-    channel_info = get_channel()
     payload = request.get_json()
 
     # Information from request
@@ -212,8 +210,6 @@ def channel_invite_server():
 '''
 @APP.route('/channel/details', methods=['GET'])
 def channel_details_server():
-    auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
     payload = request.get_json()
     
     # Information from request
@@ -242,8 +238,6 @@ def channel_details_server():
 '''
 @APP.route('/channel/messages', methods=['GET'])
 def channel_messages_server():
-    auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
     payload = request.get_json()
     
     # Information from request
@@ -269,8 +263,6 @@ def channel_messages_server():
 '''
 @APP.route('/channel/leave', methods=['POST'])
 def channel_leave_server():
-    auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
     payload = request.get_json()
     
     # Information from request
@@ -289,8 +281,6 @@ def channel_leave_server():
 '''
 @APP.route('/channel/join', methods=['POST'])
 def channel_join_server():
-    auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
     payload = request.get_json()
     
     # Information from request
@@ -304,13 +294,11 @@ def channel_join_server():
         
 '''
 #############################################################
-#                   CHANNEL_ADDOWNER                         #      
+#                   CHANNEL_ADDOWNER                        #      
 #############################################################
 '''
 @APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner_server():
-    auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
     payload = request.get_json()
     
     # Information from request
@@ -330,8 +318,6 @@ def channel_addowner_server():
 '''
 @APP.route('/channel/removeowner', methods=['POST'])
 def channel_removeowner_server():
-    auth_store = get_auth_data_store
-    channel_store = get_channel_data_store()
     payload = request.get_json()
     
     # Information from request

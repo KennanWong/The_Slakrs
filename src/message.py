@@ -1,22 +1,30 @@
-# This file contains the implementation of all 'auth_' functions for the
-# server
+'''
+
+This file contains all 'message_' functions
+
+'''
 import datetime
-import sched
 import threading
 from data_stores import get_messages_store
 from error import InputError, AccessError
-from helper_functions import create_message, get_channel, test_in_channel, get_user_token, find_message, check_owner, append_later, get_message_count
+from helper_functions import create_message, get_channel, test_in_channel
+from helper_functions import get_user_token, find_message, check_owner, append_later
 
 
-react_ids = [1]
+REACT_IDS = [1]
 
 #############################################################
-#                   MESSAGE_SEND                            #      
+#                   MESSAGE_SEND                            #
 #############################################################
 def send(payload):
+    '''
+    function to take a payload, create a new mesaage, fill
+    in the parameters and append it to the channels messages
+    store as well as the gloabal message_store
+    '''
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
-    if test_in_channel(user['u_id'], channel) == False:
+    if not test_in_channel(user['u_id'], channel):
         raise InputError(description='User is not in channel')
 
     # create a message data type, and fill in details
@@ -36,7 +44,6 @@ def send(payload):
     messages.append(new_message)
 
     # append it to the channels file
-    del new_message['channel_id']
     channel['messages'].append(new_message)
 
     # debugging purposes
@@ -46,13 +53,17 @@ def send(payload):
     return new_message
 
 #############################################################
-#                  MESSAGE_SENDLATER                        #      
+#                  MESSAGE_SENDLATER                        #
 #############################################################
 def sendlater(payload):
+    '''
+    Function to create a message and have it be sent at a
+    '''
+
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
     messages = get_messages_store()
-    if test_in_channel(user['u_id'], channel) == False:
+    if not test_in_channel(user['u_id'], channel):
         raise InputError(description='User is not in channel')
 
     # create a message data type, and fill in details
@@ -66,7 +77,7 @@ def sendlater(payload):
 
     if time < datetime.datetime.now():
         raise InputError(description='Unable to send as '+
-            'Time sent is a time in the past')
+                         'time sent is a time in the past')
 
     new_message = create_message()
     new_message['time_created'] = time
@@ -80,7 +91,7 @@ def sendlater(payload):
     interval = (time - datetime.datetime.now()).total_seconds()
 
     # append to the channel message store at a later time
-    timer = threading.Timer(interval, append_later, args = [new_message['message_id']])
+    timer = threading.Timer(interval, append_later, args=[new_message['message_id']])
 
     timer.start()
 
@@ -91,9 +102,12 @@ def sendlater(payload):
     return new_message['message_id']
 
 #############################################################
-#                   MESSAGE_REMOVE                          #      
+#                   MESSAGE_REMOVE                          #
 #############################################################
 def remove(payload):
+    '''
+    Function to remove a message from a channel
+    '''
     user = get_user_token(payload['token'])
     messages = get_messages_store()
 
@@ -102,25 +116,28 @@ def remove(payload):
     channel = get_channel(message['channel_id'])
 
     if message['u_id'] != user['u_id']:
-        if check_owner(user, channel) == False:
+        if not check_owner(user, channel):
             raise AccessError(description='You do not have permission')
-    
+
     messages.remove(message)
     channel['messages'].remove(message)
 
     return
 
 #############################################################
-#                   MESSAGE_EDIT                            #      
+#                   MESSAGE_EDIT                            #
 #############################################################
 def edit(payload):
+    '''
+    Function to remove a message from a channel
+    '''
     user = get_user_token(payload['token'])
     message = find_message(payload['message_id'])
 
     channel = get_channel(message['channel_id'])
 
     if message['u_id'] != user['u_id']:
-        if check_owner(user, channel) == False:
+        if not check_owner(user, channel):
             raise AccessError(description='You do not have permission')
 
     message['message'] = payload['message']
@@ -129,33 +146,36 @@ def edit(payload):
 
 
 #############################################################
-#                   MESSAGE_REACT                           #      
+#                   MESSAGE_REACT                           #
 #############################################################
 def react(payload):
-    global react_ids
+    '''
+    Function to add a react to a given message
+    '''
+    global REACT_IDS
     user = get_user_token(payload['token'])
 
     message = find_message(int(payload['message_id']))
 
     channel = get_channel(message['channel_id'])
 
-    if (int(payload['react_id']) in react_ids) != True:
+    if int(payload['react_id']) not in REACT_IDS:
         raise InputError(description='Unable to react with react_id '+
-        payload['react_id'])
-    
-    if test_in_channel(user['u_id'], channel) == False:
+                         payload['react_id'])
+
+    if not test_in_channel(user['u_id'], channel):
         raise InputError(description='Unable to react as you are '+
-        'not a part of that channel')
+                         'not a part of that channel')
 
     for i in message['reacts']:
         if i['react_id'] == payload['react_id']:
             # this react is already present in the message
             # just add another u_id
-            if (user['u_id'] in i['u_ids']):
+            if user['u_id'] in i['u_ids']:
                 raise InputError(description='Already reacted')
             i['u_ids'].append(user['u_id'])
             return
-    
+
     # no previous react wih react_id
     new_react = {
         'react_id' : payload['react_id'],
@@ -165,45 +185,47 @@ def react(payload):
     new_react['u_ids'].append(user['u_id'])
     message['reacts'].append(new_react)
 
-    print (message['reacts'])
+    print(message['reacts'])
     return
 
 
 
 #############################################################
-#                   MESSAGE_UNREACT                         #      
+#                   MESSAGE_UNREACT                         #
 #############################################################
 def unreact(payload):
-    global react_ids
+    '''
+    Function to remove a react from a message
+    '''
+    global REACT_IDS
     user = get_user_token(payload['token'])
 
     message = find_message(payload['message_id'])
 
     channel = get_channel(message['channel_id'])
 
-    if (int(payload['react_id']) in react_ids) != True:
+    if int(payload['react_id']) not in REACT_IDS:
         raise InputError(description='Unable to react with react_id '+
-        payload['react_id'])
+                         payload['react_id'])
 
-    if test_in_channel(user['u_id'], channel) == False:
+    if not test_in_channel(user['u_id'], channel):
         raise InputError(description='Unable to react as you are '+
-        'not a part of that channel')
+                         'not a part of that channel')
 
     for i in message['reacts']:
         if i['react_id'] == payload['react_id']:
             # this react is already present in the message
             # just remove u_id
-            if (user['u_id'] in i['u_ids']) == False:
+            if user['u_id'] not in i['u_ids']:
                 raise InputError(description='Attempting to uncreact '+
-                'a message you have not reacted to')
+                                 'a message you have not reacted to')
             i['u_ids'].remove(user['u_id'])
             if len(i['u_ids']) == 0:
                 # no one else has reacted, so remove react
                 message['reacts'].remove(i)
-                print (message['reacts'])
+                print(message['reacts'])
             return
-    
-    # unable to find react of react_id in messages 
-    raise InputError(description = 'Message with ID message_id ' +
-    'does not contain an active react with with ID react_id')
 
+    # unable to find react of react_id in messages
+    raise InputError(description='Message with ID message_id ' +
+                     'does not contain an active react with with ID react_id')

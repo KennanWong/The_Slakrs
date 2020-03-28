@@ -1,63 +1,120 @@
-from auth import *
-import user
+'''
+Pytest file to test functionality of auth_register
+'''
+
 import pytest
-import other
+
+import server
+import auth
+from data_stores import get_auth_data_store
 from error import InputError
 
-'''
-#############################################################
-#                   AUTH_REGISTER                           #      
-#############################################################
-'''
 
-#assumes users_all functions
-#assumes that registers, checkes users_all for an existing email address
-#assumes that a check is in place to see if an email is valid or not
-#assumes that length of the password is checked during register function
-#assumes that the length of a first name is checked during register function
-#assumes that the length of a last name is checked during register function
+#############################################################
+#                   AUTH_REGISTER                           #
+#############################################################
 
 def test_register1():
-    result1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    result2 = other.users_all(result1['token'])
-    
-    registered = 0
+    '''
+    Test valid use of test_register
+    '''
+    payload = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'Wong123',
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }
 
-    for a in result2['users']:
-        
-        if (int(result1['u_id']) == int(a['u_id'])):
-            registered = 1
-    
-    assert registered == 1
+    result1 = auth.register(payload)
 
-    
+    auth_store = get_auth_data_store()
+
+    assert result1 in auth_store
 
 def test_invalid_email_reg():
+    '''
+    Test auth.register on an invalid email
+    '''
+    payload = {
+        'email' : 'Kennan@com',
+        'password': 'Wong123',
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }
     with pytest.raises(InputError):
-        result1 = auth_register('John.smith@com', 'password1', 'John', 'Smith')
+        auth.register(payload)
 
+'''
 def test_email_used():
-    result1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    with pytest.raises(InputError):
-        result2 = auth_register('John.smith@gmail.com', 'password1', 'Reece', 'Tang')
+    payload = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'Wong123',
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }
+    auth.register(payload)
 
+    payload2 = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'Wong123',
+        'name_first': 'Ken',
+        'name_last': 'Wong'
+    }
+    with pytest.raises(InputError):
+        auth.register(payload2)
+'''
 
 def test_short_pass():
+    '''
+    Test auth.register on a short pass
+    '''
+    payload = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'short',
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }
     with pytest.raises(InputError):
-        result1 = auth_register('John.smith@gmail.com', '12345','John', 'Smithh')
-    
+        auth.register(payload)
+
 
 def test_short_name():
+    '''
+    Test auth.register on a short first name
+    '''
+    payload = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'Wong123',
+        'name_first': 'K',
+        'name_last': 'Wong'
+    }
     with pytest.raises(InputError):
-        result2 = auth_register('John.smith@gmail.com', 'password1', 'J', 'Smith')
+        auth.register(payload)
 
 
 def test_short_last():
+    '''
+    Test auth.register on a short last name
+    '''
+    payload = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'Wong123',
+        'name_first': 'Kennan',
+        'name_last': 'W'
+    }
     with pytest.raises(InputError):
-        result2 = auth_register('John.smith@gmail.com', 'password1', 'John', 'S')
+        auth.register(payload)
 
+'''
 def test_register_double1():
-    result1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    payload = {
+        'email' : 'Kennan@gmail.com',
+        'password': 'Wong123',
+        'name_first': 'Kennan',
+        'name_last': 'W'
+    }
+    auth.register(payload)
    
     with pytest.raises(InputError):
-         result2 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+        auth.register(payload)
+'''

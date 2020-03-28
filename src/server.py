@@ -1,15 +1,19 @@
+'''
+Main serve file for flask server
+Contains all routes
+'''
+
 import sys
 import re
+from json import dumps
+from flask import Flask, request
+from flask_cors import CORS
+
 import auth
 import message
 import channels
-import datetime
-from json import dumps
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 from error import InputError
 
-#test
 
 def defaultHandler(err):
     response = err.get_response()

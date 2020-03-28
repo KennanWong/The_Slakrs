@@ -1,9 +1,18 @@
-from message import *
-from auth import *
-from channel import *
-from channels import *
+'''
+Pytest file to test functionality of message_remove
+'''
+
 import pytest
-from error import InputError,AccessError
+
+import message
+# import channel
+import channels
+from other import workspace_reset
+from helper_functions import find_message
+from test_helper_functions import reg_user2, register_and_create, send_msg1
+from data_stores import get_auth_data_store, get_channel_data_store
+from data_stores import get_messages_store, reset_auth_store
+from error import InputError, AccessError
 
 
 
@@ -14,130 +23,125 @@ from error import InputError,AccessError
 '''
 
 def test_edit1():
-    # an admin is editing their own message
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
-    message_edit(user1_tk, msg1_id, 'testing-edit')
+    '''
+    Test valid use of message.edit where someone is editing their
+    own message
+    '''
+    workspace_reset()
 
-    successEdit = 0
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
 
+    msg1 = send_msg1(user1, channel1)
 
-    for a in messages['messageDict']:
-        if a['message'] == 'testing-edit':
-            successEdit = 1
-    
+    message.edit({
+        'token': user1['token'],
+        'message_id': msg1['message_id'],
+        'message': 'edit'
+    })
 
-    assert successEdit == 1
-    
+    assert msg1['message'] == 'edit'
 
+'''
 def test_edit2():
-    # a member is editing their own message
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']   
     
-    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth_login('dean.yu@gmail.com','password2')
-    user2_tk = user2['token']
+    Test if an owner is editing another users message
     
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    channel_join(user2_tk, channel_id1)
-    msg2_id = message_send(user2_tk,channel_id1,'testing')['message_id']
-    message_edit(user2_tk, msg2_id, 'testing-edit')
+    workspace_reset()
 
-    successEdit = 0
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
 
-    
-    for a in messages['messageDict']:
-        if a['message'] == 'testing-edit':
-            successEdit = 1
-    
+    user2 = reg_user2()
 
-    assert successEdit == 1
+    channel.invite({
+        'token': user1['token'],
+        'channel_id': channel1['channel_id'],
+        'u_id': user2['u_id']
+    })
+
+    msg1 = send_msg1(user2, channel1)
+
+    message.edit({
+        'token': user1['token'],
+        'message_id': msg1['message_id'],
+        'message': 'edit'
+    })
+
+    assert msg1['message'] == 'edit'
+'''
+
 
 def test_edit3():
-    # someone attempts to edit a message by replacing it witha a blank string
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
-    message_edit(user1_tk, msg1_id, '')
+    '''
+    Someone attempts to edit a message by replacing it witha a blank string
+    '''
+    workspace_reset()
 
-    successRemove = 1
+    message_store = get_messages_store()
 
-    for a in messages['messageDict']:
-        if a['message'] == 'testing':
-            successRemove == 0
-    
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
 
-    assert successRemove == 1 
+    msg1 = send_msg1(user1, channel1)
 
-def test_edit4():
-    # an owner of a channel is editing a message that one of its members had sent
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']   
-    
-    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth_login('dean.yu@gmail.com','password2')
-    user2_tk = user2['token']
-    
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    channel_join(user2_tk, channel_id1)
-    msg2_id = message_send(user2_tk,channel_id1,'testing')['message_id']
-    message_edit(user1_tk, msg2_id, 'testing-edit')
+    message.edit({
+        'token': user1['token'],
+        'message_id': msg1['message_id'],
+        'message': ''
+    })
 
-    successEdit = 0
+    assert msg1 not in message_store
+    assert msg1 not in channel1['messages']
 
-
-    for a in messages['messageDict']:
-        if a['message'] == 'testing-edit':
-            successEdit = 1
-    
-    assert successEdit == 1
-
-
+'''
 def test_unauth_edit1():
-    # someone who tried to edit another persons message should cause an
-    # access error
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    
-    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth_login('dean.yu@gmail.com','password2')
-    user2_tk = user2['token']
-    
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    channel_join(user2_tk, channel_id1)
+    # Someone is attempting to edit another users message but they are not an
+    # owner
+    workspace_reset()
 
-    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
 
+    user2 = reg_user2()
+
+    channel.invite({
+        'token': user1['token'],
+        'channel_id': channel1['channel_id'],
+        'u_id': user2['u_id']
+    })
+
+    msg1 = send_msg1(user1, channel1)
+    
     with pytest.raises(AccessError):
-        message_edit(user2_tk, msg1_id, 'testing-edit')
+        message.edit({
+            'token': user2['token'],
+            'message_id': msg1['message_id'],
+            'message': 'edit'
+        })
+'''   
+
+def test_unauth_edit2():
+    '''
+    Someone attempting to edit a message in a channel they are not a part of
+    '''
+    workspace_reset()
+
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
+
+    user2 = reg_user2()
+
+    msg1 = send_msg1(user1, channel1)
     
-'''
-def test_badtoken3():
-    # if a invalid token is provided when message.edit is called
-    # it should cause an input error
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    bad_tk = int(user1_tk) + 1
-
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
-    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
-
-    with pytest.raises(InputError):
-        message.edit(bad_tk,msg1_id,'testing-edit')
-
-'''
+    with pytest.raises(AccessError):
+        message.edit({
+            'token': user2['token'],
+            'message_id': msg1['message_id'],
+            'message': 'edit'
+        })

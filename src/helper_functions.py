@@ -106,6 +106,8 @@ def append_later(argument):
     message = find_message(message_id)
     channel = get_channel(message['channel_id'])
 
+    del message['channel_id']
+
     # append it to the channels file
     channel['messages'].append(message)
 
@@ -113,3 +115,4 @@ def append_later(argument):
         print(msg['message'])
 
     return
+

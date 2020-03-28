@@ -36,6 +36,7 @@ def send(payload):
     messages.append(new_message)
 
     # append it to the channels file
+    del new_message['channel_id']
     channel['messages'].append(new_message)
 
     # debugging purposes

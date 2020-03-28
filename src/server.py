@@ -3,6 +3,7 @@ import re
 import auth
 import message
 import channels
+import standup
 import datetime
 from json import dumps
 from flask import Flask, request, jsonify
@@ -84,7 +85,7 @@ def auth_logout():
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
-            'is_succes':True
+            'is_success':True
         })
     else:
         return dumps ({
@@ -203,13 +204,6 @@ def message_remove():
 
     return dumps({})
 
-#############################################################
-#                   STANDUP_START                           #      
-#############################################################
-#@APP.route("/standup/start", methods=['POST'])
-#def standup_start():
-    
-
 
 #############################################################    
 #                   MESSAGE_EDIT                            #      
@@ -244,6 +238,48 @@ def message_unreact():
 
     return dumps({})
 
+#############################################################
+#                   STARTUP_START                           #      
+#############################################################
+@APP.route("/startup/start", methods=['POST'])
+def startup_start():
+    payload = request.get_json()
+    active = standup.start(payload)
+    standup.end_standup(payload)
+
+    return dumps ({
+        'time_finish': active['time_finish']
+    })
+
+
+#############################################################
+#                   STARTUP_ACTIVE                          #      
+#############################################################
+@APP.route("/startup/active", methods=['GET'])
+def startup_active():
+    payload = request.get_json()
+    active = standup.active(payload)
+    if active:
+        return dumps({
+            'is_active':True,
+            'time_finish': active['time_finish']
+        })
+    else:
+        return dumps ({
+            'is_active':False,
+            'time_finish': None
+        })
+
+#############################################################
+#                   STARTUP_SEND                            #      
+#############################################################
+@APP.route("/startup/send", methods=['POST'])
+def startup_send():
+    payload = request.get_json()
+    standup.send(payload)
+
+    return ({
+    })
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

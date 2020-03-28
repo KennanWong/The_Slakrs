@@ -20,18 +20,18 @@ def start(payload):
 
     standup = channel['standup']
 
-
     if standup['is_active'] is False:
         if test_in_channel(user, channel) is True:
             if payload['length'] > 0:
                 length = payload['length']
                 standup['is_active'] = True
-                timer = threading.Timer(length, end_standup)
-                timer.start()
-            
+
                 current_time = datetime.datetime.now().time()
                 time_finish = addSecs(current_time, length)
                 standup['time_finish'] = time_finish
+
+                timer = threading.Timer(length, end_standup)
+                timer.start()
             
             else:
                 raise InputError(description='Negative length is invalid')
@@ -57,9 +57,11 @@ def end_standup(payload):
     channel = get_channel(payload['channel_id'])
     standup = channel['standup']
     
+
+
     standup_message.append(standup['messages'])
-    channel['messages'].append(standup['messagesß'])
-    channel_store.append(standup['messages'])
+    #channel['messages'].append(standup['messages'])
+    #channel_store.append(standup['messages'])
         
 #############################################################
 #                   STANDUP_ACTIVE                          #      

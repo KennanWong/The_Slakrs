@@ -31,19 +31,37 @@ def channel_messages(token, channel_id, start):
             "end": end
         }
     
+    message_list = []
+    for messages in channel['messages']:
+        for reacts in message['reacts']:
+            for users_reacted in react['u_ids']:
+                if u_id in reacts['u_id']:
+                    reacts['is_this_user_reacted'] == True
+                else:
+                    reacts['is_this_user_reacted'] == False
+
+    messsage_dict = {
+        'message_id': messages['message_id'],
+        'u_id': messages['u_id'],
+        'message': messages['message'],
+        'time_created': messages['time_created'],
+        'reacts': messages['reacts'],
+        'is_pinned': messages['is_pinned']
+    }
+    message_list.append(message_dict)
+
     if start < len(channel['messages']):
         if len(channel['messages'][start:]) > 50:
             end = start + 50
             return {
-                "messages": #message_list,
+                "messages": messages_list,
                 "start": start,
-                "end": 
+                "end": end
             }
         else:
             end = -1
-            #message_list = get the messages
             return {
-                "messages": #message_list,
+                "messages": messages_list,
                 "start": start,
                 "end": -1
             }       

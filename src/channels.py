@@ -34,6 +34,11 @@ def create(payload):
                 'members':[],
                 'owners':[],
                 'messages': [],
+                'standup' : {   
+                     'is_active': [],
+                    'messages': [],
+                    'time_finish': [],
+                }
             }
         else:
             new_channel_info = {
@@ -41,9 +46,15 @@ def create(payload):
                 'name': name,
                 'is_public': False,
                 'members':[],
-                'owners':[],
+                'owners': [],
                 'messages': [],
-             }
+                'owners':[],
+ 	            'standup' : {   
+                     'is_active': [],
+                    'messages': [],
+                    'time_finish': [],
+                }
+            }
     else: 
         raise InputError (description='Name is too long')
     

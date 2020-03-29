@@ -1,114 +1,135 @@
-from message import *
-from auth import *
-from channel import *
-from channels import *
+'''
+Pytest file to test functionality of message_remove
+'''
 import pytest
-from error import InputError,AccessError
 
-'''
+import message
+# import channel
+import channels
+from other import workspace_reset
+from test_helper_functions import reg_user2, register_and_create, send_msg1
+from data_stores import get_auth_data_store, get_channel_data_store
+from data_stores import get_messages_store, reset_auth_store
+from error import InputError, AccessError
+
+
 #############################################################
-#                   MESSAGE_REMOVE                          #      
+#                   MESSAGE_REMOVE                          #
 #############################################################
-'''
+
 
 def test_remove1():
-    #the person who sent the message is trying to remove the message
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
+    '''
+    Test a valid use of message.remove
+    '''
+    workspace_reset()
+    messages_store = get_messages_store()
+    ret = register_and_create()
+    user = ret['user']
+    channel = ret['channel']
 
-    message_remove(user1_tk,msg1_id)
+    msg1 = send_msg1(user, channel)
 
-    successRemove = 0
+    message.remove({
+        'token': user['token'],
+        'message_id': msg1['message_id']
+    })
 
-    for a in messages['messageDict']:
-        if a['message_id'] == msg1_id:
-            successRemove = 1
-    
+    assert msg1 not in messages_store
+    assert msg1 not in channel['messages']
 
-    assert successRemove == 1 
-
+'''
 def test_remove2():
     #the admin of a channel is attempting to remove a message
+    workspace_reset()
+    messages_store = get_messages_store()
 
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    
-    
-    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth_login('dean.yu@gmail.com','password2')
-    user2_tk = user2['token']
-    
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    channel_join(user2_tk, channel_id1)
 
-    msg2_id = message_send(user2_tk,channel_id1,'testing')['message_id']
-    
-    message_remove(user1_tk,msg2_id)
+    #register user1 and create channel1
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
 
-    successRemove = 0
+    user2 = reg_user2()
 
-    for a in messages['messageDict']:
-        if a['message_id'] == msg2_id:
-            successRemove = 1
+    channel.invite({
+        'token': user1['token'],
+        'channel_id': channel1['channel_id'],
+        'u_id': user2['u_id']
+    })
+
+    msg1 = send_msg1(user2, channel1)
     
-    assert successRemove == 1 
-    
+    message.remove({
+        'token': user1['token'],
+        'message_id': msg1['message_id']
+    })
+
+    assert msg1 not in messages_store
+    assert msg1 not in channel['messages']
+'''
+
 def test_no_msg():
-    # attempting to remove a message that has been already removed or does
-    # not exist causing an input error
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
+    '''
+    Attempting to remove a message that has been already removed or does
+    not exist causing an input error
+    '''
+    workspace_reset()
 
-    msg2_id = msg1_id + 1
+    ret = register_and_create()
+    user1 = ret['user']
 
     with pytest.raises(InputError):
-        message_remove(user1_tk,msg2_id)
-    
+        message.remove({
+            'token': user1['token'],
+            'message_id': 1
+        })
 
+'''
 def test_unauth_remove1():
-    # if someone is trying to remove another person message causing
-    # an access error
+    
+    Attempting remove another users message in the same channel
 
-    user1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth_login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
+    workspace_reset()
+    messages_store = get_messages_store()
+    ret = register_and_create()
+    user1 = ret['user']
+    channel = ret['channel']
     
-    
-    user2 = auth_register('dean.yu@gmail.com', 'password2','Dean', 'Yu')
-    user2 = auth_login('dean.yu@gmail.com','password2')
-    user2_tk = user2['token']
-    
-    
-    channel_id1 = channels_create(user1_tk,'firstchannel',True)
-    channel_join(user2_tk, channel_id1)
+    user2 = reg_user2()
 
-    msg1_id = message_send(user1_tk,channel_id1,'testing')['message_id']
+    msg1 = send_msg1(user1, channel)
+    
+    channel.invite({
+        'token': user1['token'],
+        'channel_id': channel1['channel_id'],
+        'u_id': user2['u_id']
+    })
 
     with pytest.raises(AccessError):
-        message_remove(user2_tk,msg1_id)
+        message.remove({
+            'token': user2['token'],
+            'message_id': msg1['message_id']
+        })
+'''
+
+def test_unauth_remove2():
+    '''
+    # Attempting remove another users message in a channel
+    they are not a part of
+    '''
+    workspace_reset()
+    messages_store = get_messages_store()
+    ret = register_and_create()
+    user1 = ret['user']
+    channel = ret['channel']
     
-'''
-def test_badtoken2():
-    # if a invalid token is provided when message.remove is called
-    # it should cause an input error
-    user1 = auth.register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    user1 = auth.login('John.smith@gmail.com','password1')
-    user1_tk = user1['token']
-    bad_tk = int(user1_tk) + 1
+    user2 = reg_user2()
 
-    channel_id1 = channels.create(user1_tk,'firstchannel',True)
-    msg1_id = message.send(user1_tk,channel_id1,'testing')['message_id']
+    msg1 = send_msg1(user1, channel)
 
-    with pytest.raises(InputError):
-        message.remove(bad_tk,msg1_id)
-'''
+    with pytest.raises(AccessError):
+        message.remove({
+            'token': user2['token'],
+            'message_id': msg1['message_id']
+        })

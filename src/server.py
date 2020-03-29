@@ -1,5 +1,14 @@
+'''
+Main serve file for flask server
+Contains all routes
+'''
+
 import sys
 import re
+from json import dumps
+from flask import Flask, request
+from flask_cors import CORS
+
 import auth
 import message
 import channels
@@ -8,9 +17,9 @@ import datetime
 from json import dumps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import other
 from error import InputError
 
-#test
 
 def defaultHandler(err):
     response = err.get_response()
@@ -280,6 +289,14 @@ def standup_send():
 
     return ({
     })
+
+#############################################################
+#                   WORKSPACE_RESET                         #      
+#############################################################
+@APP.route("/workspace/reset", methods=['POST'])
+def workspace_reset():
+    other.workspace_reset()
+    return dumps({})
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

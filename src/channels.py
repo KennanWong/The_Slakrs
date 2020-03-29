@@ -35,7 +35,7 @@ def create(payload):
                 'owners':[],
                 'messages': [],
                 'standup' : {   
-                     'is_active': [],
+                     'is_active': False,
                     'messages': [],
                     'time_finish': [],
                 }
@@ -50,7 +50,7 @@ def create(payload):
                 'messages': [],
                 'owners':[],
  	            'standup' : {   
-                     'is_active': [],
+                     'is_active':False,
                     'messages': [],
                     'time_finish': [],
                 }

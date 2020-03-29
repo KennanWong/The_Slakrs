@@ -34,7 +34,8 @@ channels_store = [
    #       'standup': [
    #           {
    #              is_active
-   #              length
+   #              messages
+   #              time_finish
    #           }
    #        ]
    #     }

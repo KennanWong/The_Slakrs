@@ -21,7 +21,6 @@ def create(payload):
         'u_id': user['u_id'],
         'name_first': user['name_first'],
         'name_last': user['name_last'],
-        'handle_str': user['handle_str']
     }
         
     if len(payload['name']) < 21:

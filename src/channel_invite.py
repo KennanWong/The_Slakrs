@@ -30,4 +30,6 @@ def channel_invite(token, channel_id, u_id):
     # User is added
     channel['members'].append(u_id)
 
+    print(channel['members'])
+
     return {}

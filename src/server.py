@@ -253,12 +253,12 @@ def message_unreact():
 @APP.route("/standup/start", methods=['POST'])
 def standup_start():
     payload = request.get_json()
-    active = standup.start(payload)
-    standup.end_standup(payload)
+    end_time = standup.start(payload)
 
-    return dumps ({
-        'time_finish': active['time_finish']
+    return dumps({
+        'time_finish':end_time
     })
+
 
 
 #############################################################
@@ -266,18 +266,15 @@ def standup_start():
 #############################################################
 @APP.route("/standup/active", methods=['GET'])
 def standup_active():
-    payload = request.get_json()
-    active = standup.active(payload)
-    if active:
-        return dumps({
-            'is_active':True,
-            'time_finish': active['time_finish']
-        })
-    else:
-        return dumps ({
-            'is_active':False,
-            'time_finish': None
-        })
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+
+    payload = {
+        'token': token,
+        'channel_id': channel_id
+    }
+    standup_info = standup.active(payload)
+    return dumps(standup_info)
 
 #############################################################
 #                   STANDUP_SEND                            #      

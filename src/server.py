@@ -239,10 +239,10 @@ def message_unreact():
     return dumps({})
 
 #############################################################
-#                   STARTUP_START                           #      
+#                   STANDUP_START                           #      
 #############################################################
-@APP.route("/startup/start", methods=['POST'])
-def startup_start():
+@APP.route("/standup/start", methods=['POST'])
+def standup_start():
     payload = request.get_json()
     active = standup.start(payload)
     standup.end_standup(payload)
@@ -253,10 +253,10 @@ def startup_start():
 
 
 #############################################################
-#                   STARTUP_ACTIVE                          #      
+#                   STANDUP_ACTIVE                          #      
 #############################################################
-@APP.route("/startup/active", methods=['GET'])
-def startup_active():
+@APP.route("/standup/active", methods=['GET'])
+def standup_active():
     payload = request.get_json()
     active = standup.active(payload)
     if active:
@@ -271,10 +271,10 @@ def startup_active():
         })
 
 #############################################################
-#                   STARTUP_SEND                            #      
+#                   STANDUP_SEND                            #      
 #############################################################
-@APP.route("/startup/send", methods=['POST'])
-def startup_send():
+@APP.route("/standup/send", methods=['POST'])
+def standup_send():
     payload = request.get_json()
     standup.send(payload)
 

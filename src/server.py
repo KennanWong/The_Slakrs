@@ -4,6 +4,13 @@ import auth
 import message
 import channels
 import datetime
+from channel_invite import channel_invite
+from channel_details import channel_details
+from channel_leave import channel_leave
+from channel_join import channel_join
+from channel_addowner import channel_addowner
+from channel_removeowner import channel_removeowner
+
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
@@ -243,11 +250,8 @@ def channel_messages_server():
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
-    user_id = int(payload['u_id'])
     start = int(payload['start'])
-
-    messages = channel_messages(token, channel_id, start)
-
+    
     #Refer to messages via index
     #message id is when u sent in within the entire server
     #channel['messages'][0] = hello

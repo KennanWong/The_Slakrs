@@ -208,4 +208,3 @@ def unreact(payload):
     raise InputError(description = 'Message with ID message_id ' +
     'does not contain an active react with with ID react_id')
 
-

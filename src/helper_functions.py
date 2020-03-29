@@ -84,7 +84,7 @@ def check_owner(user, channel):
 
 # Function to check valid userID
 def is_valid_user_id(u_id):
-    auth_store = get_data_auth_store
+    auth_store = get_auth_data_store
     for user in auth_store:
         if user['u_id'] == u_id:
             return 1
@@ -93,7 +93,7 @@ def is_valid_user_id(u_id):
 
 # Function to get userID from token
 def user_id_from_token(token):
-    auth_store = get_data_auth_store
+    auth_store = get_auth_data_store
     for user in auth_store:
         if token == user['token']:
             return user['u_id']

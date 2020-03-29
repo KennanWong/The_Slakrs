@@ -45,7 +45,10 @@ def create(payload):
              }
     else: 
         raise InputError (description='Name is too long')
+    
     new_channel_info['owners'].append(channel_owner_info)
+    
     channel_store.append(new_channel_info)
 
     return new_channel_info
+

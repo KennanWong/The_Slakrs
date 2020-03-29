@@ -1,20 +1,18 @@
+'''
+Main serve file for flask server
+Contains all routes
+'''
+
 import sys
 import re
-import auth
-import message
-import channels
-import channel
-import datetime
-from channel_invite import channel_invite
-from channel_details import channel_details
-from channel_leave import channel_leave
-from channel_join import channel_join
-from channel_addowner import channel_addowner
-from channel_removeowner import channel_removeowner
-
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
+
+import auth
+import message
+import channels
+import other
 from error import InputError
 
 #test
@@ -106,7 +104,6 @@ def auth_logout():
 #############################################################
 
 
-
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
     
@@ -116,11 +113,9 @@ def channels_create():
         'channel_id': new_channel['channel_id']
     })
 
-
 #############################################################
 #                   MESSAGE_SEND                            #      
 #############################################################
-
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
@@ -138,10 +133,10 @@ def message_send():
 def message_sendlater():
     payload = request.get_json()
     
-    new_message = message.sendlater(payload)
+    new_message_id = message.sendlater(payload)
 
     return dumps({
-        'message_id':new_message['message_id']
+        'message_id':new_message_id
     })
 
 
@@ -157,7 +152,7 @@ def message_remove():
 
     return dumps({})
 
-#############################################################
+#############################################################    
 #                   MESSAGE_EDIT                            #      
 #############################################################
 @APP.route("/message/edit", methods=['PUT'])
@@ -192,7 +187,6 @@ def message_unreact():
 
 
 #LOOK AT INVALID TOKEN
-
 #############################################################
 #                   CHANNEL_INVITE                          #      
 #############################################################
@@ -229,31 +223,24 @@ def channel_details_server():
     
     return dumps(details)
     
-'''
+
 #############################################################
 #                   CHANNEL_MESSAGES                        #      
 #############################################################
 
 @APP.route('/channel/messages', methods=['GET'])
 def channel_messages_server():
-    payload = request.get_json()
     
     # Information from request
-    token = payload['token']
-    channel_id = int(payload['channel_id'])
-    start = int(payload['start'])
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    start = int(request.args.get('start'))
 
     messages = channel.messages(token, channel_id, start)
 
-    #Refer to messages via index
-    #message id is when u sent in within the entire server
-    #channel['messages'][0] = hello
-    #but hello could have a message id of 3
-    
-    #channel['messages'][start] loop until channel['messages'][end]
 
     return dumps(messages)
-'''
+
 
 #############################################################
 #                   CHANNEL_LEAVE                           #      
@@ -272,7 +259,7 @@ def channel_leave_server():
     
     return dumps(leave)
     
-'''
+
 #############################################################
 #                   CHANNEL_JOIN                            #      
 #############################################################
@@ -290,7 +277,7 @@ def channel_join_server():
 
     return dumps(join)
         
-'''
+
 #############################################################
 #                   CHANNEL_ADDOWNER                        #      
 #############################################################
@@ -330,5 +317,13 @@ def channel_removeowner_server():
     return dumps({})
 
 
+#############################################################
+#                   WORKSPACE_RESET                         #      
+#############################################################
+@APP.route("/workspace/reset", methods=['POST'])
+def workspace_reset():
+    other.workspace_reset()
+    return dumps({})
+
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

@@ -14,11 +14,11 @@ def test_channel_leave_successful():
     channelInfo = ret['channel']
     channel_id = channelInfo['channel_id']
 
-    user2 = reg_user2()
-    token2 = user2['token']
+    #user2 = reg_user2()
+    #token2 = user2['token']
 
-    channel.join(token2, channel_id)
-    channel.leave(token2, channel_id)
+    #channel.join(token2, channel_id)
+    #channel.leave(token2, channel_id)
     '''
     # Check user2 has left
     results = [{

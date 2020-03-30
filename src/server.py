@@ -256,9 +256,11 @@ def standup_start():
     payload = request.get_json()
     end_time = standup.start(payload)
 
-    return dumps ({
-        'time_finish': end_time
+
+    return dumps({
+        'time_finish':end_time
     })
+
 
 
 #############################################################
@@ -268,6 +270,13 @@ def standup_start():
 def standup_active():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
+
+    payload = {
+        'token': token,
+        'channel_id': channel_id
+    }
+    standup_info = standup.active(payload)
+    return dumps(standup_info)
 
     
     payload = {

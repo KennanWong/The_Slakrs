@@ -22,6 +22,7 @@ def start(payload):
 
     standup = channel['standup']
 
+
     if standup['is_active'] is False:
         if test_in_channel(user['u_id'], channel) is True:
             if payload['length'] > 0:
@@ -51,7 +52,6 @@ def start(payload):
 #run this function where it collates all messages into one
 def end_standup(payload):
 
-    
     messages = get_messages_store()
 
     standup_message = ''
@@ -59,7 +59,7 @@ def end_standup(payload):
     channel = get_channel(payload['channel_id'])
     standup = channel['standup']
     user = get_user_token(payload['token'])
-
+    
     # formating all the messages into one message package
     for msg in standup['messages']:
         standup_message += msg['Name_first']
@@ -87,7 +87,6 @@ def end_standup(payload):
 #############################################################
 #                   STANDUP_ACTIVE                          #      
 #############################################################
-        
 def active(payload):
     channel_store = get_channel_data_store()
     messages = get_messages_store()
@@ -95,22 +94,21 @@ def active(payload):
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
 
-
     standup = channel['standup']
+
 
     if standup['is_active']:
         standup_info = {
             'is_active': True,
             'time_finish': standup['time_finish']
         }
-
     else:
         standup_info = {
             'is_active': False,
             'time_finish': 'N/A'
         }
-
     return standup_info
+
 
 
 
@@ -119,8 +117,6 @@ def active(payload):
 #############################################################
 
 def send(payload):
-   
-
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
     

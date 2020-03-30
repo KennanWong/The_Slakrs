@@ -49,7 +49,6 @@ def send(payload):
 
     # debugging purposes
     for msg in channel['messages']:
-        print(msg['message'])
         if msg['is_pinned'] == True:
             print('*** '+ msg['message'] + ' ***')
         else:
@@ -245,7 +244,7 @@ def react(payload):
     new_react = {
         'react_id' : payload['react_id'],
         'u_ids' : [],
-        'is_user_reacted' : ''
+        'is_user_reacted' : False
     }
     new_react['u_ids'].append(user['u_id'])
     message['reacts'].append(new_react)

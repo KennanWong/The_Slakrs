@@ -225,7 +225,7 @@ def channel_details_server():
     
 
 #############################################################
-#                   CHANNEL_MESSAGES                        #      
+#                     CHANNEL_MESSAGES                      #      
 #############################################################
 
 @APP.route('/channel/messages', methods=['GET'])
@@ -243,7 +243,7 @@ def channel_messages_server():
 
 
 #############################################################
-#                   CHANNEL_LEAVE                           #      
+#                       CHANNEL_LEAVE                       #      
 #############################################################
 
 @APP.route('/channel/leave', methods=['POST'])

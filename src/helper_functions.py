@@ -7,7 +7,8 @@ import re
 import hashlib
 from datetime import datetime
 from error import InputError
-from data_stores import get_auth_data_store, get_channel_data_store, get_messages_store
+from data_stores import get_auth_data_store, get_channel_data_store
+from data_stores import get_messages_store
 
 MSG_COUNT = 1
 
@@ -142,4 +143,9 @@ def append_later(argument):
     for msg in channel['messages']:
         print(msg['message'])
 
+    return
+
+def reset_message_count():
+    global MSG_COUNT
+    MSG_COUNT = 1
     return

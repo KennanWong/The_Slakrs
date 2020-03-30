@@ -14,7 +14,7 @@ def test_channel_details_successful():
     channel_id = channelInfo['channel_id']
 
     token1 = user1['token']
-
+    '''
     results = [{
             "name": 'The Slakrs',
             "all_members": [{
@@ -31,7 +31,11 @@ def test_channel_details_successful():
     ]
 
     assert channel.details(token1, channel_id) == results
-    
+    '''
+    assert channel.details(token1, channel_id)['name'] == 'firstChannel'
+    assert channel.details(token1, channel_id)['owner_members'] == [{'u_id': u_id1, 'name_first': 'Kennan', 'name_last': 'Wong'}]
+    assert channel.details(token1, channel_id)['all_members'] == [{'u_id': u_id1, 'name_first': 'Kennan', 'name_last': 'Wong'}]
+
 def test_channel_details_invalid_channel():
     workspace_reset()
     ret = register_and_create()

@@ -66,6 +66,7 @@ def details(token, channel_id):
         # name = channel['name']
         for owner in channel['owners']:
             owner_members.append(user_details(owner['u_id']))
+            all_members.append(user_details(owner['u_id']))
         for member in channel['members']:
             all_members.append(user_details(member['u_id']))
         return {

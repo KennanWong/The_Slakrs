@@ -28,6 +28,17 @@ def reg_user2():
     user2 = auth.register(payload)
     return user2
 
+# function to register user3
+def reg_user3():
+    payload = {
+        'email' : 'Thomas@gmail.com',
+        'password': 'Shelby123',
+        'name_first': 'Thomas',
+        'name_last': 'Shelby'
+    }
+    user3 = auth.register(payload)
+    return user3
+
 # function used to register a user and then create a channel
 def register_and_create():
     payload1 = {

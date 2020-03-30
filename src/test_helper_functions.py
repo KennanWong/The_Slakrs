@@ -4,7 +4,6 @@ Set of functions used for testing
 import auth
 import message
 import channels
-# import channel
 
 
 # function to register user1
@@ -98,3 +97,4 @@ def react_to_msg(react_id, msg,user):
     })
 
     return
+

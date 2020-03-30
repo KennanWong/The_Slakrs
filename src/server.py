@@ -1,11 +1,18 @@
+'''
+Main serve file for flask server
+Contains all routes
+'''
+
 import sys
 import re
-import auth
-import message
-import channels
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
+
+import auth
+import message
+import channels
+import other
 from error import InputError
 
 
@@ -96,7 +103,6 @@ def auth_logout():
 #############################################################
 
 
-
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
     
@@ -106,11 +112,9 @@ def channels_create():
         'channel_id': new_channel['channel_id']
     })
 
-
 #############################################################
 #                   MESSAGE_SEND                            #      
 #############################################################
-
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
@@ -121,11 +125,20 @@ def message_send():
         'message_id': new_message['message_id']
     })
     
+#############################################################
+#                   MESSAGE_SENDLATER                       #      
+#############################################################
+@APP.route("/message/sendlater", methods=['POST'])
+def message_sendlater():
+    payload = request.get_json()
+    
+    new_message_id = message.sendlater(payload)
+
+    return dumps({
+        'message_id':new_message_id
+    })
 
 
-
-if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
 
 #############################################################
 #                   MESSAGE_REMOVE                          #      
@@ -137,87 +150,49 @@ def message_remove():
     message.remove(payload)
 
     return dumps({})
-    
-    
-    
-    
+
+
+#############################################################    
+#                   MESSAGE_EDIT                            #      
 #############################################################
-#                         SEARCH                            #      
-#############################################################   
-@APP.route('/search', methods=['GET'])
-def message_search():
-    """ return messages """
-    result = search(request.args.get('token'), request.args.get('query_str'))
-    return dumps(result)
-    
-#############################################################
-#                USER PERMISSION CHANGE                     #      
-#############################################################
-@APP.route('/admin/userpermission/change', methods=['POST'])
-def userpermission_change():
-    """ return empty dic, change user's permission """
-    result = permission(request.form.get('token'), int(request.form.get('u_id')),
-                        int(request.form.get('permission_id')))
-    return dumps(result)
+@APP.route("/message/edit", methods=['PUT'])
+def message_edit():
+    payload = request.get_json()
+
+    message.edit(payload)
+
+    return dumps({})
 
 
 #############################################################
-#                      USER_PROFILE                         #      
+#                    MESSAGE_REACT                          #      
 #############################################################
+@APP.route("/message/react", methods=['PUT'])
+def message_react():
+    payload = request.get_json()
+    message.react(payload)
 
-@APP.route('/user/profile', methods=['GET'])
-def user_profile():
-    """ 
-    return 'email', 'name_first', 'name_last', 'handle_str', unpin a msg 
-    """
-    result = profile(request.args.get('token'), request.args.get('u_id'))
-    result['profile_img_url'] = str(request.base_url) + result['profile_img_url']
-    return dumps(result)
+    return dumps({})
+
 
 #############################################################
-#                   USER_PROFILE_SETNAME                    #
+#                   MESSAGE_UNREACT                         #      
 #############################################################
+@APP.route("/message/unreact", methods=['POST'])
+def message_unreact():
+    payload = request.get_json()
+    message.unreact(payload)
 
-@APP.route('/user/profile/setname', methods=['PUT'])
-def user_profile_setname():
-    """ 
-    return empty dic, change user's name 
-    """
-    result = setname(request.form.get('token'), request.form.get('name_first'),request.form.get('name_last'))
-    return dumps(result)
+    return dumps({})
 
-#############################################################
-#                   USER_PROFILE_SETEMAIL                   #
-#############################################################
-
-@APP.route('/user/profile/setemail', methods=['PUT'])
-def user_profile_setemail():
-    """ 
-    return empty dic, change user's email 
-    """
-    result = setemail(request.form.get('token'), request.form.get('email'))
-    return dumps(result)
 
 #############################################################
-#                   USER_PROFILE_SETHANDLE                  #
+#                   WORKSPACE_RESET                         #      
 #############################################################
+@APP.route("/workspace/reset", methods=['POST'])
+def workspace_reset():
+    other.workspace_reset()
+    return dumps({})
 
-@APP.route('/user/profile/sethandle', methods=['PUT'])
-def user_profile_sethandle():
-    """ 
-    return empty dic, change user's handle 
-    """
-    result = sethandle(request.form.get('token'), request.form.get('handle_str'))
-    return dumps(result)
-    
-#############################################################
-#                        USERS_ALL                          #
-#############################################################
-
-@APP.route('/users/all', methods=['GET'])
-def all_users():
-    """ 
-    show all users 
-    """
-    result = all_user(request.args.get('token'))
-    return dumps(result) 
+if __name__ == "__main__":
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

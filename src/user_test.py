@@ -151,7 +151,7 @@ def test_user_profile_setname_name_both_long():
         
 def test_user_profile_setname_invalidToken():
     with pytest.raises(InputError):
-        user_profile_setname('THISISANINVALIDTOKEN', "VALID", "NAME")
+        user_profile_setname("THISISANINVALIDTOKEN", "VALID", "NAME")
 
     
 '''

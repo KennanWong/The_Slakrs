@@ -1,38 +1,77 @@
-from auth import *
-import user
+'''
+Pytest file to test auth_login and its edge cases
+'''
 import pytest
-import other
+
+import auth
+from test_helper_functions import reg_user1
+from data_stores import reset_auth_store
 from error import InputError
 
-'''
+
 #############################################################
-#                   AUTH_LOGIN                              #      
+#                   AUTH_LOGIN                              #
 #############################################################
-'''
+
 
 def test_login1():
-    
-    result1 = auth_register('abcde@gmail.com', '12345','John', 'Smithh')
-    result2 = auth_login('abcde@gmail.com', '12345')
-    
-    assert result2['u_id'] == result1['u_id']
+    '''
+    Test basic functionality of login
+    '''
+    user1 = reg_user1()
+
+    auth.logout({
+        'token': user1['token']
+    })
+
+    assert auth.login({'email':'Kennan@gmail.com', 'password':'Wong123'})['token'] == user1['token']
+
 
 def test_invalid_email_login():
-    result1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
-    with pytest.raises(InputError):
-        result2 = auth_login('John.smith@com', 'password1')
+    '''
+    Test login if provided an invalid login
+    '''
+    reset_auth_store()
+    user1 = reg_user1()
 
+    auth.logout({
+        'token': user1['token']
+    })
+    with pytest.raises(InputError):
+        auth.login({
+            'email':'Kennan@com',
+            'password':'Wong123'
+        })
 
 def test_wrong_email():
-    result1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    '''
+    Test login if provided with an incorrect email
+    '''
+    reset_auth_store()
+    user1 = reg_user1()
+
+    auth.logout({
+        'token': user1['token']
+    })
     with pytest.raises(InputError):
-        results2 = auth_login('Smith.john@gmail.com', 'password1')
-    
+        auth.login({
+            'email':'Nat@gmail.com',
+            'password':'Wong123'
+        })
+
 
 def test_wrong_pass():
-    result1 = auth_register('John.smith@gmail.com', 'password1','John', 'Smithh')
+    '''
+    Test login if provided with an incorrect pass
+    '''
+    reset_auth_store()
+    user1 = reg_user1()
+
+    auth.logout({
+        'token': user1['token']
+    })
     with pytest.raises(InputError):
-        result2 = auth_login('John.smith@gmail.com', 'password2')
-
-
-
+        auth.login({
+            'email':'Kenann@gmail.com',
+            'password':'Wong123'
+        })

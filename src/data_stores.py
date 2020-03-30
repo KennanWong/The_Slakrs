@@ -1,6 +1,5 @@
 
 # This file contains our data and data structure for the server
-
 channels_store = [
     # {
     #     'channel_id'
@@ -11,7 +10,6 @@ channels_store = [
     #             u_id
     #             name_first
     #             Name_last
- 	# 	        Handle_str
  	# 	    }
     #     ] 
     #     'owners':[
@@ -19,7 +17,6 @@ channels_store = [
     #             u_id
     #             name_first
     #             Name_last
- 	# 	        Handle_str
  	# 	    }
     #     ]
     #     'messages': [
@@ -38,17 +35,18 @@ channels_store = [
 
 
 auth_data = [
-    # user_data :{
+    # new_user = {
     #     'u_id' : u_id,
     #     'email': email,
+    #     'password': password,
     #     'name_first': first_name,
     #     'name_last': last_name,
     #     'handle_str': handle.lower(),
-    #     'password': password,
     #     'token': token,
-    #     'status' : LOGGED_ON
-    #     'messages' : []
-    #     'channels': []
+    #     'status' : LOGGED_ON,
+    #     'messages':[],
+    #     'permission_id': 2,
+    #     'slack_owner' : False
     # }
 ]
 
@@ -59,8 +57,15 @@ messages_store = [
     # 'message'
     # 'time_created'
     # 'reacts'
+        # {
+        #     'react_id'
+        #     'u_ids' # a list of u_id
+        #     'is_user_reacted'
+        # }
     # 'is_pinned'
 ]
+
+
 
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
@@ -76,4 +81,18 @@ def get_channel_data_store():
 def get_messages_store():
     global messages_store
     return messages_store
-    
+
+def reset_auth_store():
+    global auth_data
+    auth_data = []
+    return
+
+def reset_channel_data_store():
+    global channels_store
+    channels_store = []
+    return
+
+def reset_messages_store():
+    global messages_store
+    messages_store = []
+    return

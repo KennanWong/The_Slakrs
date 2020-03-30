@@ -169,7 +169,7 @@ def leave(token, channel_id):
 
     # User leaving channel
     user_det = user_details(user['u_id'])
-
+    
     if user_det in channel['owners']:
         channel['owners'].remove(user_det)
     
@@ -226,7 +226,7 @@ def addowner(token, channel_id, u_id):
 
     # InputError when user with user id u_id is already an owner of the channel
     if addee_dets in channel['owners']:
-        raise InputError(description='Cannot add if user is already an owner of the channe;')
+        raise InputError(description='Cannot add if user is already an owner of the channel')
     
     # InputError if user isn't even a member of the channel
     if not test_in_channel(u_id, channel):   
@@ -239,7 +239,7 @@ def addowner(token, channel_id, u_id):
     # Otherwise user is added as an owner
     else:
         channel['owners'].append(addee_dets)
-        channel['members'].remove(addee_dets)
+        #channel['members'].remove(addee_dets)
         return {}
 
 

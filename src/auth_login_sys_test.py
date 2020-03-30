@@ -2,10 +2,11 @@ import pytest
 import urllib
 import json
 import flask
+from urllib.error import HTTPError
 
 import server
 import auth
-from system_helper_functions import reg_user1, reset_workspace
+from system_helper_functions import reg_user1, reset_workspace, logout_user1
 from other import workspace_reset
 from data_stores import get_auth_data_store, reset_auth_store
 from helper_functions import get_user_token
@@ -22,42 +23,89 @@ def test_login():
     reset_workspace()
 
     # Register a user
-    data = json.dumps({
-        'email' : 'Kennan@gmail.com',
-        'password': 'Wong123',
-        'name_first': 'Kennan',
-        'name_last': 'Wong'
-    }).encode('utf-8')
-    req = urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/auth/register", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
-    ))
-    payload = json.load(req) 
-    token = payload['token']
+    response = reg_user1()
     
     # Logout that user
-    data2 = json.dumps({
-        'token': payload['token']
-    }).encode('utf-8')
-
-    req2 = urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/auth/logout", 
-        data = data2, 
-        headers = {'Content-Type':'application/json'}
-    ))
+    logout_user1(response['token'])
 
     # Attempt to login that user
-    data3 = json.dumps({
+    data = json.dumps({
         'email': 'Kennan@gmail.com',
         'password': 'Wong123'
     }).encode('utf-8')
-    req3 = urllib.request.urlopen(urllib.request.Request(
+    req = urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/auth/login", 
-        data = data3, 
+        data = data, 
         headers = {'Content-Type':'application/json'}
     ))
-    payload3 = json.load(req3)
+    payload = json.load(req)
 
-    assert payload['u_id'] == payload3['u_id']
-    assert payload['token'] == payload3['token']
+    assert response['u_id'] == payload['u_id']
+    assert response['token'] == payload['token']
+
+
+
+def test_invalid_email():
+    reset_workspace()
+    
+    # Register a user
+    response = reg_user1()
+    
+    # Logout that user
+    logout_user1(response['token'])
+
+    data = json.dumps({
+        'email': 'Kennan@.com',
+        'password': 'Wong123'
+    }).encode('utf-8')
+    
+    with pytest.raises(HTTPError):
+        req = urllib.request.urlopen(urllib.request.Request(
+            f"{BASE_URL}/auth/login", 
+            data = data, 
+            headers = {'Content-Type':'application/json'}
+        ))
+
+def test_wrong_email():
+    reset_workspace()
+    
+    # Register a user
+    response = reg_user1()
+    
+    # Logout that user
+    logout_user1(response['token'])
+
+    data = json.dumps({
+        'email': 'Kennand@gmail.com',
+        'password': 'Wong123'
+    }).encode('utf-8')
+    
+    with pytest.raises(HTTPError):
+        req = urllib.request.urlopen(urllib.request.Request(
+            f"{BASE_URL}/auth/login", 
+            data = data, 
+            headers = {'Content-Type':'application/json'}
+        ))
+
+def test_wrong_pass():
+    reset_workspace()
+    
+    # Register a user
+    response = reg_user1()
+    
+    # Logout that user
+    logout_user1(response['token'])
+
+    data = json.dumps({
+        'email': 'Kennan@gmail.com',
+        'password': 'Wong321'
+    }).encode('utf-8')
+    
+    with pytest.raises(HTTPError):
+        req = urllib.request.urlopen(urllib.request.Request(
+            f"{BASE_URL}/auth/login", 
+            data = data, 
+            headers = {'Content-Type':'application/json'}
+        ))
+
+

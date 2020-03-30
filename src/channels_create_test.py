@@ -1,32 +1,46 @@
 import pytest
-from auth import auth_register
-from channel import channel_details
-from channels import channels_create, channels_list, channels_listall
-from error import InputError, AccessError
+
+import channels
+from other import workspace_reset
+from test_helper_functions import reg_user1, register_and_create
+from error import InputError
+from data_stores import get_channel_data_store
 
 
-#channel can either be public or private
-def test_create_channel_private():
-
-    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
-    token1 = results['token']
-    u_id1 = results['u_id']
-
-    channel_info1 = channels_create(token1, 'Slakrs', False)
+#############################################################
+#                   CHANNELS_CREATE                         #
+#############################################################
+def test_create():
     
+    #testing functionability of channels create
 
-def test_create_channel_public():
-    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
-    token1 = results['token']
-    u_id1 = results['u_id']
-
-    channel_info3 = channels_create(token1, 'Slakrs', True)
+    workspace_reset()
+    user1 = reg_user1()
     
+    payload = {
+        'token': user1['token'],
+        'name': 'Slackrs',
+        'is_public': True
 
-def test_channel_name_too_long():
-    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
-    token1 = results['token']
-    u_id1 = results['u_id']
+    }
 
-    with pytest.raises(InputError) as e:
-        channel_info4 = channels_create(token1, 'a' * 21, True)
+    result1 = channels.create(payload)
+
+    channel_store = get_channel_data_store()
+
+    assert result1 in channel_store
+
+
+def test_invalid_name():
+    workspace_reset()
+    user1 = reg_user1()
+
+    payload = {
+        'token': user1['token'],
+        'name': 'Thisnameislongerthan20characters',
+        'is_public': True
+    }
+
+
+    with pytest.raises(InputError):
+        channels.create(payload)

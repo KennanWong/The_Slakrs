@@ -8,8 +8,7 @@ def channel_join(token, channel_id):
 
     # Check if channel exists using helper function
     channel = get_channel(channel_id)
-    
-    if user['slack_owner'] == True:
+
     # InputError if channel_id does not refer to a valid channel
     if channel is None:
         raise InputError(description='Invalid channel_id')

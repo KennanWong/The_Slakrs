@@ -77,29 +77,33 @@ def details(token, channel_id):
     else:
         raise AccessError(description = 'Authorised user is not a member of the channel')
     
-'''
+
 #############################################################
 #                  CHANNEL_MESSAGES                         #
 #############################################################
 def messages(token, channel_id, start):
-    
     auth_store = get_auth_data_store
 
+    u_id = user_id_from_token(token)
     # Check if channel exists using helper function
     channel = get_channel(channel_id)
 
     # InputError when we try to get details of an invalid channelID
-    if channel is None:
-        raise InputError(description='Invalid channel_id')
+    #if channel is None:
+    #    raise InputError(description='Invalid channel_id')
 
     # Check if authorised user is a member of the channel, AccessError if not
-    if u_id not in channel['members']:
-        raise AccessError(description = 'Authorised user is not a member of the channel')
+    if not test_in_channel(u_id, channel):
+        raise AccessError(description='Authorised user is not a member of the channel')
       
     # InputError when start is greater than or equal to the total number of messages in the channel
-    if start >= len(messages):
+    if start >= len(channel['messages']):
         raise InputError(description='Start is greater than or equal to the total number of messages in the channel')
-
+    
+    # Incorrect indexing
+    if start < 0 or start > len(channel['messages']):
+        raise InputError(description='Incorrect indexing')
+    
     if not isinstance(start, int):
         raise InputError(description='Start is not of type integer')
 
@@ -108,27 +112,29 @@ def messages(token, channel_id, start):
         return {
             "messages": [],
             "start": start,
-            "end": end
+            "end": start
         }
     
-    message_list = []
-    for messages in channel['messages']:
-        for reacts in message['reacts']:
-            for users_reacted in react['u_ids']:
+    messages_list = []
+    messages_dict = {}
+    if start + 50 > len(channel['messages']):
+        interval = start + 50
+    else:
+        interval = len(channel['messages'])
+    for messages in channel['messages'][start: interval]:
+        messages_dict = {
+            'message_id': messages['message_id'],
+            'u_id': messages['u_id'],
+            'message': messages['message'],
+            'time_created': messages['time_created'],
+            'reacts': messages['reacts'],
+            'is_pinned': messages['is_pinned']
+        }
+        for reacts in messages['reacts']:
+            for users_reacted in reacts['u_ids']:
                 if u_id in reacts['u_id']:
                     reacts['is_this_user_reacted'] == True
-                else:
-                    reacts['is_this_user_reacted'] == False
-
-    messsage_dict = {
-        'message_id': messages['message_id'],
-        'u_id': messages['u_id'],
-        'message': messages['message'],
-        'time_created': messages['time_created'],
-        'reacts': messages['reacts'],
-        'is_pinned': messages['is_pinned']
-    }
-    message_list.append(message_dict)
+        messages_list.append(messages_dict)
 
     if start < len(channel['messages']):
         if len(channel['messages'][start:]) > 50:
@@ -138,14 +144,14 @@ def messages(token, channel_id, start):
                 "start": start,
                 "end": end
             }
-        else:
-            end = -1
+        if len(channel['messages'][start:]) < 50:
             return {
                 "messages": messages_list,
                 "start": start,
                 "end": -1
-            }       
-'''   
+            }   
+
+
 #############################################################
 #                     CHANNEL_LEAVE                         #
 #############################################################
@@ -170,6 +176,35 @@ def leave(token, channel_id):
     if user_det in channel['members']:
         channel['members'].remove(user_det)
     
+    return {}
+
+
+#############################################################
+#                     CHANNEL_JOIN                          #
+#############################################################
+def join(token, channel_id):
+    auth_store = get_auth_data_store
+    channels_store = get_channel_data_store
+
+    user = get_user_token(token)
+    # Check if channel exists using helper function
+    channel = get_channel(channel_id)
+
+    # InputError if channel_id does not refer to a valid channel
+    if channel is None:
+        raise InputError(description='Invalid channel_id')
+    
+    #or if not channel['is_public']
+    if channel['is_public'] == True and user['permission_id'] == 1:
+        channel['owners'].append(user)
+    elif channel['is_public'] == True and user['permission_id'] == 2:
+        channel['members'].append(user)
+    elif channel['is_public'] == False and user['permission_id'] == 1:
+        channel['owners'].append(user)
+    else:
+        # AccessError when attempting to join a private channel
+        raise AccessError(description='Cannot join a private channel')
+
     return {}
 
 
@@ -227,9 +262,6 @@ def removeowner(token, channel_id, u_id):
     # InputError when user with user id u_id is not an owner of the channel
     if removee_dets not in channel['owners']:
         raise InputError(description='Cannot remove if user is not an owner of the channel')
-    
-    ###USER REMOVING THEMSELF
-    # if (len(channel['owner_members']) == 1)
 
     # AccessError when the authorised user is not an owner of the slackr, or an owner of this channel
     # Can't remove someone if you're not owner yourself

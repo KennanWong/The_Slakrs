@@ -61,16 +61,15 @@ def register(payload):
         'slack_owner' : False
     }
 
-    #test if an email is alread taken
-    for i in auth_store:
-        if i['email'] == email:
-            raise InputError(description='Email is already in use')
-
     if u_id == 1:
         # this is the first person in a slack they are now an owner
         new_user['slack_owner'] = True
         new_user['permission_id'] = 1
 
+    #test if an email is alread taken
+    for i in auth_store:
+        if i['email'] == email:
+            raise InputError(description='Email is already in use')
 
     auth_store.append(new_user)
 
@@ -109,6 +108,8 @@ def login(payload):
         raise InputError(description="Email entered does not belong to a user")
 
     return user
+
+
 
 #############################################################
 #                   AUTH_LOGOUT                             #

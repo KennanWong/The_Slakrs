@@ -110,3 +110,108 @@ def test_channel_invite_existing_user():
     # the channel
     with pytest.raises(InputError) as e:
         channel_invite(token1, channel_id, u_id2)
+
+
+import pytest
+import channel
+from other import workspace_reset
+from test_helper_functions import reg_user1, reg_user2, reg_user3, register_and_create
+from data_stores import get_channel_data_store
+from error import InputError, AccessError
+
+def test_channel_invite_successful():
+    workspace_reset()
+    #user1 = reg_user1()
+    user2 = reg_user2()
+
+    ret = register_and_create()
+    user = ret['user']
+    channelInfo = ret['channel']
+    
+	#channel_store = get_channel_data_store()
+    token = user['token']
+    channel_id = channelInfo['channel_id']
+    u_id = user2['u_id']
+
+    assert channel.invite(token, channel_id, u_id) == {}
+
+def test_channel_invite_invalid_channel():
+    workspace_reset()
+    #user1 = reg_user1()
+    user2 = reg_user2()
+
+    ret = register_and_create()
+    user = ret['user']
+    channelInfo = ret['channel']
+
+    #channel_store = get_channel_data_store()
+
+    token = user['token']
+
+    u_id2 = user2['u_id']
+    
+	# InputError when user2 is invited to an invalid channel
+    # Invalid channel_id = 100
+    with pytest.raises(InputError) as e:
+        channel.invite(token, 100, u_id2)
+
+def test_channel_invite_invaliduserID():
+    workspace_reset()
+    #user1 = reg_user1()
+    user2 = reg_user2()
+
+    ret = register_and_create()
+    user = ret['user']
+    channelInfo = ret['channel']
+
+    #channel_store = get_channel_data_store()
+    token = user['token']
+
+    channel_id = channelInfo['channel_id']
+    
+    # InputError when user tries to invite someone with an invalid user ID
+    # Invalid user_id = 100
+    with pytest.raises(InputError) as e:
+        channel.invite(token, channel_id, 100)
+
+def test_channel_invite_unauthorised():
+    workspace_reset()
+    #user1 = reg_user1()
+    user2 = reg_user2()
+    user3 = reg_user3()
+
+    ret = register_and_create()
+    user = ret['user']
+    channelInfo = ret['channel']
+
+    #channel_store = get_channel_data_store()
+    token = user2['token']
+    channel_id = channelInfo['channel_id']
+    u_id = user3['u_id']
+
+    # AccessError when authorised user is not a member of the channel
+    # user2 invites user3 after user1 creates the channel
+    with pytest.raises(AccessError) as e:
+        channel.invite(token, channel_id, u_id)
+
+def test_channel_invite_existing_user():
+    workspace_reset()
+    #user1 = reg_user1()
+    user2 = reg_user2()
+
+    ret = register_and_create()
+    user = ret['user']
+    channelInfo = ret['channel']
+
+    #channel_store = get_channel_data_store()
+    token = user['token']
+    channel_id = channelInfo['channel_id']
+    u_id = user2['u_id']
+
+	# Invite user2
+    channel.invite(token, channel_id, u_id)
+
+    # InputError when user tries to invite someone who is already a member of 
+    # the channel
+    with pytest.raises(InputError) as e:
+        channel.invite(token, channel_id, u_id)

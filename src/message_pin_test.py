@@ -1,7 +1,7 @@
 import pytest
 
 import message
-#import channel
+import channel
 from other import workspace_reset
 from test_helper_functions import reg_user1, register_and_create, send_msg1, reg_user2
 from error import InputError, AccessError
@@ -95,29 +95,27 @@ def test_unauthor_member():
         })  
 
 
-#def test_unauth_owner():
+def test_unauth_owner():
 
     #user is not an owner
-
- #   workspace_reset()
-
-  #  ret = register_and_create()
-  #  user = ret['user']
-  #  channel1 = ret['channel']
-
-  #  user2 = reg_user2()
-
-  #  channel.invite({
-  #      'token': user['token'],
-  #      'channel_id': channel1['channel_id'],
-  #      'u_id': user2['u_id']
-  #  })
-
-   # msg1 = send_msg1(user, channel1)
+    workspace_reset()   
     
-   # with pytest.raises(InputError):
-    #    message.pin({
-   #         'token': user2['token'],
-    #        'message_id': msg1['message_id'],
-    #    })  
+    ret = register_and_create()
+    user1 = ret['user']
+    channel1 = ret['channel']
+
+    user2 = reg_user2()
+
+    token = user1['token']
+    channel_id = channel1['channel_id']
+    u_id = user2['u_id']
+    channel.invite(token, channel_id, u_id)
+
+    msg1 = send_msg1(user2, channel1)
+    
+    with pytest.raises(InputError):
+        message.pin({
+            'token': user2['token'],
+            'message_id': msg1['message_id'],
+        })  
 

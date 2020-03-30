@@ -31,3 +31,4 @@ def test_bad_token():
     auth.logout(user2)
 
     assert auth.logout(user2) == False
+

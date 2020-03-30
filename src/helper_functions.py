@@ -54,14 +54,10 @@ def get_user_token(token):
     otherwise raises an error
     '''
     auth_store = get_auth_data_store()
-    user = {}
     for i in auth_store:
         if i['token'] == token:
-            user = i
-    if user != {}:
-        return user
-    else:
-        raise InputError(description='Invalid Token')
+            return i
+    raise InputError(description='Invalid Token')
 
 def test_email(email):
     '''

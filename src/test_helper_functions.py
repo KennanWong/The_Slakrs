@@ -72,3 +72,40 @@ def send_msg1(user, channel):
 
     message_test = message.send(payload)
     return message_test
+
+def create_ch1(user):
+    '''
+    Helper function to create a channel
+    '''
+    payload = {
+        'token' : user['token'],
+        'name': 'firstChannel',
+        'is_public': True
+    }
+    new_channel = channels.create(payload)
+    return new_channel
+
+'''
+def invite_to_ch1(user1, user2, channel):
+    
+    Function for user1 to invite user2 to
+    channel
+    
+    channel.invite(user1['token'], channel['channel_id'], user2['u_id'])
+
+    return
+'''
+
+def react_to_msg(react_id, msg,user):
+    '''
+    Function to react to 'message' with
+    react id of 'react_id'
+    '''
+    message.react({
+        'token': user['token'],
+        'message_id': msg['message_id'],
+        'react_id': 1
+    })
+
+    return
+

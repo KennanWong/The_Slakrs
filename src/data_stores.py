@@ -65,7 +65,7 @@ messages_store = [
     # 'is_pinned'
 ]
 
-
+MSG_COUNT = 1
 
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
@@ -82,6 +82,10 @@ def get_messages_store():
     global messages_store
     return messages_store
 
+def get_message_count():
+    global MSG_COUNT
+    return MSG_COUNT
+
 def reset_auth_store():
     global auth_data
     auth_data = []
@@ -95,4 +99,9 @@ def reset_channel_data_store():
 def reset_messages_store():
     global messages_store
     messages_store = []
+    return
+
+def reset_message_count():
+    global MSG_COUNT
+    MSG_COUNT = 1
     return

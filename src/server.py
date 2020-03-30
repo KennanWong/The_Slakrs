@@ -90,7 +90,7 @@ def auth_logout():
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
-            'is_succes':True
+            'is_success':True
         })
     else:
         return dumps ({
@@ -167,7 +167,7 @@ def message_edit():
 #############################################################
 #                    MESSAGE_REACT                          #      
 #############################################################
-@APP.route("/message/react", methods=['PUT'])
+@APP.route("/message/react", methods=['POST'])
 def message_react():
     payload = request.get_json()
     message.react(payload)

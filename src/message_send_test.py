@@ -7,7 +7,7 @@ import pytest
 # import channel
 import message
 from test_helper_functions import reg_user2, register_and_create
-from data_stores import get_auth_data_store, get_channel_data_store
+from data_stores import get_auth_data_store
 from data_stores import get_messages_store, reset_auth_store
 from error import InputError, AccessError
 
@@ -35,7 +35,6 @@ def test_send1():
     message_test = message.send(payload)
 
     message_store = get_messages_store()
-    channels = get_channel_data_store()
 
     assert message_test in message_store
     assert message_test in channel['messages']

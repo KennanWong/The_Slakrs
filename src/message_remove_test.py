@@ -5,11 +5,9 @@ import pytest
 
 import message
 # import channel
-import channels
 from other import workspace_reset
 from test_helper_functions import reg_user2, register_and_create, send_msg1
-from data_stores import get_auth_data_store, get_channel_data_store
-from data_stores import get_messages_store, reset_auth_store
+from data_stores import get_messages_store
 from error import InputError, AccessError
 
 
@@ -119,11 +117,10 @@ def test_unauth_remove2():
     they are not a part of
     '''
     workspace_reset()
-    messages_store = get_messages_store()
     ret = register_and_create()
     user1 = ret['user']
     channel = ret['channel']
-    
+
     user2 = reg_user2()
 
     msg1 = send_msg1(user1, channel)

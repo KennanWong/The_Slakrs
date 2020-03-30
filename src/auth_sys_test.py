@@ -61,3 +61,4 @@ def test_login():
 
     assert payload['u_id'] == payload3['u_id']
     assert payload['token'] == payload3['token']
+

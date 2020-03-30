@@ -48,3 +48,16 @@ def register_and_create():
         'user':result1,
         'channel':new_channel
     }
+
+def send_msg1(user, channel):
+    '''
+    Helper function to send a message
+    '''
+    payload = {
+        'token':user['token'],
+        'channel_id': channel['channel_id'],
+        'message' : 'testing'
+    }
+
+    message_test = message.send(payload)
+    return message_test

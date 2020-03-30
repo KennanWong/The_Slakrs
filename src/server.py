@@ -12,6 +12,7 @@ from flask_cors import CORS
 import auth
 import message
 import channels
+import other
 from error import InputError
 
 
@@ -183,6 +184,14 @@ def message_unreact():
 
     return dumps({})
 
+
+#############################################################
+#                   WORKSPACE_RESET                         #      
+#############################################################
+@APP.route("/workspace/reset", methods=['POST'])
+def workspace_reset():
+    other.workspace_reset()
+    return dumps({})
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

@@ -25,7 +25,7 @@ def send(payload):
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
     if not test_in_channel(user['u_id'], channel):
-        raise InputError(description='User is not in channel')
+        raise AccessError(description='User is not in channel')
 
     # create a message data type, and fill in details
     # then append to the channels list of messages
@@ -131,6 +131,7 @@ def edit(payload):
     '''
     Function to remove a message from a channel
     '''
+    message_store = get_messages_store()
     user = get_user_token(payload['token'])
     message = find_message(payload['message_id'])
 
@@ -139,10 +140,14 @@ def edit(payload):
     if message['u_id'] != user['u_id']:
         if not check_owner(user, channel):
             raise AccessError(description='You do not have permission')
-
-    message['message'] = payload['message']
-
-    return
+    
+    if len(payload['message']) == 0:
+        channel['messages'].remove(message)
+        message_store.remove(message)
+        return
+    else:
+        message['message'] = payload['message']
+        return
 
 
 #############################################################

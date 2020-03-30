@@ -34,12 +34,12 @@ def register(payload):
         raise InputError(description='Password is too short')
 
     #test length of Last and First names
-    if 1 <= len(payload['name_first']) <= 50:
+    if 1 < len(payload['name_first']) <= 50:
         first_name = payload['name_first']
     else:
         raise InputError(description='Not a valid first name')
 
-    if 1 <= len(payload['name_last']) <= 50:
+    if 1 < len(payload['name_last']) <= 50:
         last_name = payload['name_last']
     else:
         raise InputError(description='Not a valid last name')

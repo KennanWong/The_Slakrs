@@ -146,12 +146,14 @@ def pin(payload):
         raise InputError(description='Message is already pinned')
 
     else:
-        if check_owner(user, channel) is True:
-            message['is_pinned'] = True
-            print (message)
+        if test_in_channel(user['u_id'],channel) is True:
+            if check_owner(user, channel) is True:
+                message['is_pinned'] = True
+                print (message)
+            else:
+                raise InputError(description='You do not have permission')
         else:
-            raise InputError(description='You do not have permission')
-
+            raise AccessError(description='You do not have permission')
     return
 
 #############################################################
@@ -171,11 +173,13 @@ def unpin(payload):
         raise InputError(description='Message is already unpinned')
 
     else:
-        if check_owner(user, channel) is True:
-            message['is_pinned'] = False
+        if test_in_channel(user['u_id'],channel) is True:
+            if check_owner(user, channel) is True:
+                message['is_pinned'] = False
+            else:
+                raise InputError(description='You do not have permission')
         else:
-            raise InputError(description='You do not have permission')
-
+            raise AccessError(description='You do not have permission')
     
     return
 

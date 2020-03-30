@@ -73,7 +73,6 @@ messages_store = [
 ]
 
 
-
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
     global auth_data

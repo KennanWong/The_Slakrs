@@ -11,6 +11,7 @@ from flask_cors import CORS
 
 import auth
 import message
+import channel
 import channels
 import standup
 import datetime
@@ -253,11 +254,10 @@ def message_unreact():
 @APP.route("/standup/start", methods=['POST'])
 def standup_start():
     payload = request.get_json()
-    active = standup.start(payload)
-    standup.end_standup(payload)
+    end_time = standup.start(payload)
 
     return dumps ({
-        'time_finish': active['time_finish']
+        'time_finish': end_time
     })
 
 
@@ -266,19 +266,18 @@ def standup_start():
 #############################################################
 @APP.route("/standup/active", methods=['GET'])
 def standup_active():
-    payload = request.get_json()
-    active = standup.active(payload)
-    if active:
-        return dumps({
-            'is_active':True,
-            'time_finish': active['time_finish']
-        })
-    else:
-        return dumps ({
-            'is_active':False,
-            'time_finish': None
-        })
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
 
+    
+    payload = {
+        'token': token,
+        'channel_id': channel_id
+    }
+
+    standup_info = standup.active(payload)
+    return dumps(standup_info)
+    
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -297,6 +296,42 @@ def standup_send():
 def workspace_reset():
     other.workspace_reset()
     return dumps({})
+
+
+#############################################################
+#                   CHANNEL_JOIN                            #      
+#############################################################
+
+@APP.route('/channel/join', methods=['POST'])
+def channel_join_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Join the channel
+    join = channel.join(token, channel_id)
+
+    return dumps(join)
+        
+############################################################
+#                   CHANNEL_LEAVE                           #      
+#############################################################
+
+@APP.route('/channel/leave', methods=['POST'])
+def channel_leave_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Leave the channel
+    leave = channel.leave(token, channel_id)
+    
+    return dumps(leave)
+    
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

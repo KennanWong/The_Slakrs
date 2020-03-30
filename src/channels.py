@@ -13,7 +13,7 @@ from data_stores import get_channel_data_store
 def create(payload):
     channel_store = get_channel_data_store()
     channel_owner_info = {}
-    new_channel_info ={}
+    new_channel_info = {}
    
     user = get_user_token(payload['token'])
     
@@ -86,7 +86,7 @@ def List(token):
             }
         if channel_info != {}:
             channels.append(channel_info)
-    
+            
     return channels
 
 #############################################################

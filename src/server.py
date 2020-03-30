@@ -89,7 +89,7 @@ def auth_logout():
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
-            'is_succes':True
+            'is_success':True
         })
     else:
         return dumps ({

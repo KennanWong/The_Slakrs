@@ -91,4 +91,36 @@ def validate_uid(u_id):
             return True
     
     return False
+
+#function returns 1 if email has not been used before    
+def check_used_email(email):
+    email_store = get_auth_data_store()
+    for i in email_store:
+        if i['email'] == email;
+            raise InputError(description='Email is already in use')
+    else:
+        return 1
+        
+#function returns 1 if handle has not been used before    
+def check_used_handle(handle_str):
+    handle_store = get_auth_data_store()
+    for i in handle_store:
+        if i['handle_str'] == handle_str;
+            raise InputError(description='Handle is already in use')
+    else:
+        return 1
+        
+# function to validate a token and returns the users info
+# otherwise raises an error
+def get_user_uid(u_id):
+    auth_store = get_auth_data_store()
+    user = {}
+    for i in auth_store:
+        if i['u_id'] == u_id:
+            user = i
+    if user != {}:
+        return user
+    else:
+        raise InputError(description='Invalid u_id)  
+             
     

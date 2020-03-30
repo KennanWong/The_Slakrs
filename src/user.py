@@ -1,9 +1,9 @@
 # This file contains the implementation of all 'user_' functions for the
 # server
 
-from error import InputError
-from helper_functions import get_user_token, validate_ui
-from data_stores import get_channel_data_store, get_data
+from error import InputError AccessError
+from helper_functions import get_user_token, validate_uid, check_used_email, check_used_handle
+from data_stores import get_auth_data_store
 
 #############################################################
 #                      USER_PROFILE                         #      
@@ -62,10 +62,123 @@ def profile_setemail(payload):
     '''
     Update the authorised user's email address
     '''
-    user = get_user_token(token)
+    
+    #test email is valid and not been used before
+    new_email = test_email(payload['email'])
+    assert (check_used_email(new_email) == 1)
+    
+    user = get_user_token(payload['token'])
+    user['email'] = new_email
+    return ({})
+    
+#############################################################
+#                   USER_PROFILE_SETHANDLE                  #
+#############################################################
+
+def profile_sethandle(payload):
+    
+    '''
+    Update the authorised user's handle (i.e. display name)
+    '''
+    #test handle is valid and not been used before
+    if len(payload['handle_str']) < 3 or len(payload['handle_str']) > 20:
+        raise InputError(description='handle_str should be between 3-20 characters')
+    
+    assert (check_used_handle(payload['handle_str']) == 1)
+    
+    user = get_user_token(payload['token'])
+    user['handle_str'] = handle_str
+    return ({})
+    
+#############################################################
+#                        USERS_ALL                          #
+#############################################################  
+
+def users_all(payload):
+
+    '''
+    Returns a list of all users and their associated details
+    '''
+    checker = get_user_token(payload['token'])
+    
+    user_store = get_auth_data_store()
+    
+    ret = []
+    
+    user_data = {}
+
+    for i in user_store['users']:
+        user_data = {
+            'u_id': i['u_id'],
+            'email': i['email'],
+            'name_first': i['name_first'],
+            'name_last': i['name_last'],
+            'handle_str': i['handle'],
+        }
+        ret.append(user_data)
+    
+    return ret 
+
+#############################################################
+#                          SEARCH                           #
+#############################################################
+  
+def search(payload):
+
+    '''
+    Given a query string, return a collection of 
+    messages in all of the channels that the user
+    has joined that match the query. Results are
+    sorted from most recent message to least recent message
+    '''
+    
+    channel_store = get_channel_data_store()
+    returnMessage = []
+    
+    user = get_user_token(payload['token'])
+    
+    # if the query is nothing
+    if query_str == '':
+        return []
+                        
+    for channel in channel_store:
+        if test_in_channel(user['u_id'], channel):
+            for msg in channels['messages']:
+                if re.search(payload['query_str'], msg['message']):
+                    returnMessage.append(msg)
+        
+    return returnMessage
     
     
+#############################################################
+#              ADMIN_USERPERMISSION_CHANGE                  #
+############################################################# 
+
+
+def user_permission_change(token,u_id,permission_id):
+
+    #what does it mean for permision id to not refer to permission id?
     
     
+    if vadidate_uid(payload['u_id'] == False)
+        raise InputError (description='Invalid u_id')
+
+    owner = get_user_token(payload['token'])
     
-      
+    chan_user = get_user_uid(payload['u_id'])
+    
+    if owner['slacker_owner'] == True:
+        chan_user['permission_id'] = payload['permission_id']
+        return {}
+        
+    else:
+        raise AccessError(description='The authorised user is not an owner')
+        
+        
+        
+    
+            
+
+
+
+

@@ -1,3 +1,8 @@
+import pytest
+from error import InputError
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
+from auth import auth_register
+
 '''
 #############################################################
 #                   USER_PROFILE_SETEMAIL                   #

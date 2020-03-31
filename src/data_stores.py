@@ -106,8 +106,3 @@ def reset_messages_store():
     global messages_store
     messages_store = []
     return
-
-def reset_message_count():
-    global MSG_COUNT
-    MSG_COUNT = 1
-    return

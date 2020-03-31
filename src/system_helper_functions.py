@@ -71,6 +71,25 @@ def reg_user2():
     response = json.load(req)
     return response
 
+def reg_user3():
+    '''
+    Registers a user and returns the reponse from the request
+    '''
+    data = json.dumps({
+        'email' : 'Thomas@gmail.com',
+        'password': 'Shelby123',
+        'name_first': 'Thomas',
+        'name_last': 'Shelby'
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/auth/register",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+
+    response = json.load(req)
+    return response
+
 def create_ch1(user1):
     '''
     Function returns the payload of channels/create request
@@ -79,6 +98,23 @@ def create_ch1(user1):
         'token':user1['token'],
         'name': 'new_channel',
         'is_public': True
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/channels/create",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+    payload = json.load(req)
+    return payload
+
+def create_pvt_ch(user1):
+    '''
+    Function returns the payload of channels/create request
+    '''
+    data = json.dumps({
+        'token':user1['token'],
+        'name': 'new_channel',
+        'is_public': False
     }).encode('utf-8')
     req = urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/channels/create",

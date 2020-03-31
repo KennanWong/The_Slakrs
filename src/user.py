@@ -1,23 +1,20 @@
 # This file contains the implementation of all 'user_' functions for the
 # server
 
-from error import InputError, AccessError
+from error import InputError
 from helper_functions import get_user_token, validate_uid, test_email
 from helper_functions import check_used_email, check_used_handle
-from helper_functions import get_user_uid
 
 #############################################################
 #                      USER_PROFILE                         #      
 #############################################################
 
 def profile(payload):
-
     '''
     For a valid user, returns information about their user id, 
     email, first name, last name, and handle
     '''
     
-    #for invalid u_id given
     if validate_uid(payload['u_id']) is False:
         raise InputError(description='Invalid u_id')
 
@@ -59,18 +56,18 @@ def profile_setname(payload):
 #                   USER_PROFILE_SETEMAIL                   #
 #############################################################
 
-def profile_setemail(payload):  
+def profile_setemail(payload):
     '''
     Update the authorised user's email address
     '''
     
     #test email is valid and not been used before
     new_email = test_email(payload['email'])
-    assert (check_used_email(new_email) == 1)
+    assert check_used_email(new_email) == 1
     
     user = get_user_token(payload['token'])
     user['email'] = new_email
-    return ({})
+    return {}
     
 #############################################################
 #                   USER_PROFILE_SETHANDLE                  #
@@ -85,9 +82,9 @@ def profile_sethandle(payload):
     if len(payload['handle_str']) < 3 or len(payload['handle_str']) > 20:
         raise InputError(description='handle_str should be between 3-20 characters')
     
-    assert (check_used_handle(payload['handle_str']) == 1)
+    assert check_used_handle(payload['handle_str']) == 1
     
     user = get_user_token(payload['token'])
     user['handle_str'] = payload['handle_str']
-    return ({})
+    return {}
     

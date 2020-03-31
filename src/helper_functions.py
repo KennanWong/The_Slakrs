@@ -129,6 +129,10 @@ def user_details(u_id):
             }
     return False
 
+# Function to get userID from token
+def user_id_from_token(token):
+    user = get_user_token(token)
+    return user['u_id']
 
 #to get current time and add seconds, courtesy of stackoverflow
 def addSecs(tm, secs):

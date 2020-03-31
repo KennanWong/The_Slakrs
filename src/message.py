@@ -5,7 +5,6 @@ This file contains all 'message_' functions
 '''
 import datetime
 import threading
-from data_stores import get_messages_store, get_channel_data_store
 from data_stores import get_messages_store
 from error import InputError, AccessError
 from helper_functions import create_message, get_channel, test_in_channel
@@ -14,6 +13,7 @@ from helper_functions import get_user_token, find_message, check_owner, append_l
 
 REACT_IDS = [1]
 
+#pylint compliant
 #############################################################
 #                   MESSAGE_SEND                            #
 #############################################################
@@ -49,7 +49,7 @@ def send(payload):
 
     # debugging purposes
     for msg in channel['messages']:
-        if msg['is_pinned'] == True:
+        if msg['is_pinned'] is True:
             print('*** '+ msg['message'] + ' ***')
         else:
             print(msg['message'])
@@ -105,14 +105,10 @@ def sendlater(payload):
         print(msg['message'])
 
     return new_message['message_id']
-
-
-        
-
 #############################################################
 #                   MESSAGE_REMOVE                          #
 #############################################################
-def remove(payload):
+def remove(payload):  # pylint: disable=R1711
     '''
     Function to remove a message from a channel
     '''
@@ -133,10 +129,10 @@ def remove(payload):
     return
 
 #############################################################
-#                   MESSAGE_PIN                             #      
+#                   MESSAGE_PIN                             #
 #############################################################
-def pin(payload):
-
+def pin(payload): # pylint: disable=R1711
+    'testing functionability for message pin'
     user = get_user_token(payload['token'])
     message = find_message(payload['message_id'])
     channel = get_channel(message['channel_id'])
@@ -145,10 +141,10 @@ def pin(payload):
         raise InputError(description='Message is already pinned')
 
     else:
-        if test_in_channel(user['u_id'],channel) is True:
+        if test_in_channel(user['u_id'], channel) is True:
             if check_owner(user, channel) is True:
                 message['is_pinned'] = True
-                print (message)
+                print(message)
             else:
                 raise InputError(description='You do not have permission')
         else:
@@ -156,34 +152,33 @@ def pin(payload):
     return
 
 #############################################################
-#                   MESSAGE_UNPIN                           #      
+#                   MESSAGE_UNPIN                           #
 #############################################################
-def unpin(payload):
+def unpin(payload): # pylint: disable=R1711
+    'testing functionability for message unpin'
 
-    channel_store = get_channel_data_store()
-    messages = get_messages_store()
 
     user = get_user_token(payload['token'])
     message = find_message(payload['message_id'])
 
     channel = get_channel(message['channel_id'])
-    
+
     if message['is_pinned'] is False:
         raise InputError(description='Message is already unpinned')
 
     else:
-        if test_in_channel(user['u_id'],channel) is True:
+        if test_in_channel(user['u_id'], channel) is True:
             if check_owner(user, channel) is True:
                 message['is_pinned'] = False
             else:
                 raise InputError(description='You do not have permission')
         else:
             raise AccessError(description='You do not have permission')
-    
+
     return
 
 
-#############################################################   
+#############################################################
 #                   MESSAGE_EDIT                            #
 #############################################################
 def edit(payload):
@@ -199,8 +194,8 @@ def edit(payload):
     if message['u_id'] != user['u_id']:
         if not check_owner(user, channel):
             raise AccessError(description='You do not have permission')
-    
-    if len(payload['message']) == 0:
+
+    if len(payload['message']) == 0:  # pylint: disable=C1801, R1705
         channel['messages'].remove(message)
         message_store.remove(message)
         return
@@ -216,7 +211,7 @@ def react(payload):
     '''
     Function to add a react to a given message
     '''
-    global REACT_IDS
+    global REACT_IDS    # pylint: disable=W0603
     user = get_user_token(payload['token'])
 
     message = find_message(int(payload['message_id']))
@@ -261,7 +256,7 @@ def unreact(payload):
     '''
     Function to remove a react from a message
     '''
-    global REACT_IDS
+    global REACT_IDS  # pylint: disable=W0603
     user = get_user_token(payload['token'])
 
     message = find_message(payload['message_id'])
@@ -284,7 +279,7 @@ def unreact(payload):
                 raise InputError(description='Attempting to uncreact '+
                                  'a message you have not reacted to')
             i['u_ids'].remove(user['u_id'])
-            if len(i['u_ids']) == 0:
+            if len(i['u_ids']) == 0:  # pylint: disable=C1801
                 # no one else has reacted, so remove react
                 message['reacts'].remove(i)
                 print(message['reacts'])

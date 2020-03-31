@@ -51,7 +51,23 @@ def test_profile_working():
     assert response['name_last'] == 'Wong'
 
 def test_profile_invalid_u_id():
-    return
+    reset_workspace()
+
+    user1 = reg_user1()
+
+    data = json.dumps({
+        'token': user1['token'],
+        'u_id': 3
+    }).encode('utf-8')
+    req = urllib.request.Request(
+        f"{BASE_URL}/user/profile",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    )
+    req.get_method = lambda: 'GET'
+
+    with pytest.raises(HTTPError):
+        json.load(urllib.request.urlopen(req))
 
 #############################################################
 #                   USER_PROFILE_SETNAME                    #

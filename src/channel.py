@@ -5,8 +5,10 @@ from helper_functions import user_details, is_valid_user_id, get_user_token
 from helper_functions import check_owner
 from error import InputError, AccessError
 
-#pylint: disable=W0612
-#pylint: disable=C1801
+# pylint: disable=W0612
+# pylint: disable=C1801
+# pylint: disable = C0301
+# pylint: disable = R0912
 
 #############################################################
 #                  CHANNEL_INVITE                           #

@@ -1,69 +1,63 @@
 import pytest
+import channel
+from other import workspace_reset
+from test_helper_functions import reg_user1, reg_user2, register_and_create
 from error import InputError, AccessError
-from auth import auth_register
-from channel import channel_details
-from channels import channels_create
-
-'''
-#############################################################
-#                      CHANNEL_DETAILS                      #     
-#############################################################
-
-InputError when any of:
-** Channel ID is not a valid channel
-
-AccessError when:
-** Authorised user is not a member of channel with channel_id
-'''
 
 def test_channel_details_successful():
-    # CASE 1: Matching details to expected output
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
-    token1 = user1['token']
+    workspace_reset()
+    ret = register_and_create()
+    user1 = ret['user']
     u_id1 = user1['u_id']
-
-    # Create channel
-    channelInfo = channels_create(token1, 'The Slakrs', True)
+    channelInfo = ret['channel']
     channel_id = channelInfo['channel_id']
-    
-    results = [
-        {
+
+    token1 = user1['token']
+
+    results = [{
             "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
-                               "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "Hayden", 
-                             "name_last": "Smith"}]
+            "all_members": [{
+                "u_id": u_id1,
+                "name_first": 'Kennan',
+                "name_last": 'Wong'
+            }],
+            "owner_members": [{
+                "u_id": u_id1,
+                "name_first": 'Kennan',
+                "name_last": 'Wong'
+            }]
         }
     ]
 
-    assert channel_details(token1, channel_id) == results
+    assert channel.details(token1, channel_id) == results
 
 def test_channel_details_invalid_channel():
-    # CASE 2: Invalid channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
-    token1 = user1['token']
-
-    channelInfo = channels_create(token1, 'The Slakrs', True)
+    workspace_reset()
+    ret = register_and_create()
+    user = ret['user']
+    channelInfo = ret['channel']
     channel_id = channelInfo['channel_id']
-    invalidChannelID = 1
+	
+    token = user['token']
 
-    # InputError when we try to get details of an invalid channel
+	# InputError when we try to get details of an invalid channel
+    # Invalid channel_id = 100
     with pytest.raises(InputError) as e:
-        channel_details(token1, invalidChannelID)
+        channel.details(token, 100)
 
 def test_channel_details_unauthorised():
-    # CASE 3: Authorised user is not a member of channel with channel_id
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
-    token1 = user1['token']
+	workspace_reset()
+	ret = register_and_create()
+	user = ret['user']
+	channelInfo = ret['channel']
+	channel_id = channelInfo['channel_id']
+	
+	user2 = reg_user2()
+	
+	token = user2['token']
 
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
-    token2 = user2['token']
-
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
-
-    # AccessError when we try to get details of channel where the user isn't a 
+	# AccessError when we try to get details of channel where the user isn't a 
     # member
     # user2 isn't a member
-    with pytest.raises(AccessError) as e:
-        channel_details(token2, channel_id)
+	with pytest.raises(AccessError) as e:
+		channel.details(token, channel_id)

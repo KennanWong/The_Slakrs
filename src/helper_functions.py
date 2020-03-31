@@ -93,8 +93,9 @@ def find_message(message_id):
             return i
 
     raise InputError(description='Message not found')
+            
 
-
+# function to see if a user is an owner of a channel
 def check_owner(user, channel):
     '''
     Function to see if a user is an owner of a channel
@@ -102,6 +103,42 @@ def check_owner(user, channel):
     for i in channel['owners']:
         if i['u_id'] == user['u_id']:
             return True
+    
+    return False
+
+
+# Function to check valid userID
+def is_valid_user_id(u_id):
+    auth_store = get_auth_data_store()
+    for user in auth_store:
+        if user['u_id'] == u_id:
+            return 1
+    else:
+        raise InputError(description='Invalid u_id')
+
+# Function to get userID from token
+def user_id_from_token(token):
+    user = get_user_token(token)
+    return user['u_id']
+
+# Fucntion to get details of a user
+def user_details(u_id):
+    auth_store = get_auth_data_store()
+    for user in auth_store:
+        if u_id == user['u_id']:
+            return {
+                'u_id': u_id,
+                'name_first': user['name_first'],
+                'name_last': user['name_last']
+            }
+    return False
+
+
+#to get current time and add seconds, courtesy of stackoverflow
+def addSecs(tm, secs):
+    fulldate = datetime.datetime(100, 1, 1, tm.hour, tm.minute, tm.second)
+    fulldate - fulldate + datetime.timedelta(seconds=secs)
+    return fulldate.time()
     return False
 
 

@@ -128,7 +128,7 @@ def user_details(u_id):
                 'name_last': user['name_last']
             }
     return False
-'''
+
 # function to format a list of dictionaries into a members data type
 
 def format_to_members(members):
@@ -151,8 +151,6 @@ user id from token
             return user['u_id']
     else:
         raise InputError(description='Could not find u_id')
-'''
-
 
 def get_message_count():
     '''

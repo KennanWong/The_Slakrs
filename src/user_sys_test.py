@@ -25,7 +25,7 @@ from system_helper_functions import reg_user1, reg_user2, send_msg1
 #############################################################
 '''
 
-BASE_URL = 'http://127.0.0.1:8080'
+BASE_URL = 'http://127.0.0.1:3542'
 
 def test_profile_working():
     # create a user

@@ -132,9 +132,9 @@ def user_details(u_id):
 # function to format a list of dictionaries into a members data type
 
 def format_to_members(members):
-    
+    '''
     Function to format a list of dictionaries into a members data type
-    
+    '''
     members = []
     for i in members:
         add = {

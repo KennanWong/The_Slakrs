@@ -32,7 +32,7 @@ def test_unreact1():
         'message_id': msg1['message_id'],
         'react_id': 1
     }).encode('utf-8')
-
+    
     req = urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/message/unreact",
         data=data,
@@ -42,7 +42,7 @@ def test_unreact1():
     payload = json.load(req)
 
     assert payload == {}
-
+    
 '''
 def test_react2():
     reset_workspace()

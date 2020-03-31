@@ -16,7 +16,7 @@ from helper_functions import addSecs
 #                   STANDUP_START                           #
 #############################################################
 
-BASE_URL = 'http://127.0.0.1:5005'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def test_start():
     

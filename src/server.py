@@ -233,7 +233,7 @@ def message_edit():
 #############################################################
 #                    MESSAGE_REACT                          #      
 #############################################################
-@APP.route("/message/react", methods=['PUT'])
+@APP.route("/message/react", methods=['POST'])
 def message_react():
     payload = request.get_json()
     message.react(payload)

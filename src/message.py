@@ -220,7 +220,7 @@ def react(payload):
 
     if int(payload['react_id']) not in REACT_IDS:
         raise InputError(description='Unable to react with react_id '+
-                         payload['react_id'])
+                         str(payload['react_id']))
 
     if not test_in_channel(user['u_id'], channel):
         raise InputError(description='Unable to react as you are '+
@@ -239,8 +239,9 @@ def react(payload):
     new_react = {
         'react_id' : payload['react_id'],
         'u_ids' : [],
-        'is_user_reacted' : False
+         'is_user_reacted' : False
     }
+
     new_react['u_ids'].append(user['u_id'])
     message['reacts'].append(new_react)
 
@@ -265,7 +266,7 @@ def unreact(payload):
 
     if int(payload['react_id']) not in REACT_IDS:
         raise InputError(description='Unable to react with react_id '+
-                         payload['react_id'])
+                         str(payload['react_id']))
 
     if not test_in_channel(user['u_id'], channel):
         raise InputError(description='Unable to react as you are '+

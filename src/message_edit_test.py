@@ -8,19 +8,17 @@ import message
 # import channel
 import channels
 from other import workspace_reset
-from helper_functions import find_message
 from test_helper_functions import reg_user2, register_and_create, send_msg1
-from data_stores import get_auth_data_store, get_channel_data_store
-from data_stores import get_messages_store, reset_auth_store
-from error import InputError, AccessError
+from data_stores import get_messages_store
+from error import AccessError
 
 
 
-'''
+
 #############################################################
-#                   MESSAGE_EDIT                            #      
+#                   MESSAGE_EDIT                            #
 #############################################################
-'''
+
 
 def test_edit1():
     '''
@@ -123,7 +121,7 @@ def test_unauth_edit1():
             'message_id': msg1['message_id'],
             'message': 'edit'
         })
-'''   
+'''
 
 def test_unauth_edit2():
     '''
@@ -138,7 +136,7 @@ def test_unauth_edit2():
     user2 = reg_user2()
 
     msg1 = send_msg1(user1, channel1)
-    
+
     with pytest.raises(AccessError):
         message.edit({
             'token': user2['token'],

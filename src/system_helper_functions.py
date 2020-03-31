@@ -5,7 +5,7 @@ A series of helper functions to automate server testing
 import urllib
 import json
 
-BASE_URL = 'http://127.0.0.1:5005'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def reset_workspace():
     '''
@@ -119,7 +119,7 @@ def invite_to_channel(inviter, invitee, channel):
         data = data, 
         headers = {'Content-Type':'application/json'}
     )
- '''
+'''
 
 def react_to_msg(user, message, react_id):
     '''

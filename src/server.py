@@ -6,17 +6,20 @@ Contains all routes
 import sys
 import re
 from json import dumps
+import datetime
 from flask import Flask, request
 from flask_cors import CORS
 
+from json import dumps
+from flask import Flask, request, jsonify
 import auth
 import message
 import channel
 import channels
 import standup
-import datetime
-from json import dumps
-from flask import Flask, request, jsonify
+
+
+
 from flask_cors import CORS
 import other
 from error import InputError
@@ -324,7 +327,7 @@ def channel_join_server():
 
     return dumps(join)
         
-############################################################
+#############################################################
 #                   CHANNEL_LEAVE                           #      
 #############################################################
 
@@ -341,6 +344,22 @@ def channel_leave_server():
     
     return dumps(leave)
     
+#############################################################
+#                   CHANNEL_INVITE                          #      
+#############################################################
+@APP.route('/channel/invite', methods=['POST'])
+def channel_invite_server():
+    payload = request.get_json()
 
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+
+    # Invite user to channel
+    invite = channel.invite(token, channel_id, user_id)
+    
+    return dumps(invite)
+    
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

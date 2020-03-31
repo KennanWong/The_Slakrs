@@ -102,7 +102,7 @@ def test_channel_messages_unauthorised():
 def test_others():
     'Other errors'
     workspace_reset()
-    
+
     ret = register_and_create()
     user1 = ret['user']
     token1 = user1['token']

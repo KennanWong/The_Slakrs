@@ -47,6 +47,7 @@ def test_channel_details_invalid_channel():
 	# InputError when we try to get details of an invalid channel
     # Invalid channel_id = 100
     with pytest.raises(InputError) as e:
+<<<<<<< HEAD
         channel.details(token1, 100)
 
 def test_channel_details_unauthorised():
@@ -65,3 +66,23 @@ def test_channel_details_unauthorised():
     # user2 isn't a member
     with pytest.raises(AccessError) as e:
         channel.details(token2, channel_id)
+=======
+        channel.details(token, 100)
+
+def test_channel_details_unauthorised():
+	workspace_reset()
+	ret = register_and_create()
+	user = ret['user']
+	channelInfo = ret['channel']
+	channel_id = channelInfo['channel_id']
+	
+	user2 = reg_user2()
+	
+	token = user2['token']
+
+	# AccessError when we try to get details of channel where the user isn't a 
+    # member
+    # user2 isn't a member
+	with pytest.raises(AccessError) as e:
+		channel.details(token, channel_id)
+>>>>>>> 01f270677e7014dd304eab5b20ce0041cbd173c9

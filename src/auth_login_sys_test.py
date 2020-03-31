@@ -15,7 +15,7 @@ from system_helper_functions import reg_user1, reset_workspace, logout_user1
 #                     AUTH_LOGIN                            #
 #############################################################
 
-BASE_URL = 'http://127.0.0.1:8080'
+BASE_URL = 'http://127.0.0.1:5005'
 
 def test_login():
     '''

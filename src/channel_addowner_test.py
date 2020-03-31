@@ -47,6 +47,7 @@ def test_already_owner():
     ret = register_and_create()
     user1 = ret['user']
     token1 = user1['token']
+<<<<<<< HEAD
     channel_info = ret['channel']
     user2 = reg_user2()
     token2 = user2['token']
@@ -58,11 +59,22 @@ def test_already_owner():
 
     channel.addowner(token1, channel_id, u_id2)
 
+=======
+    channelInfo = ret['channel']
+    channel_id = channelInfo['channel_id']
+    
+    user2 = reg_user2()
+    u_id2 = user1['u_id']
+
+    channel.addowner(token1, channel_id, u_id2)
+    
+>>>>>>> 01f270677e7014dd304eab5b20ce0041cbd173c9
     # InputError because user2 is already an owner
     with pytest.raises(InputError):
         channel.addowner(token1, channel_id, u_id2)
 
 def test_not_owner():
+<<<<<<< HEAD
     'Non-owner case'
     workspace_reset()
     ret = register_and_create()
@@ -102,3 +114,18 @@ def test_invalid_channel():
     # Invalid channel_id = 100
     with pytest.raises(InputError):
         channel.addowner(token2, 100, u_id2)
+=======
+    workspace_reset()
+    ret = register_and_create()
+    user = ret['user']
+    u_id1 = user['u_id']
+    channelInfo = ret['channel']
+    channel_id = channelInfo['channel_id']
+    
+    user2 = reg_user2()
+    token2 = user2['token']
+
+    # AccessError when non-owner tries to make user1 as owner
+    with pytest.raises(AccessError):
+        channel.addowner(token2, channel_id, u_id1)
+>>>>>>> 01f270677e7014dd304eab5b20ce0041cbd173c9

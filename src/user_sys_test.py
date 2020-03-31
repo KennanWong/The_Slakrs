@@ -36,8 +36,8 @@ def test_profile_working():
 
     data = json.dumps({
         'token': user1['token'],
-        'email': 'Kennan@gmail.com'
-    })
+        'u_id': user1['u_id']
+    }).encode('utf-8')
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile",
         data=data,
@@ -50,13 +50,12 @@ def test_profile_working():
     assert response['name_first'] == 'Kennan'
     assert response['name_last'] == 'Wong'
 
-    
+def test_profile_invalid_u_id():
+    return
 
-'''
 #############################################################
 #                   USER_PROFILE_SETNAME                    #
 #############################################################
-'''
 
 def test_user_profile_setname_working():
     reset_workspace()   

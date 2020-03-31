@@ -11,8 +11,7 @@ from urllib.error import HTTPError
 
 import server
 import user
-from system_helper_functions import reset_workspace
-from other import workspace_reset
+from system_helper_functions import reset_workspace, reg_user1
 from data_stores import get_auth_data_store, reset_auth_store
 from helper_functions import get_user_token
 from error import InputError
@@ -23,7 +22,32 @@ from error import InputError
 #                   USER_PROFILE                            #
 #############################################################
 '''
-    
+
+BASE_URL = 'http://127.0.0.1:8080'
+
+def test_profile_working():
+    # create a user
+
+    reset_workspace()
+
+    user1 = reg_user1()
+
+    data = json.dumps({
+        'token': user1['token'],
+        'email': 'Kennan@gmail.com'
+    })
+    req = urllib.request.Request(
+        f"{BASE_URL}/user/profile",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    )
+    req.get_method = lambda: 'GET'
+    response = json.load(urllib.request.urlopen(req))
+
+    assert response['email'] == 'Kennan@gmail.com'
+    assert response['name_first'] == 'Kennan'
+    assert response['name_last'] == 'Wong'
+
     
 
 '''

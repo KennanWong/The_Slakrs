@@ -1,20 +1,20 @@
+'this file is the integration tests for standup_active'
+from datetime import datetime, timedelta
 import pytest
 
 import standup
-#import channel
-import channels
-from other import workspace_reset
-from test_helper_functions import reg_user1, register_and_create, send_msg1, reg_user2
-from error import InputError, AccessError
-from data_stores import get_channel_data_store, get_messages_store
-import time
-from datetime import datetime, timedelta
-from helper_functions import addSecs
 
+from other import workspace_reset
+from test_helper_functions import register_and_create
+from error import InputError
+
+
+#pylint compliant
 #############################################################
 #                   STANDUP_ACTIVE                          #
 #############################################################
 def test_active():
+    'testing functionability for standup active'
 
     workspace_reset()
 
@@ -44,6 +44,8 @@ def test_active():
     assert result2['is_active'] is True
 
 def test_invalid_id():
+    'testing error case'
+
     workspace_reset()
 
     ret = register_and_create()
@@ -56,7 +58,7 @@ def test_invalid_id():
         'length': 30
     }
 
-    result = standup.start(payload)
+    result = standup.start(payload)                     # pylint: disable=W0612
 
     payload2 = {
         'token': user['token'],
@@ -64,4 +66,4 @@ def test_invalid_id():
     }
 
     with pytest.raises(InputError):
-        standup.start(payload2)
+        standup.start(payload2)                         # pylint: disable=C0304

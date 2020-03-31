@@ -1,22 +1,25 @@
+'this file is the integration tests for channels create'
+
 import pytest
 
 import channels
 from other import workspace_reset
-from test_helper_functions import reg_user1, register_and_create
+from test_helper_functions import reg_user1
 from error import InputError
 from data_stores import get_channel_data_store
 
+#pylint compliant
 
 #############################################################
 #                   CHANNELS_CREATE                         #
 #############################################################
 def test_create():
-    
-    #testing functionability of channels create
+
+    'testing functionability of channels create'
 
     workspace_reset()
     user1 = reg_user1()
-    
+
     payload = {
         'token': user1['token'],
         'name': 'Slackrs',
@@ -32,6 +35,7 @@ def test_create():
 
 
 def test_invalid_name():
+    'error case for channels create'
     workspace_reset()
     user1 = reg_user1()
 

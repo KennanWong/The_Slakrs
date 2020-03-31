@@ -1,20 +1,20 @@
+'this file is the integration tests for standup_send'
+
 import pytest
 
 import standup
-#import channel
-import channels
-from other import workspace_reset
-from test_helper_functions import reg_user1, register_and_create, send_msg1, reg_user2
-from error import InputError, AccessError
-from data_stores import get_channel_data_store, get_messages_store
-import time
-from datetime import datetime, timedelta
-from helper_functions import addSecs
 
+from other import workspace_reset
+from test_helper_functions import register_and_create, reg_user2
+from error import InputError, AccessError
+
+#pylint compliant
 #############################################################
 #                   STANDUP_SEND                            #
 #############################################################
 def test_send():
+    'testing functionability for standup send'
+
     workspace_reset()
 
     ret = register_and_create()
@@ -27,14 +27,14 @@ def test_send():
         'length': 30
     }
 
-    result = standup.start(payload)
+    result = standup.start(payload)      # pylint: disable=W0612
 
     payload2 = {
         'token': user['token'],
         'channel_id': channel['channel_id']
     }
 
-    result2 = standup.active(payload2)
+    result2 = standup.active(payload2)      # pylint: disable=W0612
 
     standup.send({
         'token': user['token'],
@@ -43,13 +43,14 @@ def test_send():
     })
 
 def test_invalid_id():
+    'testing error case'
 
     workspace_reset()
 
     ret = register_and_create()
     user = ret['user']
     channel = ret['channel']
-    
+
 
     payload = {
         'token': user['token'],
@@ -57,30 +58,31 @@ def test_invalid_id():
         'length': 30
     }
 
-    result = standup.start(payload)
+    result = standup.start(payload)         # pylint: disable=W0612
 
     payload2 = {
         'token': user['token'],
         'channel_id': channel['channel_id']
     }
 
-    result2 = standup.active(payload2)
+    result2 = standup.active(payload2)          # pylint: disable=W0612
 
     with pytest.raises(InputError):
-        standup.start ({
+        standup.start({
             'token': user['token'],
             'channel_id': 100,
             'message': 'test'
         })
 
 def test_message_too_long():
+    'testing error case'
 
     workspace_reset()
 
     ret = register_and_create()
     user = ret['user']
     channel = ret['channel']
-    
+
 
     payload = {
         'token': user['token'],
@@ -88,26 +90,26 @@ def test_message_too_long():
         'length': 30
     }
 
-    result = standup.start(payload)
+    result = standup.start(payload)         # pylint: disable=W0612
 
     payload2 = {
         'token': user['token'],
         'channel_id': channel['channel_id']
     }
 
-    result2 = standup.active(payload2)
+    result2 = standup.active(payload2)          # pylint: disable=W0612
 
-    with pytest.raises(InputError): 
+    with pytest.raises(InputError):
         standup.send({
             'token': user['token'],
             'channel_id': channel['channel_id'],
             'message':  'To manage the transition from trimesters to hexamesters in 2020,'+
                         'UNSW has established a new focus on building an in-house digital'+
                         ' collaboration and communication tool for groups and teams to support'+
-                        ' the high intensity learning environment. Rather than re-invent the wheel,'+
-                        ' UNSW has decided that it finds the functionality of Slack to be nearly'+
+                        ' the high intensity learning environment. Rather than re-invent the '+
+                        'wheel, UNSW decided that it finds the functionality of Slackto be nearly'+
                         ' exactly what it needs. For this reason, UNSW has contracted out Lit Pty '+
-                        'Ltd (a small software business run by Hayden) to build the new product. In'+
+                        'Ltd (a small software business run by Hayden) to build the new product.'+
                         ' UNSWs attempt to connect with the younger and more "hip" generation that'+
                         ' fell in love with flickr, Tumblr, etc, they would like to call the new '+
                         'UNSW-based product slackr. Lit Pty Ltd has sub-contracted two software '+
@@ -120,6 +122,8 @@ def test_message_too_long():
         })
 
 def test_no_active():
+    'testing error case'
+
     workspace_reset()
 
     ret = register_and_create()
@@ -134,6 +138,8 @@ def test_no_active():
         })
 
 def test_unauthor_member():
+    'testing error case'
+
     workspace_reset()
 
     ret = register_and_create()
@@ -148,18 +154,18 @@ def test_unauthor_member():
         'length': 30
     }
 
-    result = standup.start(payload)
+    result = standup.start(payload)             # pylint: disable=W0612
 
     payload2 = {
         'token': user['token'],
         'channel_id': channel['channel_id']
     }
 
-    result2 = standup.active(payload2)
+    result2 = standup.active(payload2)              # pylint: disable=W0612
 
     with pytest.raises(AccessError):
         standup.send({
             'token': user2['token'],
             'channel_id': channel['channel_id'],
             'message': 'test'
-        })
+        })                                           # pylint: disable=C0304

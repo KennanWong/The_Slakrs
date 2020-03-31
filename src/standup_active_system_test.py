@@ -1,17 +1,15 @@
+'this file is the http testing for standup active'
+
 import urllib
 import json
-import flask
-from urllib.error import HTTPError
+from urllib.error import HTTPError  # pylint: disable=C0412
+import flask                     # pylint: disable=W0611
+
 
 import pytest
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2, send_msg1
 
-import time
-from datetime import datetime, timedelta
-from helper_functions import addSecs
-
-
+#pylint compliant
 #############################################################
 #                   STANDUP_ACTIVE                          #
 #############################################################
@@ -19,7 +17,7 @@ from helper_functions import addSecs
 BASE_URL = 'http://127.0.0.1:5005'
 
 def test_active():
-     
+    'successful case'
     reset_workspace()
 
     user1 = reg_user1()
@@ -31,12 +29,12 @@ def test_active():
         'length': 30
     }).encode('utf-8')
 
-    req1 = urllib.request.urlopen(urllib.request.Request(
+    req = urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/standup/start",
         data=data1,
         headers={'Content-Type':'application/json'}
     ))
-    
+
     data = json.dumps({
         'token': user1['token'],
         'channel_id': channel1['channel_id'],
@@ -54,12 +52,8 @@ def test_active():
     assert response['is_active'] is True
 
 
-    #length = 30
-    #time_finish = (datetime.now() + timedelta(seconds=length)).strftime("%H:%M:%S")
-   # assert response['time_finish'] == time_finish
-    
-
 def test_invalid_id():
+    'error test'
     reset_workspace()
 
     user1 = reg_user1()
@@ -82,10 +76,13 @@ def test_invalid_id():
         'channel_id': 100,
     }).encode('utf-8')
 
-    with pytest.raises(HTTPError):
-        urllib.request.urlopen(urllib.request.Request(
-            f"{BASE_URL}/standup/active",
-            data=data1,
-            headers={'Content-Type':'application/json'}
-        ))
+    req = urllib.request.Request(
+            f"{BASE_URL}/standup/active",                   # pylint: disable=C0330
+            data=data1,                                     # pylint: disable=C0330
+            headers={'Content-Type':'application/json'}     # pylint: disable=C0330
+    )
 
+    req.get_method = lambda: 'GET'
+
+    with pytest.raises(HTTPError):
+        json.load(urllib.request.urlopen(req))

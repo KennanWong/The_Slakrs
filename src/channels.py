@@ -1,32 +1,33 @@
-# This file contains the implementation of all 'channel_' functions for the
-# server
+'This file contains the implementation of all channels functions for the server'
+
 
 from error import InputError
 from helper_functions import get_user_token, test_in_channel
 from data_stores import get_channel_data_store
 
-
+#pylint compliant
 #############################################################
-#                   CHANNELS_CREATE                         #      
+#                   CHANNELS_CREATE                         #
 #############################################################
 
 def create(payload):
+    'implementations of channels create function'
     channel_store = get_channel_data_store()
     channel_owner_info = {}
     new_channel_info = {}
-   
+
     user = get_user_token(payload['token'])
-    
+
     new_channel_info = {}
     channel_owner_info = {
         'u_id': user['u_id'],
         'name_first': user['name_first'],
         'name_last': user['name_last'],
     }
-        
+
     if len(payload['name']) < 21:
         name = payload['name']
-        if payload['is_public']: 
+        if payload['is_public']:
             new_channel_info = {
                 'channel_id': int(len(channel_store)+1),
                 'name':  name,
@@ -34,7 +35,7 @@ def create(payload):
                 'members':[],
                 'owners':[],
                 'messages': [],
-                'standup' : {   
+                'standup' : {
                     'is_active': False,
                     'messages': [],
                     'time_finish': [],
@@ -48,29 +49,29 @@ def create(payload):
                 'members':[],
                 'owners': [],
                 'messages': [],
-                'owners':[],
- 	            'standup' : {   
-                    'is_active':False,
-                    'messages': [],
-                    'time_finish': [],
-                }
+ 	            'standup' : {                       # pylint: disable=C0330
+                    'is_active': False,             # pylint: disable=C0330
+                    'messages': [],                 # pylint: disable=C0330
+                    'time_finish': [],              # pylint: disable=C0330
+                }                                   # pylint: disable=C0330
             }
-    else: 
-        raise InputError (description='Name is too long')
-    
+    else:
+        raise InputError(description='Name is too long')
+
     new_channel_info['owners'].append(channel_owner_info)
-    
+
     channel_store.append(new_channel_info)
 
     return new_channel_info
 
 #############################################################
-#                   CHANNELS_LIST                           #      
+#                   CHANNELS_LIST                           #
 #############################################################
 
-def List(token):
+def List(token): # pylint: disable=C0103
+    'implementations of channels all functions'
     channel_store = get_channel_data_store()
-   
+
     channels = []
     channel_info = {}
 
@@ -86,25 +87,22 @@ def List(token):
             }
         if channel_info != {}:
             channels.append(channel_info)
-            
+
     return channels
 
 #############################################################
-#                   CHANNELS_LISTALL                        #      
+#                   CHANNELS_LISTALL                        #
 #############################################################
 
 
-def Listall(token):
+def Listall(token): # pylint: disable=W0613, C0103
+    'implementations of channels listall function'
     channel_store = get_channel_data_store()
 
     channels_return = []
     channel_info = {}
 
-    user = get_user_token(token)
-
-    u_id = user['u_id']
-
-    if len(channel_store) == 0:
+    if len(channel_store) == 0: # pylint: disable=C1801
         # the channel store is empty
         return channels_return
 

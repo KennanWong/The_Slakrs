@@ -239,9 +239,8 @@ def react(payload):
     new_react = {
         'react_id' : payload['react_id'],
         'u_ids' : [],
-         'is_user_reacted' : False
+        'is_user_reacted' : False
     }
-
     new_react['u_ids'].append(user['u_id'])
     message['reacts'].append(new_react)
 

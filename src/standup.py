@@ -1,21 +1,22 @@
+'''
+
+This file contains all 'standup' functions
+
+'''
+from datetime import datetime, timedelta
+import threading
 from data_stores import get_messages_store
 from error import InputError, AccessError
 from helper_functions import create_message, get_channel
 from helper_functions import test_in_channel, get_user_token
-from helper_functions import find_message, check_owner
-from data_stores import get_channel_data_store
-from datetime import datetime, timedelta
-import threading
-import time
-from helper_functions import addSecs
 
+
+#pylint compliant
 #############################################################
-#                   STANDUP_START                           #      
+#                   STANDUP_START                           #
 #############################################################
 def start(payload):
-
-    channel_store = get_channel_data_store()
-    messages = get_messages_store()
+    'function to start a standup'
 
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
@@ -35,10 +36,10 @@ def start(payload):
 
                 timer = threading.Timer(length, end_standup, args=[payload])
                 timer.start()
-            
+
             else:
                 raise InputError(description='Negative length is invalid')
-        
+
         else:
             raise AccessError(description='User not in channel')
 
@@ -49,9 +50,8 @@ def start(payload):
     return time_finish
 
 
-#run this function where it collates all messages into one
-def end_standup(payload):
-
+def end_standup(payload):   # pylint: disable=R1711
+    'run this function where it collates all messages into one'
     messages = get_messages_store()
 
     standup_message = ''
@@ -59,7 +59,7 @@ def end_standup(payload):
     channel = get_channel(payload['channel_id'])
     standup = channel['standup']
     user = get_user_token(payload['token'])
-    
+
     # formating all the messages into one message package
     for msg in standup['messages']:
         standup_message += msg['Name_first']
@@ -83,15 +83,14 @@ def end_standup(payload):
     print('finished standup')
     return
 
-        
+
 #############################################################
-#                   STANDUP_ACTIVE                          #      
+#                   STANDUP_ACTIVE                          #
 #############################################################
 def active(payload):
-    channel_store = get_channel_data_store()
-    messages = get_messages_store()
+    'check if a standup is active and return the neccessary details if it is'
 
-    user = get_user_token(payload['token'])
+    user = get_user_token(payload['token']) # pylint: disable=W0612
     channel = get_channel(payload['channel_id'])
 
     standup = channel['standup']
@@ -113,13 +112,14 @@ def active(payload):
 
 
 #############################################################
-#                   STANDUP_SEND                            #      
+#                   STANDUP_SEND                            #
 #############################################################
 
-def send(payload):
+def send(payload): # pylint: disable=R1711
+    'sends a message to get buffered in the standup queue'
     user = get_user_token(payload['token'])
     channel = get_channel(payload['channel_id'])
-    
+
     standup = channel['standup']
 
     if not test_in_channel(user['u_id'], channel):
@@ -140,7 +140,3 @@ def send(payload):
     standup['messages'].append(new_message)
 
     return
-    
-
-
-   

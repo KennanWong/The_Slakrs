@@ -1,14 +1,16 @@
+'this file is the http testing for message unpin'
+
 import urllib
 import json
-from urllib.error import HTTPError
-import flask
+from urllib.error import HTTPError      # pylint: disable=C0412
+import flask                            # pylint: disable=W0611
 
 
 import pytest
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
 from system_helper_functions import reg_user2, send_msg1
 
-
+#pylint  ompliant
 #############################################################
 #                   MESSAGE_UNPIN                           #
 #############################################################
@@ -31,7 +33,7 @@ def test_unpin():
         'message_id': msg1['message_id'],
     }).encode('utf-8')
 
-    req = urllib.request.urlopen(urllib.request.Request(
+    req = urllib.request.urlopen(urllib.request.Request(  # pylint: disable=W0611, W0612
         f"{BASE_URL}/message/pin",
         data=data,
         headers={'Content-Type':'application/json'}
@@ -51,7 +53,7 @@ def test_unpin():
     assert payload == {}
 
 def test_already_unpinned():
-
+    'test error case'
     reset_workspace()
 
     user1 = reg_user1()
@@ -61,13 +63,13 @@ def test_already_unpinned():
     data = json.dumps({
         'token': user1['token'],
         'message_id': msg1['message_id'],
- 
+
     }).encode('utf-8')
 
     urllib.request.urlopen(urllib.request.Request(
-    f"{BASE_URL}/message/pin",
-    data=data,
-    headers={'Content-Type':'application/json'}
+    f"{BASE_URL}/message/pin",                          # pylint: disable=C0330
+    data=data,                                          # pylint: disable=C0330
+    headers={'Content-Type':'application/json'}         # pylint: disable=C0330
     ))
 
     data1 = json.dumps({
@@ -89,17 +91,18 @@ def test_already_unpinned():
         ))
 
 def test_invalid_id():
+    'test error case'
     reset_workspace()
 
     user1 = reg_user1()
     channel1 = create_ch1(user1)
-    
+
     msg1 = send_msg1(user1, channel1)
 
     data = json.dumps({
         'token': user1['token'],
         'message_id': msg1['message_id'],
- 
+
     }).encode('utf-8')
 
     urllib.request.urlopen(urllib.request.Request(
@@ -121,7 +124,7 @@ def test_invalid_id():
         ))
 
 def test_unauth_member():
-
+    'test error case'
     reset_workspace()
 
     user1 = reg_user1()
@@ -188,4 +191,4 @@ def test_unauth_owner():
             data=data1,
             headers={'Content-Type':'application/json'}
         ))
-'''
+'''                                                             # pylint: disable=W0105, C0304

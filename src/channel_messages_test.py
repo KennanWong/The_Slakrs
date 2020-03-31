@@ -1,6 +1,8 @@
 import pytest
 from error import InputError, AccessError
 from auth import auth_register
+import channel
+import auth
 from channel import channel_messages
 from channels import channels_create
 from message import message_send

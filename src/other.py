@@ -4,12 +4,7 @@ This file contains all function stubs for 'other_' functions and misclaneous
 
 from data_stores import reset_auth_store, reset_channel_data_store
 from data_stores import reset_messages_store
-from error import InputError, AccessError
-from helper_functions import get_user_token, validate_uid, test_email
-from helper_functions import check_used_email, check_used_handle
-from helper_functions import get_user_uid, test_in_channel
-from data_stores import get_auth_data_store
-
+from helper_functions import reset_message_count
 
 #############################################################
 #                        WORKSPACE_RESET                    #
@@ -22,6 +17,7 @@ def workspace_reset():
     '''
     reset_auth_store()
     reset_channel_data_store()
+    reset_message_count()
     reset_messages_store()
     return
     

@@ -1,32 +1,34 @@
-import pytest
-from auth import auth_register
-from channel import channel_details
-from channels import channels_create, channels_list, channels_listall
-from error import InputError, AccessError
+'this file is the integration tests for channels listall'
 
-def test_listall_and_details():
-    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
-    token1 = results['token']
-    u_id1 = results['u_id']
+import pytest # pylint: disable=W0611
 
-    result2 = auth_register("sidsat@gmail.com", '123!Asdf', 'Sid', 'Sat')
-    token2 = results['token']
-    u_id2 = results['u_id']
 
-    channel_info1 = channels_create(token1, 'Slakrs', True)
-    channel_info2 = channels_create(token2, 'Kings Landing' , True)
+import channels
+from other import workspace_reset
+from test_helper_functions import register_and_create, reg_user2
 
-    #channel1 = channel_details(token1, channel_info1)
-    #channel2 = channel_details(token2, channel_info2)
 
-    all_channels = channels_listall(token2)
-    
-    flag = 0
-    j = 0
+#pylint compliant
+#############################################################
+#                   CHANNELS_LISTALL                        #
+#############################################################
+def test_listall():
+    'testing functionability of channels listall'
 
-    for i in all_channels:
-        if (channel_info1 or channel_info2) == all_channels[j]:
-            flag = 1
-        j =+ 1
-    
-    assert flag == 1
+    workspace_reset()
+
+    ret = register_and_create()
+    user1 = ret['user']
+
+
+    user2 = reg_user2()
+
+    #user2 creating a channel
+    payload1 = {
+        'token': user2['token'],
+        'name': 'Slackrs',
+        'is_public': True
+    }
+    result1 = channels.create(payload1) # pylint: disable=W0612
+    token = user1['token']
+    channels.Listall(token) # pylint: disable=C0304

@@ -6,16 +6,26 @@ Contains all routes
 import sys
 import re
 from json import dumps
+import datetime
 from flask import Flask, request
 from flask_cors import CORS
 
+from json import dumps
+from flask import Flask, request, jsonify
 import auth
 import message
+import channel
 import channels
+import standup
+
+
+
+from flask_cors import CORS
 import other
 import user
 from error import InputError
 
+#test
 
 def defaultHandler(err):
     response = err.get_response()
@@ -90,7 +100,7 @@ def auth_logout():
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
-            'is_succes':True
+            'is_success':True
         })
     else:
         return dumps ({
@@ -112,6 +122,62 @@ def channels_create():
     return dumps ({
         'channel_id': new_channel['channel_id']
     })
+
+#############################################################
+#                   CHANNELS_LIST                           #      
+#############################################################
+
+@APP.route("/channels/list", methods=['GET'])
+def channels_list():
+    
+    token = request.args.get('token')
+    chann_inf = channels.List(token)
+    
+    return dumps(
+        chann_inf
+    )
+
+
+#############################################################
+#                   CHANNELS_LISTALL                        #      
+#############################################################
+
+@APP.route("/channels/listall", methods=['GET'])
+def channels_listall():
+    
+    token = request.args.get('token')
+    chann_inf2 = channels.Listall(token)
+
+    return  dumps(
+        chann_inf2
+    )
+
+
+#############################################################
+#                   MESSAGE_PIN                             #      
+#############################################################
+
+@APP.route("/message/pin", methods=['POST'])
+def message_pin():
+    
+    payload = request.get_json()
+    message.pin(payload)
+
+    return dumps({})
+
+#############################################################
+#                   MESSAGE_UNPIN                             #      
+#############################################################
+
+@APP.route("/message/unpin", methods=['POST'])
+def message_unpin():
+    
+    payload = request.get_json()
+    message.unpin(payload)
+
+    return dumps({})
+    
+
 
 #############################################################
 #                   MESSAGE_SEND                            #      
@@ -139,6 +205,7 @@ def message_sendlater():
         'message_id':new_message_id
     })
 
+    
 
 
 #############################################################
@@ -168,7 +235,7 @@ def message_edit():
 #############################################################
 #                    MESSAGE_REACT                          #      
 #############################################################
-@APP.route("/message/react", methods=['PUT'])
+@APP.route("/message/react", methods=['POST'])
 def message_react():
     payload = request.get_json()
     message.react(payload)
@@ -183,6 +250,186 @@ def message_react():
 def message_unreact():
     payload = request.get_json()
     message.unreact(payload)
+
+    return dumps({})
+
+#############################################################
+#                   STANDUP_START                           #      
+#############################################################
+@APP.route("/standup/start", methods=['POST'])
+def standup_start():
+    payload = request.get_json()
+    end_time = standup.start(payload)
+
+
+    return dumps({
+        'time_finish':end_time
+    })
+
+
+
+#############################################################
+#                   STANDUP_ACTIVE                          #      
+#############################################################
+@APP.route("/standup/active", methods=['GET'])
+def standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+
+    payload = {
+        'token': token,
+        'channel_id': channel_id
+    }
+    standup_info = standup.active(payload)
+    return dumps(standup_info)
+
+    
+    payload = {
+        'token': token,
+        'channel_id': channel_id
+    }
+
+    standup_info = standup.active(payload)
+    return dumps(standup_info)
+    
+#############################################################
+#                   STANDUP_SEND                            #      
+#############################################################
+@APP.route("/standup/send", methods=['POST'])
+def standup_send():
+    payload = request.get_json()
+    standup.send(payload)
+
+    return ({
+    })
+
+#LOOK AT INVALID TOKEN
+#############################################################
+#                   CHANNEL_INVITE                          #      
+#############################################################
+
+@APP.route('/channel/invite', methods=['POST'])
+def channel_invite_server():
+    payload = request.get_json()
+
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+
+    # Invite user to channel
+    invite = channel.invite(token, channel_id, user_id)
+    
+    return dumps(invite)
+
+
+#############################################################
+#                   CHANNEL_DETAILS                         #      
+#############################################################
+
+@APP.route('/channel/details', methods=['GET'])
+def channel_details_server():
+    # Information from request
+    token = request.args.get('token')
+    print(token)
+    channel_id = request.args.get('channel_id')
+    
+    
+    details = channel.details(token, channel_id)
+
+    
+    return dumps(details)
+    
+
+#############################################################
+#                     CHANNEL_MESSAGES                      #      
+#############################################################
+
+@APP.route('/channel/messages', methods=['GET'])
+def channel_messages_server():
+    
+    # Information from request
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    start = int(request.args.get('start'))
+
+    messages = channel.messages(token, channel_id, start)
+
+
+    return dumps(messages)
+
+
+#############################################################
+#                       CHANNEL_LEAVE                       #      
+#############################################################
+
+@APP.route('/channel/leave', methods=['POST'])
+def channel_leave_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Leave the channel
+    leave = channel.leave(token, channel_id)
+    
+    return dumps(leave)
+    
+
+#############################################################
+#                   CHANNEL_JOIN                            #      
+#############################################################
+
+@APP.route('/channel/join', methods=['POST'])
+def channel_join_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Join the channel
+    join = channel.join(token, channel_id)
+
+    return dumps(join)
+        
+
+#############################################################
+#                   CHANNEL_ADDOWNER                        #      
+#############################################################
+
+@APP.route('/channel/addowner', methods=['POST'])
+def channel_addowner_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id_adding = int(payload['u_id'])
+
+    # Add owner with user_id to owner members
+    channel.addowner(token, channel_id, user_id_adding)
+    
+    #return dumps(addowner)
+    return dumps({})
+    
+
+#############################################################
+#                   CHANNEL_REMOVEOWNER                     #      
+#############################################################
+
+@APP.route('/channel/removeowner', methods=['POST'])
+def channel_removeowner_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id_removing = int(payload['u_id'])
+
+    # Remove owner with user_id from owner members
+    channel.removeowner(token, channel_id, user_id_removing)
 
     return dumps({})
 
@@ -287,3 +534,57 @@ def all_users():
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
 
+
+#############################################################
+#                   CHANNEL_JOIN                            #      
+#############################################################
+
+@APP.route('/channel/join', methods=['POST'])
+def channel_join_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Join the channel
+    join = channel.join(token, channel_id)
+
+    return dumps(join)
+        
+#############################################################
+#                   CHANNEL_LEAVE                           #      
+#############################################################
+
+@APP.route('/channel/leave', methods=['POST'])
+def channel_leave_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Leave the channel
+    leave = channel.leave(token, channel_id)
+    
+    return dumps(leave)
+    
+#############################################################
+#                   CHANNEL_INVITE                          #      
+#############################################################
+@APP.route('/channel/invite', methods=['POST'])
+def channel_invite_server():
+    payload = request.get_json()
+
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+
+    # Invite user to channel
+    invite = channel.invite(token, channel_id, user_id)
+    
+    return dumps(invite)
+    
+if __name__ == "__main__":
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

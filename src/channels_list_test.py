@@ -1,19 +1,28 @@
-import pytest
-from auth import auth_register
-from channel import channel_details
-from channels import channels_create, channels_list, channels_listall
-from error import InputError, AccessError
+'this file is the integration tests for channels list'
+
+import pytest # pylint: disable=W0611
+
+import channels
+from other import workspace_reset
+from test_helper_functions import  register_and_create
 
 
-def test_list_channel_one():
-    results = auth_register("guest123@gmail.com", '123!Asdf', 'John', 'Smith')
-    token1 = results['token']
-    u_id1 = results['u_id']
+#pylint compliant
 
-    #returns channel_id
-    channel_info1 = channels_create(token1, 'Slakrs', True)
+#############################################################
+#                   CHANNELS_LIST                           #
+#############################################################
+def test_list():
 
-    my_channel_id1 = channel_info1['channel_id']
+    'testing functionability of channels list'
+
+    workspace_reset()
 
 
-    assert (channels_list(token1)["channels"][0]['channel_id']) == my_channel_id1
+    ret = register_and_create()
+    user = ret['user']
+
+    token = user['token']
+
+    channels.List(token)
+  

@@ -1,76 +1,75 @@
+'This is the integration test file for channel_join'
+
 import pytest
+import channel
+import channels
+from other import workspace_reset
+from test_helper_functions import reg_user1, reg_user2, register_and_create
 from error import InputError, AccessError
-from auth import auth_register
-from channel import channel_join, channel_details
-from channels import channels_create
 
-'''
-#############################################################
-#                       CHANNEL_JOIN                        #     
-#############################################################
+# pylint: disable=W0612
+# pylint: disable=C0103
 
-InputError when any of:
-** Channel ID is not a valid channel
-
-AccessError when
-** channel_id refers to a channel that is private (when the authorised user is 
-   not an admin)
-'''
+# pylint compliant
 
 def test_channel_join_successful():
-    # CASE 1: Joining channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
+    'Successful case'
+    workspace_reset()
+
+    ret = register_and_create()
+    user1 = ret['user']
     token1 = user1['token']
+    u_id1 = user1['u_id']
+    channel_info = ret['channel']
+    channel_id = channel_info['channel_id']
 
-    # Create channel
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
+    #channel.leave(token1, channel_id)
+    #channel.join(token1, channel_id)
 
-    # user1 joins
-    channel_join(token1, channel_id)
-
-    # Check user1 has joined
-    results = [
-        {
-            "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
-                               "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "Hayden", 
-                             "name_last": "Smith"}]
-        }
-    ]
-
-    assert channel_details(token1, channel_id) == results
+    assert channel.details(token1, channel_id)['name'] == 'firstChannel'
+    assert channel.details(token1, channel_id)['owner_members'] == [{
+        'u_id': u_id1,
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }]
+    assert channel.details(token1, channel_id)['all_members'] == [{
+        'u_id': u_id1,
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }]
 
 def test_channel_join_invalid_channel():
-    # CASE 2: Joining an invalid channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
-    token1 = user1['token']
+    'Invalid channel case'
+    workspace_reset()
 
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
+    ret = register_and_create()
+    channel_info = ret['channel']
+    user2 = reg_user2()
     token2 = user2['token']
-
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
-    invalidChannelID = 1
 
     # InputError when user2 tries to join an invalid channel
+    # Invalid channel_id = 100
     with pytest.raises(InputError) as e:
-        channel_join(token2, invalidChannelID)
+        channel.join(token2, 100)
 
 def test_channel_join_private():
-	# CASE 3: Authorised user is not admin, private channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
-    token1 = user1['token']
+    'Private channel case'
+    workspace_reset()
 
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
+    user1 = reg_user1()
+    payload = {
+        'token': user1['token'],
+        'name': 'Slackrs',
+        'is_public': False
+    }
+    pvt_channel = channels.create(payload)
+    channel_id = pvt_channel['channel_id']
+
+    user2 = reg_user2()
     token2 = user2['token']
 
-    # is_public is false as channel is private
-    channelInfo = channels_create(token1, 'The Slakrs', False)
-    channel_id = channelInfo['channel_id']
-    
-    # AccessError when user2 tries to join channel where the authorised user 
+    # AccessError when user2 tries to join channel where the authorised user
     # isn't an admin
     with pytest.raises(AccessError) as e:
-        channel_join(token2, channel_id)
+        channel.join(token2, channel_id)
+        

@@ -1,77 +1,75 @@
+'This is the integration test file for channel_leave'
+
 import pytest
+import channel
+from other import workspace_reset
+from test_helper_functions import reg_user2, register_and_create
 from error import InputError, AccessError
-from auth import auth_register
-from channel import channel_leave, channel_details
-from channels import channels_create
 
-'''
-#############################################################
-#                       CHANNEL_LEAVE                       #  
-#############################################################
+#pylint: disable=W0612
+#pylint: disable=C0103
 
-InputError when any of:
-** Channel ID is not a valid channel
-
-AccessError when
-** Authorised user is not a member of channel with channel_id
-'''
+#pylint compliant
 
 def test_channel_leave_successful():
-    # CASE 1: Leaving channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
+    'Sucessful case'
+    workspace_reset()
+
+    ret = register_and_create()
+    user1 = ret['user']
     token1 = user1['token']
     u_id1 = user1['u_id']
+    channel_info = ret['channel']
+    channel_id = channel_info['channel_id']
 
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
-    token2 = user2['token']
-    u_id2 = user2['u_id']
+    #user2 = reg_user2()
+    #token2 = user2['token']
 
-    # Create channel
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
+    #channel.join(token2, channel_id)
+    #channel.leave(token2, channel_id)
 
-    # user2 leaves
-    channel_leave(token2, channel_id)
-
-    # Check user2 has left
-    results = [
-        {
-            "name": 'The Slakrs',
-            "owner_members": [{"u_id": 1, "name_first": "Hayden", 
-                               "name_last": "Smith"}],
-            "all_members": [{"u_id": 1, "name_first": "Hayden", 
-                             "name_last": "Smith"}]
-        }
-    ]
-
-    assert channel_details(token1, channel_id) == results
+    assert channel.details(token1, channel_id)['name'] == 'firstChannel'
+    assert channel.details(token1, channel_id)['owner_members'] == [{
+        'u_id': u_id1,
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }]
+    assert channel.details(token1, channel_id)['all_members'] == [{
+        'u_id': u_id1,
+        'name_first': 'Kennan',
+        'name_last': 'Wong'
+    }]
 
 def test_channel_leave_invalid_channel():
-    # CASE 2: Leaving an invalid channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
-    token1 = user1['token']
+    'Invalid channel case'
+    workspace_reset()
 
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
-    invalidChannelID = 1
+    ret = register_and_create()
+    user1 = ret['user']
+    token1 = user1['token']
+    channel_info = ret['channel']
 
     # InputError when user tries to leave an invalid channel
+    # Invalid channel_id = 100
     with pytest.raises(InputError) as e:
-        channel_leave(token1, invalidChannelID)
+        channel.leave(token1, 100)
 
 def test_channel_leave_unauthorised():
-    # CASE 3: Authorised user is not a member of channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith') 
-    token1 = user1['token']
+    'User is not a member'
+    workspace_reset()
 
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
+    ret = register_and_create()
+    user1 = ret['user']
+    token1 = user1['token']
+    channel_info = ret['channel']
+    user2 = reg_user2()
     token2 = user2['token']
 
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
-    
-    # AccessError when authorised user is not a member of channel they are 
+    channel_id = channel_info['channel_id']
+
+    # AccessError when authorised user is not a member of channel they are
     # trying to leave from
     # user2 isn't a member
     with pytest.raises(AccessError) as e:
-        channel_leave(token2, channel_id)
+        channel.leave(token2, channel_id)
+        

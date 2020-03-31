@@ -1,112 +1,95 @@
+'This is the integration test file for channel_invite'
+
 import pytest
+import channel
+from other import workspace_reset
+from test_helper_functions import reg_user2, reg_user3, register_and_create
 from error import InputError, AccessError
-from auth import auth_register
-from channel import channel_invite
-from channels import channels_create
 
-'''
-#############################################################
-#                      CHANNEL_INVITE                       #     
-#############################################################
+# pylint: disable=W0612
+# pylint: disable=C0103
 
-InputError when any of:
-**  channel_id does not refer to a valid channel that the authorised user is 
-    part of
-**  u_id does not refer to a valid user
-
-AccessError when:
-** the authorised user is not already a member of the channel
-'''
+# pylint compliant
 
 def test_channel_invite_successful():
-    # CASE 1: Successful invite
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
-    token1 = user1['token']
-    u_id1 = user1['u_id']
+    'Successful case'
+    workspace_reset()
 
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
-    token2 = user2['token']
+    ret = register_and_create()
+    user1 = ret['user']
+    token1 = user1['token']
+    channel_info = ret['channel']
+    user2 = reg_user2()
     u_id2 = user2['u_id']
 
-    # Create a channel, takes in token, name, is_public
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
-    
-    # Inviting user2 to channel
-    channel_invite(token1, channel_id, u_id2)
-    
+    channel_id = channel_info['channel_id']
+
+    assert channel.invite(token1, channel_id, u_id2) == {}
+
 def test_channel_invite_invalid_channel():
-    # CASE 2: Inviting user to invalid channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
+    'Invalid channel case'
+    workspace_reset()
+    ret = register_and_create()
+    user1 = ret['user']
     token1 = user1['token']
-    u_id1 = user1['u_id']
-
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
-    token2 = user2['token']
+    channel_info = ret['channel']
+    user2 = reg_user2()
     u_id2 = user2['u_id']
 
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
-    invalidChannelID = 1
-
-    # InputError when user2 is invited to an invalid channel
+	# InputError when user2 is invited to an invalid channel
+    # Invalid channel_id = 100
     with pytest.raises(InputError) as e:
-        channel_invite(token1, invalidChannelID, u_id2)
+        channel.invite(token1, 100, u_id2)
 
-def test_channel_invite_invaliduserID():   
-    # CASE 3: Inviting user with invalid userID
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
-    token1 = user1['token']
-    u_id1 = user1['u_id']
-    invalidUserID = 1
+def test_channel_invite_invalid_userid():
+    'Invalid user case'
+    workspace_reset()
 
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
+    ret = register_and_create()
+    user1 = ret['user']
+    token = user1['token']
+    channel_info = ret['channel']
+    channel_id = channel_info['channel_id']
 
     # InputError when user tries to invite someone with an invalid user ID
+    # Invalid user_id = 100
     with pytest.raises(InputError) as e:
-        channel_invite(token1, channel_id, invalidUserID)
+        channel.invite(token, channel_id, 100)
 
 def test_channel_invite_unauthorised():
-    # CASE 4: Inviting a user when the authorised user is not a member of 
-    #         channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
-    token1 = user1['token']
-    u_id1 = user1['u_id']
-
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
+    'User is not a member case'
+    workspace_reset()
+    ret = register_and_create()
+    user1 = ret['user']
+    channel_info = ret['channel']
+    user2 = reg_user2()
     token2 = user2['token']
-    u_id2 = user2['u_id']
-    
-    user3 = auth_register("tommy@gmail.com", 'nkoim$#475', 'Tommy', 'Shelby')
-    token3 = user3['token']
+    user3 = reg_user3()
     u_id3 = user3['u_id']
 
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
+    channel_id = channel_info['channel_id']
 
     # AccessError when authorised user is not a member of the channel
     # user2 invites user3 after user1 creates the channel
     with pytest.raises(AccessError) as e:
-        channel_invite(token2, channel_id, u_id3)
+        channel.invite(token2, channel_id, u_id3)
 
-def test_channel_invite_existing_user(): 
-    # CASE 5: Inviting a user who is already a member of channel
-    user1 = auth_register("hayden@gmail.com", '123!@asdf', 'Hayden', 'Smith')
+def test_channel_invite_existing_user():
+    'Existing user case'
+    workspace_reset()
+    ret = register_and_create()
+    user1 = ret['user']
     token1 = user1['token']
-    u_id1 = user1['u_id']
-
-    user2 = auth_register("john@gmail.com", 'zcvb*&234', 'John', 'Appleseed')
-    token2 = user2['token']
+    channel_info = ret['channel']
+    user2 = reg_user2()
     u_id2 = user2['u_id']
 
-    channelInfo = channels_create(token1, 'The Slakrs', True)
-    channel_id = channelInfo['channel_id']
+    channel_id = channel_info['channel_id']
 
-	# Invite user2
-    channel_invite(token1, channel_id, u_id2)
+    # Invite user2
+    channel.invite(token1, channel_id, u_id2)
 
-    # InputError when user tries to invite someone who is already a member of 
+    # InputError when user tries to invite someone who is already a member of
     # the channel
     with pytest.raises(InputError) as e:
-        channel_invite(token1, channel_id, u_id2)
+        channel.invite(token1, channel_id, u_id2)

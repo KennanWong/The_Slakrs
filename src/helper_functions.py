@@ -7,7 +7,8 @@ import re
 import hashlib
 from datetime import datetime
 from error import InputError
-from data_stores import get_auth_data_store, get_channel_data_store, get_messages_store
+from data_stores import get_auth_data_store, get_channel_data_store
+from data_stores import get_messages_store
 
 MSG_COUNT = 1
 
@@ -47,21 +48,16 @@ def get_channel(channel_id):
             return i
     raise InputError(description='Invalid channel_id')
 
-
 def get_user_token(token):
     '''
     Function to validate a token and returns the users info
     otherwise raises an error
     '''
     auth_store = get_auth_data_store()
-    user = {}
     for i in auth_store:
         if i['token'] == token:
-            user = i
-    if user != {}:
-        return user
-    else:
-        raise InputError(description='Invalid Token')
+            return i
+    raise InputError(description='Invalid Token')
 
 def test_email(email):
     '''
@@ -96,8 +92,9 @@ def find_message(message_id):
             return i
 
     raise InputError(description='Message not found')
+            
 
-
+# function to see if a user is an owner of a channel
 def check_owner(user, channel):
     '''
     Function to see if a user is an owner of a channel
@@ -105,8 +102,68 @@ def check_owner(user, channel):
     for i in channel['owners']:
         if i['u_id'] == user['u_id']:
             return True
+    
     return False
 
+
+# Function to check valid userID
+def is_valid_user_id(u_id):
+    auth_store = get_auth_data_store()
+    for user in auth_store:
+        if user['u_id'] == u_id:
+            return 1
+    else:
+        raise InputError(description='Invalid u_id')
+
+
+
+# Fucntion to get details of a user
+def user_details(u_id):
+    auth_store = get_auth_data_store()
+    for user in auth_store:
+        if u_id == user['u_id']:
+            return {
+                'u_id': u_id,
+                'name_first': user['name_first'],
+                'name_last': user['name_last']
+            }
+    return False
+
+
+#to get current time and add seconds, courtesy of stackoverflow
+def addSecs(tm, secs):
+    fulldate = datetime.datetime(100, 1, 1, tm.hour, tm.minute, tm.second)
+    fulldate - fulldate + datetime.timedelta(seconds=secs)
+    return fulldate.time()
+    return False
+
+# Function to check valid userID
+def is_valid_user_id(u_id):
+    auth_store = get_auth_data_store()
+    for user in auth_store:
+        if user['u_id'] == u_id:
+            return 1
+    else:
+        raise InputError(description='Invalid u_id')
+
+# Function to get userID from token
+def user_id_from_token(token):
+    user = get_user_token(token)
+    return user['u_id']
+
+# Fucntion to get details of a user
+def user_details(u_id):
+    auth_store = get_auth_data_store()
+    for user in auth_store:
+        if u_id == user['u_id']:
+            return {
+                'u_id': u_id,
+                'name_first': user['name_first'],
+                'name_last': user['name_last']
+            }
+    return False
+
+# function to format a list of dictionaries into a members data type
 
 def format_to_members(members):
     '''
@@ -122,6 +179,13 @@ def format_to_members(members):
         members.append(add)
     return members
 
+def user_id_from_token():
+    auth_store = get_auth_data_store
+    for user in auth_store:
+        if token == user['token']:
+            return user['u_id']
+    else:
+        raise InputError(description='Could not find u_id')
 
 def get_message_count():
     '''
@@ -187,3 +251,7 @@ def get_user_uid(u_id):
         return user
     else:
         raise InputError(description='Invalid u_id')
+def reset_message_count():
+    global MSG_COUNT
+    MSG_COUNT = 1
+    return

@@ -2,6 +2,8 @@ import pytest
 from error import InputError
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from auth import auth_register
+from test_helper_functions import reg_user1, reg_user2, register_and_create, send_msg1
+from other import workspace_reset
 
 '''
 #############################################################
@@ -12,19 +14,21 @@ from auth import auth_register
 
 def test_profile_working():
     #create a user    
+    workspace_reset()
     
-    email = "varun@gmail.com"
-    name_first = "Varun"
-    name_last = "Kashyap"
-    
-    details = auth_register(email, "password1", name_first, name_last)
+    details = reg_user1()
     
     token = details['token']    
     uid = details['u_id']
     
     #test that the returned values are correct
+    payload{
+        'token' : register['token'],
+        'u_id' : uid
     
-    profile = user_profile(token, uid)
+    }
+    
+    profile = user_profile(payload)
     
     assert(profile['email'] == email)
     assert(profile['name_first'] == name_first)
@@ -33,26 +37,47 @@ def test_profile_working():
     
 #ending with _ID must be an integer
    
-def test_profile_invalid_uID1():      
-    details = auth_register("user@gmail.com", "password1", "Test", "User")	
-    token1 = details['token']
+def test_profile_invalid_uID1():          
+    
+    workspace_reset()
+    
+    details = reg_user1()	
        
-    with pytest.raises(InputError):
-        user_profile(token1, "NOT_VALID_UID")
-		
-def test_profile_invalid_uID2():   
-    details = auth_register("user@gmail.com", "password1", "Test", "User")	
-    token2 = details['token']
-    	
-    with pytest.raises(InputError):
-        user_profile(token2, "2t62te63te36et")
-		
-def test_profile_invalid_uID3():
-    details = auth_register("user@gmail.com", "password1", "Test", "User")	
-    token3 = details['token']
+    payload{
+        'token' : details['token'],
+        'u_id' : "NOT_VALID_UID"
+    
+    }
     
     with pytest.raises(InputError):
-        user_profile(token3, "29382938---2392398")
+        user_profile(payload)
+		
+def test_profile_invalid_uID2():   
+    workspace_reset()
+    
+    details = reg_user1()
+    
+    payload{
+        'token' : details['token'],
+        'u_id' : "22tt3t3tt3r4r"
+    }    
+    	
+    with pytest.raises(InputError):
+        user_profile(payload)
+		
+def test_profile_invalid_uID3():
+    workspace_reset()
+    
+    details = reg_user1()
+    
+        
+    payload{
+        'token' : details['token'],
+        'u_id' : "126261261----22322323"
+    }    
+    	
+    with pytest.raises(InputError):
+        user_profile(payload)
 		
 '''
 #############################################################
@@ -61,11 +86,9 @@ def test_profile_invalid_uID3():
 '''
 
 def test_user_profile_setname_working():
+    workspace_reset()   
     
-    email1 = "varun@gmail.com"
-    name_first1 = "Varun"
-    name_last1 = "Kashyap"   
-    details = auth_register(email1, "password1", name_first1, name_last1)
+    details = reg_user1()
     
     token = details['token']    
     uid = details['u_id']
@@ -76,82 +99,171 @@ def test_user_profile_setname_working():
     name_first2 = "Jeff"
     name_last2 = "Jefferson"
     
-    assert (user_profile_setname(token, name_first2, name_last2) == {})
+    payload5{
+        'token' : details['token'],
+        'name_first' : name_first2
+        'name_last' : name_last2     
+    }
+        
+    assert (user_profile_setname(payload5) == {})
 
-    profile2 = user_profile(token, uid)
+    payload3{
+        'token' : details['token'],
+        'u_id' : details['u_id']       
+    }
+    
+    profile2 = user_profile(payload3)
     assert(profile2['name_first']) == name_first2
     assert(profile2['name_last']) == name_last2
     
 def test_user_profile_setname_same_name():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
     token = details['token']
     uid = details['u_id']
-    user_profile_setname(token, "Varun", "Kashyap") 
+    first = details['name_first']
+    last = details['name_last']
     
-    profile2 = user_profile(token, uid)
-    assert(profile2['name_first']) == "Varun"
-    assert(profile2['name_last']) == "Kashyap"
+    payload{
+        'token' : details['token'],
+        'name_first' : first,
+        'name_last' : last       
+    }
+    
+    user_profile_setname(payload) 
+    
+    payload2{
+        'token' : details['token'],
+        'u_id' : uid 
+    }
+    
+    profile2 = user_profile(payload2)
+    assert(profile2['name_first']) == first
+    assert(profile2['name_last']) == last
     
 def test_user_profile_setname_length_border():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
     token = details['token']
     string_50 = "a" * 50
     string_1 = "a"
     
-    assert (user_profile_setname(token, "ValidSTRING", string_50) == {})
-    assert (user_profile_setname(token, "ValidString", string_1) == {})
-    assert (user_profile_setname(token, string_50, "ValidString") == {})
-    assert (user_profile_setname(token, string_1, "ValidString") == {})
-    assert (user_profile_setname(token, string_1, string_50) == {})        
+    payload1{
+        'token' : details['token'],
+        'name_first' : "ValidString",
+        'name_last' : string_50       
+    }
+    
+    payload2{
+        'token' : details['token'],
+        'name_first' : "ValidString",
+        'name_last' : string_1       
+    }
+    payload3{
+        'token' : details['token'],
+        'name_first' : string_50,
+        'name_last' : "ValidString"       
+    }
+    payload4{
+        'token' : details['token'],
+        'name_first' : string_1,
+        'name_last' : string_50       
+    }
+    
+    assert (user_profile_setname(payload1) == {})
+    assert (user_profile_setname(payload2) == {})
+    assert (user_profile_setname(payload3) == {})
+    assert (user_profile_setname(payload4) == {})
 
 def test_user_profile_setname_name_first_short():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
-    token = details['token']
+    workspace_reset()
+    
+    details = reg_user1()
     valid_last = "THISISAVALIDLASTNAME"
     
+    payload{
+        'token' : details['token'],
+        'name_first' : "",
+        'name_last' : valid_last       
+    }
     
     with pytest.raises(InputError):
-        user_profile_setname(token, "", valid_last)
+        user_profile_setname(payload)
         
 def test_user_profile_setname_name_last_short():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
-    token = details['token']
+    workspace_reset()
+    
+    details = reg_user1()
     valid_first = "THISISAVALIDFIRSTNAME"
     
+    payload{
+        'token' : details['token'],
+        'name_first' : valid_first,
+        'name_last' : ""       
+    }
     
     with pytest.raises(InputError):
-        user_profile_setname(token, "", valid_first)
+        user_profile_setname(payload)
         
 def test_user_profile_setname_name_both_short():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
-    token = details['token']
+    workspace_reset()
+    
+    details = reg_user1()
+    payload{
+        'token' : details['token'],
+        'name_first' : "",
+        'name_last' : ""       
+    }
+    
     with pytest.raises(InputError):
-        user_profile_setname(token, "", "")
+        user_profile_setname(payload)
         
 def test_user_profile_setname_name_first_long():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
     token = details['token']
     string_51 = "a" * 51
+    
+    payload{
+        'token' : details['token'],
+        'name_first' : string_51,
+        'name_last' : "THISISAVALIDNAME"       
+    }
+    
     with pytest.raises(InputError):
-        user_profile_setname(token, string_51, "THISISAVALIDNAME")
+        user_profile_setname(payload)
     
 def test_user_profile_setname_name_last_long():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
     token = details['token']
     string_51 = "a" * 51
+    
+    payload{
+        'token' : details['token'],
+        'name_first' : "THISISAVALIDNAME",
+        'name_last' : string_51       
+    }
+    
     with pytest.raises(InputError):
-        user_profile_setname(token, "THISISAVALIDNAME", string_51)
-        
-def test_user_profile_setname_name_both_long():
-    details = auth_register("varun@gmail.com", "password1", "Varun", "Kashyap")
-    token = details['token']
-    string_51 = "a" * 51
-    with pytest.raises(InputError):
-        user_profile_setname(token, string_51, string_51)
+        user_profile_setname(payload)
         
 def test_user_profile_setname_invalidToken():
+    workspace_reset()
+    
+    details = reg_user1()
+    payload{
+        'token' : "INVALID",
+        'name_first' : "THISISAVALIDNAME",
+        'name_last' : "ValidName"       
+    }
+    
     with pytest.raises(InputError):
-        user_profile_setname("THISISANINVALIDTOKEN", "VALID", "NAME")
+        user_profile_setname(payload)
 
     
 '''
@@ -161,60 +273,103 @@ def test_user_profile_setname_invalidToken():
 '''   
 
 def test_user_profile_setemail_working():
-    details = auth_register("email@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
     token = details['token']
     uid = details['u_id']
     
+    payload{
+        'token' : token,
+        'email' : "new_email@gmail.com"     
+    }
+    
     #tests under working conditions
     
-    assert (user_profile_setemail(token, "new_email@gmail.com") == {})
-    profile = user_profile(token1, uid1)
+    assert (user_profile_setemail(payload) == {})
+    payload2{
+        'token' : token,
+        'u_id' : uid 
+    }
+    
+    profile = user_profile(payload2)
     newEmail = profile['email']
-    assert newEmail == "email@gmail.com"
+    assert (newEmail == "new_email@gmail.com")
     
 
 def test_user_profile_setemail_invalidEmail():
 
     #create some users
-    details = auth_register("email@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
+    
     token = details['token']
     uid = details['u_id']
 
     #function will fail if the email provided is invalid
+    payload1{
+        'token' : token,
+        'email' : "@gmail.com"     
+    }
+    payload2{
+        'token' : token,
+        'email' : "email@.com"     
+    }
+    payload3{
+        'token' : token,
+        'email' : "new_email@gmail."     
+    }
+    payload4{
+        'token' : token,
+        'email' : "new_emailgmail.com"     
+    }
+    
     
     # No prefix
     with pytest.raises(InputError):
-        user_profile_setemail(token, "@gmail.com")
+        user_profile_setemail(payload1)
     # No suffix
     with pytest.raises(InputError):
-        user_profile_setemail(token, "email@.com")
+        user_profile_setemail(payload2)
     # No .com
     with pytest.raises(InputError):
-        user_profile_setemail(token, "email@gmail.")
+        user_profile_setemail(payload3)
     # no @
     with pytest.raises(InputError):
-        user_profile_setemail(token, "emailgmail.com")
+        user_profile_setemail(payload4)
         
 def test_user_profile_setemail_already_used():
 
-    #create some users
-    email1 = "email1@gmail.com"
     
-    details1 = auth_register(email1, "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details1 = reg_user1()
     token1 = details1['token']
     uid1 = details1['u_id']
-        
-    email2 = "email2@gmail.com"
-    details2 = auth_register(email2, "password2", "Vince", "Kash")
+    email1 = details1['email']
+    
+    details2 = reg_user2()
     token2 = details2['token']
     uid2 = details2['u_id']
-     
+    email2 = details2['email']
     #changing email to one already in use causes function to fail
+    
+    payload1{
+        'token' : token1,
+        'email' : email2     
+    }
+    
+    payload2{
+        'token' : token2,
+        'email' : email1     
+    }
+    
     with pytest.raises(InputError):
-        user_profile_setemail(token1, email2)
+        user_profile_setemail(payload1)
         
     with pytest.raises(InputError):
-        user_profile_setemail(token2, email1)
+        user_profile_setemail(payload2)
         
 def test_user_profile_setemail_invalidToken():
     with pytest.raises(InputError):
@@ -228,7 +383,10 @@ def test_user_profile_setemail_invalidToken():
 
 def test_user_profile_sethandle_working():
     #create user 
-    details = auth_register("email@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details = reg_user1()
+    
     token = details['token']
     uid = details['u_id']
     
@@ -238,6 +396,8 @@ def test_user_profile_sethandle_working():
     assert(user_profile(token,["handle_str"] == "handleTwo"))
 
 def test_user_profile_sethandle_length():
+    workspace_reset()
+    
     string_3 = "aaa"
     string_20 = "x" * 20
     
@@ -246,7 +406,8 @@ def test_user_profile_sethandle_length():
     string_long = "w" * 50
     
     
-    details = auth_register("email@gmail.com", "password1", "Varun", "Kashyap")
+    
+    details = reg_user1()
     token = details['token']
     uid = details['u_id']
     
@@ -255,6 +416,7 @@ def test_user_profile_sethandle_length():
     assert(user_profile(token,["handle_str"] == string_3))
     assert(user_profile_sethandle(token, string_20) == {})
     assert(user_profile(token,["handle_str"] == string_20))
+    
     
     with pytest.raises(InputError):
         user_profile_sethandle(token, string_2)
@@ -266,22 +428,38 @@ def test_user_profile_sethandle_length():
         user_profile_sethandle(token, string_long)
 	    
 def test_user_profile_sethandle_already_used():
-    details1 = auth_register("email@gmail.com", "password1", "Varun", "Kashyap")
+    workspace_reset()
+    
+    details1 = reg_user1()
     token1 = details1['token']
     uid1 = details1['u_id']
     
-    details2 = auth_register("email2@gmail.com", "password2", "Email", "Time")
+    details2 = reg_user2()
     token2 = details2['token']
     uid2 = details2['u_id']
     
     valid_handle = "ValidHandle"    
     
     #test handle already used
-    user_profile_sethandle(token1, valid_handle)
-    assert(user_profile(token1,["handle_str"] == valid_handle))
+    payload1{
+        'token' : token1,
+        'handle_str' : valid_handle     
+    }
+    payload2{
+        'token' : token1,
+        'u_id' : uid1     
+    }
+    payload3{
+        'token' : token2,
+        'handle_str' : valid_handle     
+    }
+    
+    
+    user_profile_sethandle(payload1)
+    
+    assert(user_profile(payload2)=={})
     
     with pytest.raises(InputError):
-        user_profile_sethandle(token2, valid_handle)
+        user_profile_sethandle(payload3)
 
     
-

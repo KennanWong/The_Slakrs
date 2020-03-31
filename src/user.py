@@ -1,8 +1,11 @@
 # This file contains the implementation of all 'user_' functions for the
 # server
 
-from error import InputError AccessError
-from helper_functions import get_user_token, validate_uid, check_used_email, check_used_handle
+import re
+from error import InputError, AccessError
+from helper_functions import get_user_token, validate_uid, test_email
+from helper_functions import check_used_email, check_used_handle
+from helper_functions import get_user_uid, test_in_channel
 from data_stores import get_auth_data_store
 
 #############################################################
@@ -87,7 +90,7 @@ def profile_sethandle(payload):
     assert (check_used_handle(payload['handle_str']) == 1)
     
     user = get_user_token(payload['token'])
-    user['handle_str'] = handle_str
+    user['handle_str'] = payload['handle_str']
     return ({})
     
 #############################################################
@@ -143,7 +146,7 @@ def search(payload):
                         
     for channel in channel_store:
         if test_in_channel(user['u_id'], channel):
-            for msg in channels['messages']:
+            for msg in channel['messages']:
                 if re.search(payload['query_str'], msg['message']):
                     returnMessage.append(msg)
         
@@ -155,24 +158,24 @@ def search(payload):
 ############################################################# 
 
 
-def user_permission_change(token,u_id,permission_id):
+def user_permission_change(payload):
 
     #what does it mean for permision id to not refer to permission id?
-    
-    
-    if vadidate_uid(payload['u_id'] == False)
+    '''
+    changes the permision of a authorised uid
+    '''
+    if validate_uid(payload['u_id'] is False):
         raise InputError (description='Invalid u_id')
 
     owner = get_user_token(payload['token'])
     
     chan_user = get_user_uid(payload['u_id'])
     
-    if owner['slacker_owner'] == True:
+    if owner['slacker_owner'] is True:
         chan_user['permission_id'] = payload['permission_id']
         return {}
         
-    else:
-        raise AccessError(description='The authorised user is not an owner')
+    raise AccessError(description='The authorised user is not an owner')
         
         
         

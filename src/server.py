@@ -13,6 +13,7 @@ import auth
 import message
 import channels
 import other
+import user
 from error import InputError
 
 
@@ -194,5 +195,95 @@ def workspace_reset():
     other.workspace_reset()
     return dumps({})
 
+    
+#############################################################
+#                         SEARCH                            #      
+#############################################################   
+@APP.route('/search', methods=['GET'])
+def search():
+    """ return messages """
+    payload = request.get_json()
+    messages = user.search(payload)
+    return dumps({messages})
+    
+#############################################################
+#                USER PERMISSION CHANGE                     #      
+#############################################################
+@APP.route('/admin/userpermission/change', methods=['POST'])
+def userpermission_change():
+    """ return empty dic, change user's permission """
+    payload = request.get_json()
+    user.user_permission_change(payload)
+    return dumps({})
+
+
+#############################################################
+#                      USER_PROFILE                         #      
+#############################################################
+
+@APP.route('/user/profile', methods=['GET'])
+def user_profile():
+    """ 
+    return 'email', 'name_first', 'name_last', 'handle_str', unpin a msg 
+    """
+    payload = request.get_json()
+    user_info = user.profile(payload)
+    return dumps ({user_info})
+    
+
+#############################################################
+#                   USER_PROFILE_SETNAME                    #
+#############################################################
+
+@APP.route('/user/profile/setname', methods=['PUT'])
+def user_profile_setname():
+    """ 
+    return empty dic, change user's name 
+    """
+    payload = request.get_json()
+    user.profile_setname(payload)
+    return({})
+
+#############################################################
+#                   USER_PROFILE_SETEMAIL                   #
+#############################################################
+
+@APP.route('/user/profile/setemail', methods=['PUT'])
+def user_profile_setemail():
+    """ 
+    return empty dic, change user's email 
+    """
+    payload = request.get_json()
+    user.profile_setemail(payload)
+    return({})
+
+#############################################################
+#                   USER_PROFILE_SETHANDLE                  #
+#############################################################
+
+@APP.route('/user/profile/sethandle', methods=['PUT'])
+def user_profile_sethandle():
+    """ 
+    return empty dic, change user's handle 
+    """
+    payload = request.get_json()
+    user.profile_sethandle(payload)
+    return({})
+    
+#############################################################
+#                        USERS_ALL                          #
+#############################################################
+
+@APP.route('/users/all', methods=['GET'])
+def all_users():
+    """ 
+    Returns a list of all users and their associated details
+    """
+    payload = request.get_json()
+    ret = user.users_all(payload)
+    return({ret})
+    
+    
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
+

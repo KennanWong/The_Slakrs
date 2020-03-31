@@ -272,21 +272,12 @@ def test_user_profile_sethandle_invalhandle2():
     }).encode('utf-8')
     
     req = urllib.request.Request(
-        f"{BASE_URL}/user/profile/sethandle",
+        f"{BASE_URL}/profile/sethandle",
         data=data,
         headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
     response = json.load(urllib.request.urlopen(req))   
     assert response == {}
-
-
-'''
-#############################################################
-#                       USERS_ALL                           #
-#############################################################
-'''  
-   
-
 
 

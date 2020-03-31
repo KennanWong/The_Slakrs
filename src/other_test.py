@@ -215,7 +215,4 @@ def test_search_no_message():
         counter=+1
         
     assert (counter == 0)
-        
-    
-
 

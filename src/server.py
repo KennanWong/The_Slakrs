@@ -24,6 +24,7 @@ from flask_cors import CORS
 import other
 from error import InputError
 
+#test
 
 def defaultHandler(err):
     response = err.get_response()
@@ -300,6 +301,137 @@ def standup_send():
 
     return ({
     })
+
+#LOOK AT INVALID TOKEN
+#############################################################
+#                   CHANNEL_INVITE                          #      
+#############################################################
+
+@APP.route('/channel/invite', methods=['POST'])
+def channel_invite_server():
+    payload = request.get_json()
+
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id = int(payload['u_id'])
+
+    # Invite user to channel
+    invite = channel.invite(token, channel_id, user_id)
+    
+    return dumps(invite)
+
+
+#############################################################
+#                   CHANNEL_DETAILS                         #      
+#############################################################
+
+@APP.route('/channel/details', methods=['GET'])
+def channel_details_server():
+    # Information from request
+    token = request.args.get('token')
+    print(token)
+    channel_id = request.args.get('channel_id')
+    
+    
+    details = channel.details(token, channel_id)
+
+    
+    return dumps(details)
+    
+
+#############################################################
+#                     CHANNEL_MESSAGES                      #      
+#############################################################
+
+@APP.route('/channel/messages', methods=['GET'])
+def channel_messages_server():
+    
+    # Information from request
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    start = int(request.args.get('start'))
+
+    messages = channel.messages(token, channel_id, start)
+
+
+    return dumps(messages)
+
+
+#############################################################
+#                       CHANNEL_LEAVE                       #      
+#############################################################
+
+@APP.route('/channel/leave', methods=['POST'])
+def channel_leave_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Leave the channel
+    leave = channel.leave(token, channel_id)
+    
+    return dumps(leave)
+    
+
+#############################################################
+#                   CHANNEL_JOIN                            #      
+#############################################################
+
+@APP.route('/channel/join', methods=['POST'])
+def channel_join_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+
+    # Join the channel
+    join = channel.join(token, channel_id)
+
+    return dumps(join)
+        
+
+#############################################################
+#                   CHANNEL_ADDOWNER                        #      
+#############################################################
+
+@APP.route('/channel/addowner', methods=['POST'])
+def channel_addowner_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id_adding = int(payload['u_id'])
+
+    # Add owner with user_id to owner members
+    channel.addowner(token, channel_id, user_id_adding)
+    
+    #return dumps(addowner)
+    return dumps({})
+    
+
+#############################################################
+#                   CHANNEL_REMOVEOWNER                     #      
+#############################################################
+
+@APP.route('/channel/removeowner', methods=['POST'])
+def channel_removeowner_server():
+    payload = request.get_json()
+    
+    # Information from request
+    token = payload['token']
+    channel_id = int(payload['channel_id'])
+    user_id_removing = int(payload['u_id'])
+
+    # Remove owner with user_id from owner members
+    channel.removeowner(token, channel_id, user_id_removing)
+
+    return dumps({})
+
 
 #############################################################
 #                   WORKSPACE_RESET                         #      

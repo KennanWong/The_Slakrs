@@ -11,6 +11,7 @@ from flask_cors import CORS
 
 import auth
 import message
+import channel
 import channels
 import other
 from error import InputError

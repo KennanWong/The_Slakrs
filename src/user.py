@@ -40,12 +40,11 @@ def profile_setname(payload):
     '''
     Update the authorised user's first and last name
     '''
-    
     user = get_user_token(payload['token'])
     
-    if len(payload['name_first']) > 50:
+    if not (1 < len(payload['name_first']) < 50):
         raise InputError(description='Invalid name_first, above the range of 50 characters')
-    if len(payload['name_last']) > 50:
+    if not (1 < len(payload['name_last']) < 50):
         raise InputError(description='Invalid name_last, above the range of 50 characters')    
     
     user['name_first'] = payload['name_first']

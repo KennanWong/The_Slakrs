@@ -167,10 +167,12 @@ def leave(token, channel_id):
 
     # User leaving channel
     user_det = user_details(user['u_id'])
-
+    print(user_det)
+    print(channel['owners'])
     if user_det in channel['owners']:
         channel['owners'].remove(user_det)
-
+        
+    print(channel['members'])
     if user_det in channel['members']:
         channel['members'].remove(user_det)
 
@@ -186,6 +188,12 @@ def join(token, channel_id):
     channels_store = get_channel_data_store
 
     user = get_user_token(token)
+
+    user_dets = {
+        'u_id' : user['u_id'],
+        'name_first': user['name_first'],
+        'name_last': user['name_last']
+    }
     # Check if channel exists using helper function
     channel = get_channel(channel_id)
 
@@ -195,11 +203,11 @@ def join(token, channel_id):
 
     #or if not channel['is_public']
     if channel['is_public'] is True and user['permission_id'] == 1:
-        channel['owners'].append(user)
+        channel['owners'].append(user_dets)
     elif channel['is_public'] is True and user['permission_id'] == 2:
-        channel['members'].append(user)
+        channel['members'].append(user_dets)
     elif channel['is_public'] is False and user['permission_id'] == 1:
-        channel['owners'].append(user)
+        channel['owners'].append(user_dets)
     else:
         # AccessError when attempting to join a private channel
         raise AccessError(description='Cannot join a private channel')

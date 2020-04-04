@@ -16,7 +16,7 @@ from system_helper_functions import reset_workspace
 #                   AUTH_REGISTER                           #
 #############################################################
 
-BASE_URL = 'http://127.0.0.1:5005'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def test_register1():
     '''

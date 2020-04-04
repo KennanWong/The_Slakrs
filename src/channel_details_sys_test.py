@@ -30,8 +30,10 @@ def test_channel_details():
     user1 = reg_user1()
     u_id1 = user1['u_id']
 
+    channel1 = create_ch1(user1)
+
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/details?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b&channel_id=1"
+        f"{BASE_URL}/channel/details?token="+str(user1['token'])+"&channel_id="+str(channel1['channel_id'])
     )
     req.get_method = lambda: 'GET'
 
@@ -61,15 +63,10 @@ def test_channel_details_invalid_channel():
 
     # Attempt to get details of an invalid channel
     # Invalid channel_id = 100
-    data = json.dumps({
-        'token': token1,
-        'channel_id': 100,
-        'u_id': u_id2
-    }).encode('utf-8')
 
     with pytest.raises(HTTPError):
-        urllib.request.urlopen(urllib.request.Request(
-            f"{BASE_URL}/channel/details",
-            data=data,
-            headers={'Content-Type': 'application/json'}
-        ))
+        req = urllib.request.Request(
+            f"{BASE_URL}/channel/details?token="+str(user1['token'])+"&channel_id=1"
+        )
+        req.get_method = lambda: 'GET'
+        json.load(urllib.request.urlopen(req))

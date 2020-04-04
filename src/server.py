@@ -5,9 +5,7 @@ Contains all routes
 
 import sys
 import re
-from json import dumps
 import datetime
-from flask import Flask, request
 from flask_cors import CORS
 
 from json import dumps
@@ -17,10 +15,6 @@ import message
 import channel
 import channels
 import standup
-
-
-
-from flask_cors import CORS
 import other
 import user
 from error import InputError
@@ -83,11 +77,11 @@ def auth_register():
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
     payload = request.get_json()
-    user = auth.login(payload)
+    user1 = auth.login(payload)
     
     return dumps({
-        'u_id' : user['u_id'],
-        'token' : user['token']
+        'u_id' : user1['u_id'],
+        'token' : user1['token']
     })
 
 
@@ -331,9 +325,7 @@ def channel_invite_server():
 def channel_details_server():
     # Information from request
     token = request.args.get('token')
-    print(token)
     channel_id = request.args.get('channel_id')
-    
     
     details = channel.details(token, channel_id)
 
@@ -449,9 +441,15 @@ def workspace_reset():
 @APP.route('/search', methods=['GET'])
 def search():
     """ return messages """
-    payload = request.get_json()
-    messages = user.search(payload)
-    return dumps({messages})
+    token = request.args.get('token')
+    query_str = request.args.get('query_str')
+
+    payload = {
+        'token' : token,
+        'query_str' : query_str
+    }
+    messages = other.search(payload)
+    return dumps(messages)
     
 #############################################################
 #                USER PERMISSION CHANGE                     #      
@@ -461,7 +459,7 @@ def userpermission_change():
     """ return empty dic, change user's permission """
     payload = request.get_json()
     user.user_permission_change(payload)
-    return dumps({})
+    return dumps()
 
 
 #############################################################
@@ -473,9 +471,18 @@ def user_profile():
     """ 
     return 'email', 'name_first', 'name_last', 'handle_str', unpin a msg 
     """
-    payload = request.get_json()
+    '''
+    MIGHT NEED TO BE CHANGED; should it return the person who makes the call or the profile of the u_id
+    '''
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+
+    payload = {
+        'token': token,
+        'u_id': u_id
+    }
     user_info = user.profile(payload)
-    return dumps ({user_info})
+    return dumps (user_info)
     
 
 #############################################################
@@ -526,65 +533,14 @@ def all_users():
     """ 
     Returns a list of all users and their associated details
     """
-    payload = request.get_json()
-    ret = user.users_all(payload)
-    return({ret})
-    
-    
-if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
+    token = request.args.get('token')
 
+    payload = {
+        'token': token
+    }
+    ret = other.users_all(payload)
+    return dumps(ret)
 
-#############################################################
-#                   CHANNEL_JOIN                            #      
-#############################################################
-
-@APP.route('/channel/join', methods=['POST'])
-def channel_join_server():
-    payload = request.get_json()
-    
-    # Information from request
-    token = payload['token']
-    channel_id = int(payload['channel_id'])
-
-    # Join the channel
-    join = channel.join(token, channel_id)
-
-    return dumps(join)
-        
-#############################################################
-#                   CHANNEL_LEAVE                           #      
-#############################################################
-
-@APP.route('/channel/leave', methods=['POST'])
-def channel_leave_server():
-    payload = request.get_json()
-    
-    # Information from request
-    token = payload['token']
-    channel_id = int(payload['channel_id'])
-
-    # Leave the channel
-    leave = channel.leave(token, channel_id)
-    
-    return dumps(leave)
-    
-#############################################################
-#                   CHANNEL_INVITE                          #      
-#############################################################
-@APP.route('/channel/invite', methods=['POST'])
-def channel_invite_server():
-    payload = request.get_json()
-
-    # Information from request
-    token = payload['token']
-    channel_id = int(payload['channel_id'])
-    user_id = int(payload['u_id'])
-
-    # Invite user to channel
-    invite = channel.invite(token, channel_id, user_id)
-    
-    return dumps(invite)
     
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

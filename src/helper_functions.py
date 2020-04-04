@@ -42,10 +42,13 @@ def get_channel(channel_id):
     Function to return the channel data suing a channel_id
     '''
     all_channels = get_channel_data_store()
-
+    if len(all_channels) == 0 :
+        raise InputError(description='There are currently no channels')
+    
     for i in all_channels:
         if i['channel_id'] == int(channel_id):
             return i
+    
     raise InputError(description='Invalid channel_id')
 
 def get_user_token(token):
@@ -187,7 +190,9 @@ def append_later(argument):
 def validate_uid(u_id):
     user_store = get_auth_data_store()
     for i in user_store:
-        if i['u_id'] == u_id:
+        print("i['u_id]: "+ str(i['u_id']))
+        print("u_id: " + str(u_id))
+        if i['u_id'] == int(u_id):
             return True
     
     return False

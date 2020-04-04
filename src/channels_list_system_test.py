@@ -7,7 +7,7 @@ import flask             # pylint: disable=W0611
 
 import pytest   # pylint: disable=W0611
 from system_helper_functions import reg_user1, reset_workspace
-from system_helper_functions import reg_user2
+from system_helper_functions import reg_user2, create_ch1
 
 #pylint compliant
 #############################################################
@@ -25,29 +25,23 @@ def test_list():
     user1 = reg_user1()
     user2 = reg_user2()
 
-    data = json.dumps({
-        'token':user2['token'],
-        'name': 'new_channel',
-        'is_public': True
-    }).encode('utf-8')
+    channel1 = create_ch1(user1)
 
-    req = urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channels/create",
-        data=data,
-        headers={'Content-Type':'application/json'}
-    ))
-
-    data1 = json.dumps({
-        'token': user1['token'],
-    }).encode('utf-8')
 
     req = urllib.request.Request(
-        f"{BASE_URL}/channels/list",
-        data=data1,
-        headers={'Content-Type':'application/json'}
+        f"{BASE_URL}/channels/list?token="+str(user1['token'])
+        # f"{BASE_URL}/channels/list",
+        # data=data1,
+        # headers={'Content-Type':'application/json'}
     )
 
     req.get_method = lambda: 'GET'
+
     response = json.load(urllib.request.urlopen(req))
 
-    assert response
+    expected = {
+        'channel_id' : 1,
+        'name': 'new_channel'
+    }
+
+    assert expected in response

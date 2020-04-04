@@ -37,6 +37,7 @@ def test_profile_working():
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b&u_id=1"
     )
+    req.get_method = lambda: 'GET'
     response = json.load(urllib.request.urlopen(req))
 
     assert response['email'] == 'Kennan@gmail.com'
@@ -49,28 +50,8 @@ def test_profile_invalid_u_id():
     user1 = reg_user1()
 
     req = urllib.request.Request(
-        f"{BASE_URL}/user/profile?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b&u_id=1"
+        f"{BASE_URL}/user/profile?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b&u_id=2"
     )
-    response = json.load(urllib.request.urlopen(req))
-
-    with pytest.raises(HTTPError):
-        json.load(urllib.request.urlopen(req))
-
-def test_profile_invalid_u_id():
-    reset_workspace()
-
-    user1 = reg_user1()
-
-    data = json.dumps({
-        'token': user1['token'],
-        'u_id': 3
-    }).encode('utf-8')
-    req = urllib.request.Request(
-        f"{BASE_URL}/user/profile",
-        data=data,
-        headers={'Content-Type':'application/json'}
-    )
-    req.get_method = lambda: 'GET'
 
     with pytest.raises(HTTPError):
         json.load(urllib.request.urlopen(req))
@@ -106,7 +87,6 @@ def test_user_profile_setname_working():
 def test_user_profile_setname_short():
 
     reset_workspace()   
-        
     
     details = reg_user1()
       
@@ -114,7 +94,7 @@ def test_user_profile_setname_short():
     
     data = json.dumps({
         'token': details['token'],
-        'name_first': "",
+        'name_first': "I",
         'name_last': "Son"
     }).encode('utf-8')
     
@@ -125,7 +105,7 @@ def test_user_profile_setname_short():
     )
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
-        response = json.load(urllib.request.urlopen(req))
+        json.load(urllib.request.urlopen(req))
  
 
 '''
@@ -263,8 +243,8 @@ def test_user_profile_sethandle_invalhandle():
         headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
-    response = json.load(urllib.request.urlopen(req))   
-    assert response == {}
+    with pytest.raises(HTTPError):
+        json.load(urllib.request.urlopen(req))   
     
 def test_user_profile_sethandle_invalhandle2():
 
@@ -278,33 +258,37 @@ def test_user_profile_sethandle_invalhandle2():
     }).encode('utf-8')
     
     req = urllib.request.Request(
-        f"{BASE_URL}/profile/sethandle",
+        f"{BASE_URL}/user/profile/sethandle",
         data=data,
         headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
-    response = json.load(urllib.request.urlopen(req))   
-    assert response == {}
+    with pytest.raises(HTTPError):
+        json.load(urllib.request.urlopen(req))  
 
-#############################################################
-#                       USERS_ALL                           #
-#############################################################
+
+'''
+gi
+'''  
 def test_users_all_working():
     reset_workspace()
 
     user1 = reg_user1()
 
+    # get a users data
     req = urllib.request.Request(
-        f"{BASE_URL}/user/profile?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+        f"{BASE_URL}/user/profile?token="+str(user1['token'])+"&u_id="+str(user1['u_id'])
     )
+    req.get_method = lambda: 'GET'
+    user1_dets = json.load(urllib.request.urlopen(req))
+
+
+    req = urllib.request.Request(
+        f"{BASE_URL}/users/all?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    )
+    req.get_method = lambda: 'GET'
     response = json.load(urllib.request.urlopen(req))
 
-    exp = {
-        'u_id': 1,
-        'email': 'Kennan@gmail.com',
-        'name_first': 'Kennan',
-        'name_last': 'Wong',
-        'handle_str': 'kennanwong'
-    }
+    assert user1_dets in response
 
-    assert exp in response
+

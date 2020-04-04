@@ -15,7 +15,7 @@ from system_helper_functions import reg_user1, reset_workspace, create_ch1
 #                   STANDUP_START                           #
 #############################################################
 
-BASE_URL = 'http://127.0.0.1:5005'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def test_start():
     'successful case'

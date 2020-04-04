@@ -15,7 +15,7 @@ from system_helper_functions import reg_user2
 #                   CHANNELS_LISTALL                        #
 #############################################################
 
-BASE_URL = 'http://127.0.0.1:5005'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def test_listall():
     'successful case for channels listall'

@@ -142,7 +142,7 @@ def send_msg1(user, channel):
     payload = json.load(req)
     return payload
 
-'''
+
 def invite_to_channel(inviter, invitee, channel):
     data = json.dumps({
         'token': inviter['token'],
@@ -150,12 +150,12 @@ def invite_to_channel(inviter, invitee, channel):
         'u_id': invitee['u_id']
     }).encode('utf-8')
     
-    urllib.request.Request(
+    urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/channel/invite", 
         data = data, 
         headers = {'Content-Type':'application/json'}
-    )
-'''
+    ))
+    return
 
 def react_to_msg(user, message, react_id):
     '''

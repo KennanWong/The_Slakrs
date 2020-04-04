@@ -42,10 +42,13 @@ def get_channel(channel_id):
     Function to return the channel data suing a channel_id
     '''
     all_channels = get_channel_data_store()
-
+    if len(all_channels) == 0 :
+        raise InputError(description='There are currently no channels')
+    
     for i in all_channels:
         if i['channel_id'] == int(channel_id):
             return i
+    
     raise InputError(description='Invalid channel_id')
 
 def get_user_token(token):
@@ -129,6 +132,10 @@ def user_details(u_id):
             }
     return False
 
+# Function to get userID from token
+def user_id_from_token(token):
+    user = get_user_token(token)
+    return user['u_id']
 
 #to get current time and add seconds, courtesy of stackoverflow
 def addSecs(tm, secs):
@@ -137,31 +144,6 @@ def addSecs(tm, secs):
     return fulldate.time()
     return False
 
-# Function to check valid userID
-def is_valid_user_id(u_id):
-    auth_store = get_auth_data_store()
-    for user in auth_store:
-        if user['u_id'] == u_id:
-            return 1
-    else:
-        raise InputError(description='Invalid u_id')
-
-# Function to get userID from token
-def user_id_from_token(token):
-    user = get_user_token(token)
-    return user['u_id']
-
-# Fucntion to get details of a user
-def user_details(u_id):
-    auth_store = get_auth_data_store()
-    for user in auth_store:
-        if u_id == user['u_id']:
-            return {
-                'u_id': u_id,
-                'name_first': user['name_first'],
-                'name_last': user['name_last']
-            }
-    return False
 
 # function to format a list of dictionaries into a members data type
 
@@ -178,14 +160,6 @@ def format_to_members(members):
         }
         members.append(add)
     return members
-
-def user_id_from_token():
-    auth_store = get_auth_data_store
-    for user in auth_store:
-        if token == user['token']:
-            return user['u_id']
-    else:
-        raise InputError(description='Could not find u_id')
 
 def get_message_count():
     '''
@@ -216,7 +190,9 @@ def append_later(argument):
 def validate_uid(u_id):
     user_store = get_auth_data_store()
     for i in user_store:
-        if i['u_id'] == u_id:
+        print("i['u_id]: "+ str(i['u_id']))
+        print("u_id: " + str(u_id))
+        if i['u_id'] == int(u_id):
             return True
     
     return False

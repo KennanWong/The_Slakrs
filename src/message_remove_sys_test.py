@@ -8,7 +8,7 @@ from urllib.error import HTTPError
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2, send_msg1
+from system_helper_functions import reg_user2, send_msg1, invite_to_channel
 
 
 #############################################################
@@ -42,7 +42,7 @@ def test_remove1():
 
     assert response == {}
 
-'''
+
 def test_remove2():
     # the admin of a channel attempting to remove another users emssage
     reset_workspace()
@@ -67,7 +67,7 @@ def test_remove2():
     response = json.load(urllib.request.urlopen(req))
 
     assert response == {}
-'''
+
 
 def test_no_msg():
     '''

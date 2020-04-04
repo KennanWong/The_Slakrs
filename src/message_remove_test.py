@@ -4,7 +4,7 @@ Pytest file to test functionality of message_remove
 import pytest
 
 import message
-# import channel
+import channel
 from other import workspace_reset
 from test_helper_functions import reg_user2, register_and_create, send_msg1
 from data_stores import get_messages_store
@@ -36,7 +36,7 @@ def test_remove1():
     assert msg1 not in messages_store
     assert msg1 not in channel['messages']
 
-'''
+
 def test_remove2():
     #the admin of a channel is attempting to remove a message
     workspace_reset()
@@ -50,11 +50,7 @@ def test_remove2():
 
     user2 = reg_user2()
 
-    channel.invite({
-        'token': user1['token'],
-        'channel_id': channel1['channel_id'],
-        'u_id': user2['u_id']
-    })
+    channel.invite(user1['token'],channel1['channel_id'],user2['u_id'])
 
     msg1 = send_msg1(user2, channel1)
     
@@ -64,8 +60,8 @@ def test_remove2():
     })
 
     assert msg1 not in messages_store
-    assert msg1 not in channel['messages']
-'''
+    assert msg1 not in channel1['messages']
+
 
 def test_no_msg():
     '''

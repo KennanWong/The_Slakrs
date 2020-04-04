@@ -1,10 +1,14 @@
 '''
 This file contains all function stubs for 'other_' functions and misclaneous
 '''
-
+import re
 from data_stores import reset_auth_store, reset_channel_data_store
+from data_stores import get_auth_data_store, get_channel_data_store
 from data_stores import reset_messages_store
-from helper_functions import reset_message_count
+from helper_functions import reset_message_count, get_user_token
+from helper_functions import test_in_channel, validate_uid
+from helper_functions import get_user_uid
+from error import AccessError, InputError
 
 #############################################################
 #                        WORKSPACE_RESET                    #
@@ -38,13 +42,13 @@ def users_all(payload):
     
     user_data = {}
 
-    for i in user_store['users']:
+    for i in user_store:
         user_data = {
             'u_id': i['u_id'],
             'email': i['email'],
             'name_first': i['name_first'],
             'name_last': i['name_last'],
-            'handle_str': i['handle'],
+            'handle_str': i['handle_str'],
         }
         ret.append(user_data)
     
@@ -68,7 +72,7 @@ def search(payload):
     
     user = get_user_token(payload['token'])
     
-    
+    query_str = payload['query_str']
     
     # if the query is nothing
     if query_str == '':
@@ -78,7 +82,15 @@ def search(payload):
         if test_in_channel(user['u_id'], channel):
             for msg in channel['messages']:
                 if re.search(payload['query_str'], msg['message']):
-                    returnMessage.append(msg)
+                    result = {
+                        'message_id': msg['message_id'],
+                        'u_id': msg['u_id'],
+                        'message': msg['message'],
+                        'time_created': msg['time_created'].strftime("%H:%M:%S"),
+                        'reacts': msg['reacts'],
+                        'is_pinned': msg['is_pinned']
+                    }
+                    returnMessage.append(result)
         
     return returnMessage
     

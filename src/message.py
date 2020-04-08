@@ -8,7 +8,7 @@ import threading
 from data_stores import get_messages_store
 from error import InputError, AccessError
 from helper_functions import create_message, get_channel, test_in_channel
-from helper_functions import get_user_token, find_message, check_owner, append_later
+from helper_functions import get_user_from, find_message, check_owner, append_later
 
 
 REACT_IDS = [1]
@@ -23,7 +23,7 @@ def send(payload):
     in the parameters and append it to the channels messages
     store as well as the gloabal message_store
     '''
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     channel = get_channel(payload['channel_id'])
     if not test_in_channel(user['u_id'], channel):
         raise AccessError(description='User is not in channel')
@@ -64,7 +64,7 @@ def sendlater(payload):
     Function to create a message and have it be sent at a
     '''
 
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     channel = get_channel(payload['channel_id'])
     messages = get_messages_store()
     if not test_in_channel(user['u_id'], channel):
@@ -105,6 +105,7 @@ def sendlater(payload):
         print(msg['message'])
 
     return new_message['message_id']
+    
 #############################################################
 #                   MESSAGE_REMOVE                          #
 #############################################################
@@ -112,7 +113,7 @@ def remove(payload):  # pylint: disable=R1711
     '''
     Function to remove a message from a channel
     '''
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     messages = get_messages_store()
 
     message = find_message(payload['message_id'])
@@ -133,7 +134,7 @@ def remove(payload):  # pylint: disable=R1711
 #############################################################
 def pin(payload): # pylint: disable=R1711
     'testing functionability for message pin'
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     message = find_message(payload['message_id'])
     channel = get_channel(message['channel_id'])
 
@@ -158,7 +159,7 @@ def unpin(payload): # pylint: disable=R1711
     'testing functionability for message unpin'
 
 
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     message = find_message(payload['message_id'])
 
     channel = get_channel(message['channel_id'])
@@ -186,7 +187,7 @@ def edit(payload):
     Function to remove a message from a channel
     '''
     message_store = get_messages_store()
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     message = find_message(payload['message_id'])
 
     channel = get_channel(message['channel_id'])
@@ -212,7 +213,7 @@ def react(payload):
     Function to add a react to a given message
     '''
     global REACT_IDS    # pylint: disable=W0603
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
 
     message = find_message(int(payload['message_id']))
 
@@ -257,7 +258,7 @@ def unreact(payload):
     Function to remove a react from a message
     '''
     global REACT_IDS  # pylint: disable=W0603
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
 
     message = find_message(payload['message_id'])
 

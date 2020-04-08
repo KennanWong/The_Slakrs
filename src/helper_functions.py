@@ -62,6 +62,37 @@ def get_user_token(token):
             return i
     raise InputError(description='Invalid Token')
 
+def get_user_email(email):
+    '''
+    Function to validate a users email and return that users data
+    '''
+    auth_store = get_auth_data_store()
+    for i in auth_store:
+        if i['email'] == email:
+            return i
+    raise InputError(description='Email does not belong to a retgistered user')
+
+def get_user_from(field, request):
+    '''
+    Function will return a users data based on a given a field and test it against
+    a requested value
+    i.e if get_user_from(email, payload[email])
+    will search each users email whether or not it matches the payload
+    '''
+    auth_store = get_auth_data_store()
+    for i in auth_store:
+        if i[str(field)] == request:
+            return i
+    
+    if str(field) == 'token':
+        raise InputError(description ='Invalid Token')
+
+    if str(field) == 'u_id':
+        raise InputError(description = 'Invalid u_id')
+    if str(field) == 'email':
+        raise InputError(description = 'Email does not belong to a registered user')
+
+
 def test_email(email):
     '''
     Functionto to test if an email is valid, courtesy of geeksforgeeks.org
@@ -190,8 +221,6 @@ def append_later(argument):
 def validate_uid(u_id):
     user_store = get_auth_data_store()
     for i in user_store:
-        print("i['u_id]: "+ str(i['u_id']))
-        print("u_id: " + str(u_id))
         if i['u_id'] == int(u_id):
             return True
     

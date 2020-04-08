@@ -3,7 +3,7 @@ This file contains the code for all the 'auth_' functions
 server
 '''
 from error import InputError
-from helper_functions import test_email, generate_token, get_user_token
+from helper_functions import test_email, generate_token, get_user_from
 from data_stores import get_auth_data_store
 
 
@@ -12,7 +12,7 @@ LOGGED_OFF = 0
 
 
 #############################################################
-#                   AUTH_REGISTER                           #
+#                   AUTH_REGISTER                           # 
 #############################################################
 
 def register(payload):
@@ -84,28 +84,19 @@ def login(payload):
     '''
     Function to login a user
     '''
-    auth_store = get_auth_data_store()
-
     email = test_email(payload['email'])
 
-    email_match = 0  # if found = 1
+    user = get_user_from('email', email)
 
-    user = {}
-    for i in auth_store:
-        if i['email'] == email:
-            email_match = 1
-            if i['status'] == LOGGED_OFF:
-                if i['password'] == payload['password']:
-                    user = i
-                    i['status'] = LOGGED_ON
-                    i['token'] = generate_token(i['u_id'])
-                else:
-                    raise InputError(description="Incorrect password")
-            else:
-                raise InputError(description="User already logged in")
+    # if the user is not currently logged off, raise error
+    if user['status'] != LOGGED_OFF:
+        raise InputError(description = "User already logged in")
 
-    if email_match == 0:
-        raise InputError(description="Email entered does not belong to a user")
+    if user['password'] != payload['password']:
+        raise InputError(description = "Incorrect password")
+
+    user['status'] = LOGGED_ON
+    user['token'] = generate_token(user['u_id'])
 
     return user
 
@@ -119,7 +110,7 @@ def logout(payload):
     '''
     Function to logout a user
     '''
-    user = get_user_token(payload['token'])
+    user = get_user_from('token',payload['token'])
     if user['status'] == LOGGED_ON:
         user['status'] = LOGGED_OFF
         user['token'] = ''

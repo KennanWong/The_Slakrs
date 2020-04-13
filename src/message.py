@@ -3,9 +3,11 @@
 This file contains all 'message_' functions
 
 '''
-import datetime
+from datetime import datetime, timezone
 import threading
-from data_stores import get_messages_store
+import hangman
+from data_stores import get_messages_store, save_messages_store
+from data_stores import save_channel_store
 from error import InputError, AccessError
 from helper_functions import create_message, get_channel, test_in_channel
 from helper_functions import get_user_from, find_message, check_owner, append_later
@@ -43,9 +45,33 @@ def send(payload):
     # append it to the messages_store
     messages = get_messages_store()
     messages.append(new_message)
+    save_messages_store()
 
     # append it to the channels file
     channel['messages'].append(new_message)
+    save_channel_store()
+
+    if txt == '/hangman':
+        if channel['hangman_active'] == False:
+            channel['hangman_active'] = True
+            hangman.start(channel)
+            hangman.message(channel, hangman.display_hangman())
+        else:
+            hangman.message(channel, 'There is already an active game running')
+            hangman.message(channel, hangman.display_hangman())
+
+    if txt.split()[0] == '/guess':
+        if channel['hangman_active'] == False:
+            hangman.message(channel, 'There is not a current game of hangman running.\n'+ 'If you would like to start one, type \hangman into the chat')
+        else:
+            if len(txt.split()) == 2:
+                new_guess = txt.split()[1]
+                if new_guess in '!@#$%^&*()_+-=[]\;<>?/~`:':
+                    hangman.message(channel, 'Invalid guess, guess again')
+                else: 
+                    hangman.guess(channel, new_guess)
+            else:
+                hangman.message(channel, 'Invalid guess, guess again')
 
     # debugging purposes
     for msg in channel['messages']:
@@ -77,9 +103,9 @@ def sendlater(payload):
         raise InputError(description='Message is more than 1000 characters')
 
     # create the message dictionary
-    time = datetime.datetime.fromtimestamp(payload['time_sent'])
+    time = payload['time_sent']
 
-    if time < datetime.datetime.now():
+    if time < datetime.now().replace(tzinfo=timezone.utc).timestamp():
         raise InputError(description='Unable to send as '+
                          'time sent is a time in the past')
 
@@ -91,6 +117,7 @@ def sendlater(payload):
 
     # append it to the messages_store first
     messages.append(new_message)
+    save_messages_store()
 
     interval = (time - datetime.datetime.now()).total_seconds()
 

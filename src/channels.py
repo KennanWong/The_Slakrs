@@ -3,7 +3,7 @@
 
 from error import InputError
 from helper_functions import get_user_token, test_in_channel
-from data_stores import get_channel_data_store
+from data_stores import get_channel_data_store, save_channel_store
 
 #pylint compliant
 #############################################################
@@ -39,7 +39,8 @@ def create(payload):
                     'is_active': False,
                     'messages': [],
                     'time_finish': [],
-                }
+                },
+                'hangman_active': False
             }
         else:
             new_channel_info = {
@@ -53,7 +54,8 @@ def create(payload):
                     'is_active': False,             # pylint: disable=C0330
                     'messages': [],                 # pylint: disable=C0330
                     'time_finish': [],              # pylint: disable=C0330
-                }                                   # pylint: disable=C0330
+                },                                  # pylint: disable=C0330
+                'hangman_active': False
             }
     else:
         raise InputError(description='Name is too long')
@@ -61,6 +63,7 @@ def create(payload):
     new_channel_info['owners'].append(channel_owner_info)
 
     channel_store.append(new_channel_info)
+    save_channel_store()
 
     return new_channel_info
 

@@ -6,6 +6,7 @@ Contains all routes
 import sys
 import re
 import datetime
+import threading
 from flask_cors import CORS
 
 from json import dumps
@@ -17,6 +18,7 @@ import channels
 import standup
 import other
 import user
+from data_stores import save_data_stores
 from error import InputError
 
 #test
@@ -541,6 +543,8 @@ def all_users():
     ret = other.users_all(payload)
     return dumps(ret)
 
-    
+
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
+    threading.Timer(60.0, save_data_stores).start()
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
+

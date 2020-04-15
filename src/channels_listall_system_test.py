@@ -7,7 +7,7 @@ import flask                                # pylint: disable=W0611
 
 import pytest                               # pylint: disable=W0611
 from system_helper_functions import reg_user1, reset_workspace
-from system_helper_functions import reg_user2
+from system_helper_functions import reg_user2, create_ch1
 
 #pylint compliant
 
@@ -22,8 +22,9 @@ def test_listall():
     reset_workspace()
 
     user1 = reg_user1()
-
     user2 = reg_user2()
+
+    channel1 = create_ch1(user1)
 
     data = json.dumps({
         'token':user2['token'],
@@ -37,18 +38,23 @@ def test_listall():
         headers={'Content-Type':'application/json'}
     ))
 
-    data1 = json.dumps({
-        'token': user1['token'],
-    }).encode('utf-8')
-
     req = urllib.request.Request(
-        f"{BASE_URL}/channels/listall",
-        data=data1,
-        headers={'Content-Type':'application/json'}
+        f"{BASE_URL}/channels/listall?token="+str(user1['token'])
+        # f"{BASE_URL}/channels/listall",
+        # data=data1,
+        # headers={'Content-Type':'application/json'}
     )
 
     req.get_method = lambda: 'GET'
+
     response = json.load(urllib.request.urlopen(req))
 
-    assert response
+    expected = {
+        'channel_id' : 1,
+        'name': 'new_channel'
+    }
+
+    assert expected in response
+
+    
     

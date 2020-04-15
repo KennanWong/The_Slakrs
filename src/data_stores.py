@@ -54,6 +54,7 @@ auth_data = [
     #     'messages':[],
     #     'permission_id': 2,
     #     'slack_owner' : False
+   #      'reset_code':
     # }
 ]
 
@@ -72,6 +73,12 @@ messages_store = [
     # 'is_pinned'
 ]
 
+reset_data = [
+   #'email':
+   # 'reset_code':
+   # 'u_id':
+]
+
 MSG_COUNT=1
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
@@ -87,6 +94,11 @@ def get_channel_data_store():
 def get_messages_store():
     global messages_store
     return messages_store
+
+#Function to get reset data store
+def get_reset_code_store():
+   global reset_data
+   return reset_data
 
 def get_message_count():
     global MSG_COUNT

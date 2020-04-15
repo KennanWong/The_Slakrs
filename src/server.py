@@ -19,7 +19,7 @@ import other
 import user
 from error import InputError
 
-#test
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -100,7 +100,6 @@ def auth_logout():
         return dumps ({
             'is_success':False
         }) 
-
 
 
 #############################################################
@@ -277,7 +276,7 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
 
-    
+'''  
     payload = {
         'token': token,
         'channel_id': channel_id
@@ -285,7 +284,7 @@ def standup_active():
 
     standup_info = standup.active(payload)
     return dumps(standup_info)
-    
+'''
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -541,6 +540,26 @@ def all_users():
     ret = other.users_all(payload)
     return dumps(ret)
 
+#############################################################
+#                   AUTH_PASSWORDRESET_REQUEST              #
+#############################################################
+@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_request():
+    payload = request.get_json()
+    auth.request(payload)
+
+    return dumps({})
+'''
+#############################################################
+#                   AUTH_PASSWORDRESET_RESET                #
+#############################################################
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
+def auth_reset():
+    payload = request.get_json()
+    auth.reset(payload)
     
+    return dumps({})
+
+'''
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

@@ -2,14 +2,17 @@
 This file contains the code for all the 'auth_' functions
 server
 '''
+import smtplib
 from error import InputError
-from helper_functions import test_email, generate_token, get_user_token
-from data_stores import get_auth_data_store
+from helper_functions import test_email, generate_token, get_user_token, id_generator
+from data_stores import get_auth_data_store, get_reset_code_store
 
 
 LOGGED_ON = 1
 LOGGED_OFF = 0
 
+EMAIL = "slakrs1531@gmail.com"
+PASSWORD = "1531python"
 
 #############################################################
 #                   AUTH_REGISTER                           #
@@ -125,3 +128,63 @@ def logout(payload):
         user['token'] = ''
         return True
     return False
+
+#############################################################
+#                   AUTH_PASSWORDRESET_REQUEST              #
+#############################################################
+def request(payload):
+
+    auth_store = get_auth_data_store()
+    reset_store = get_reset_code_store()
+    send_to_email = test_email(payload['email'])
+
+    email_match = 0  # if found = 1
+
+    for i in auth_store:
+        if i['email'] == send_to_email:
+            email_match = 1
+            reset_code = id_generator()
+
+            code_password = {
+                'email': send_to_email,
+                'reset_code': reset_code,
+
+            }
+            
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.login(EMAIL, PASSWORD)
+            server.sendmail(
+                EMAIL,
+                send_to_email,
+                reset_code)
+            server.quit()
+
+    if email_match == 0:
+        raise InputError(description="Email entered does not belong to a user")
+
+    reset_store.append(code_password)
+
+    return
+'''
+#############################################################
+#                   AUTH_PASSWORDRESET_RESET                #
+#############################################################
+def reset(payload):
+
+    auth_store = get_auth_data_store()
+    reset_store = get_reset_code_store()
+
+    for code in reset_store:
+        if code['reset_code'] == payload['reset_code']:
+            if len(payload['password']) > 6:
+                new_password = payload['new_password']
+
+            #    user['password'] = new_password
+
+            else:
+                raise InputError(description='Password is too short')
+
+        else:
+            raise InputError(description='Reset code is incorrect')
+
+'''

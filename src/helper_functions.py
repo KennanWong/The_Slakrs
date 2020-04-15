@@ -9,7 +9,8 @@ from datetime import datetime
 from error import InputError
 from data_stores import get_auth_data_store, get_channel_data_store
 from data_stores import get_messages_store
-
+import string
+import random
 MSG_COUNT = 1
 
 
@@ -231,3 +232,8 @@ def reset_message_count():
     global MSG_COUNT
     MSG_COUNT = 1
     return
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+

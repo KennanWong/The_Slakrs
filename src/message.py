@@ -52,33 +52,35 @@ def send(payload):
     save_channel_store()
 
     if txt == '/hangman':
-        if channel['hangman_active'] == False:
+        if not channel['hangman_active']:
             channel['hangman_active'] = True
             hangman.start(channel)
-            hangman.message(channel, hangman.display_hangman())
         else:
             hangman.message(channel, 'There is already an active game running')
             hangman.message(channel, hangman.display_hangman())
 
     if txt.split()[0] == '/guess':
-        if channel['hangman_active'] == False:
-            hangman.message(channel, 'There is not a current game of hangman running.\n'+ 'If you would like to start one, type \hangman into the chat')
+        if not channel['hangman_active']:
+            hangman.message(channel, 'There is not a current game of hangman running.\n'+
+                            'If you would like to start one, type \hangman into the chat')
         else:
             if len(txt.split()) == 2:
                 new_guess = txt.split()[1]
-                if new_guess in '!@#$%^&*()_+-=[]\;<>?/~`:':
+                if new_guess in r'!@#$%^&*()_+-=[]\;<>?/~`:':
                     hangman.message(channel, 'Invalid guess, guess again')
-                else: 
+                else:
                     hangman.guess(channel, new_guess)
             else:
                 hangman.message(channel, 'Invalid guess, guess again')
 
+    '''
     # debugging purposes
     for msg in channel['messages']:
         if msg['is_pinned'] is True:
             print('*** '+ msg['message'] + ' ***')
         else:
             print(msg['message'])
+    '''
 
     return new_message
 
@@ -105,7 +107,9 @@ def sendlater(payload):
     # create the message dictionary
     time = payload['time_sent']
 
-    if time < datetime.now().replace(tzinfo=timezone.utc).timestamp():
+    print(type(time))
+
+    if time < int(datetime.now().timestamp()):
         raise InputError(description='Unable to send as '+
                          'time sent is a time in the past')
 
@@ -119,7 +123,7 @@ def sendlater(payload):
     messages.append(new_message)
     save_messages_store()
 
-    interval = (time - datetime.datetime.now()).total_seconds()
+    interval = (time - datetime.now().timestamp())
 
     # append to the channel message store at a later time
     timer = threading.Timer(interval, append_later, args=[new_message['message_id']])
@@ -132,7 +136,7 @@ def sendlater(payload):
         print(msg['message'])
 
     return new_message['message_id']
-    
+
 #############################################################
 #                   MESSAGE_REMOVE                          #
 #############################################################
@@ -259,7 +263,8 @@ def react(payload):
             # this react is already present in the message
             # just add another u_id
             if user['u_id'] in i['u_ids']:
-                raise InputError(description='Already reacted')
+                # if the user has reacted, unreact them
+                unreact(payload)
             i['u_ids'].append(user['u_id'])
             return
 
@@ -272,7 +277,6 @@ def react(payload):
     new_react['u_ids'].append(user['u_id'])
     message['reacts'].append(new_react)
 
-    print(message['reacts'])
     return
 
 

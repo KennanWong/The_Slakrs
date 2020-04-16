@@ -12,7 +12,7 @@ LOGGED_OFF = 0
 
 
 #############################################################
-#                   AUTH_REGISTER                           # 
+#                   AUTH_REGISTER                           #
 #############################################################
 
 def register(payload):
@@ -94,7 +94,7 @@ def login(payload):
 
     # if the user is not currently logged off, raise error
     if user['password'] != payload['password']:
-        raise InputError(description = "Incorrect password")
+        raise InputError(description="Incorrect password")
 
     user['status'] = LOGGED_ON
     user['token'] = generate_token(user['u_id'])
@@ -111,7 +111,7 @@ def logout(payload):
     '''
     Function to logout a user
     '''
-    user = get_user_from('token',payload['token'])
+    user = get_user_from('token', payload['token'])
     if user['status'] == LOGGED_ON:
         user['status'] = LOGGED_OFF
         user['token'] = ''

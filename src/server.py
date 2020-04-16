@@ -129,9 +129,9 @@ def channels_list():
     token = request.args.get('token')
     chann_inf = channels.List(token)
     
-    return dumps(
-        chann_inf
-    )
+    return dumps({
+        'channels': chann_inf
+    })
 
 
 #############################################################
@@ -144,9 +144,9 @@ def channels_listall():
     token = request.args.get('token')
     chann_inf2 = channels.Listall(token)
 
-    return  dumps(
-        chann_inf2
-    )
+    return  dumps({
+        'channels':chann_inf2
+    })
 
 
 #############################################################
@@ -316,7 +316,7 @@ def channel_invite_server():
     # Invite user to channel
     invite = channel.invite(token, channel_id, user_id)
     
-    return dumps(invite)
+    return dumps({})
 
 
 #############################################################
@@ -368,7 +368,7 @@ def channel_leave_server():
     # Leave the channel
     leave = channel.leave(token, channel_id)
     
-    return dumps(leave)
+    return dumps({})
     
 
 #############################################################
@@ -386,7 +386,7 @@ def channel_join_server():
     # Join the channel
     join = channel.join(token, channel_id)
 
-    return dumps(join)
+    return dumps({})
         
 
 #############################################################
@@ -451,17 +451,19 @@ def search():
         'query_str' : query_str
     }
     messages = other.search(payload)
-    return dumps(messages)
+    return dumps({
+        'messages': messages
+    })
     
 #############################################################
 #                USER PERMISSION CHANGE                     #      
 #############################################################
 @APP.route('/admin/userpermission/change', methods=['POST'])
-def userpermission_change():
+def user_permission_change():
     """ return empty dic, change user's permission """
     payload = request.get_json()
-    user.user_permission_change(payload)
-    return dumps()
+    user.permission_change(payload)
+    return dumps({})
 
 
 #############################################################
@@ -484,7 +486,9 @@ def user_profile():
         'u_id': u_id
     }
     user_info = user.profile(payload)
-    return dumps (user_info)
+    return dumps ({
+        'user':user_info
+    })
     
 
 #############################################################
@@ -541,7 +545,9 @@ def all_users():
         'token': token
     }
     ret = other.users_all(payload)
-    return dumps(ret)
+    return dumps({
+        'users':ret
+    })
 
 
 if __name__ == "__main__":

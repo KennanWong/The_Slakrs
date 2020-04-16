@@ -26,7 +26,7 @@ def create_message():
     '''
     global MSG_COUNT
 
-    timeStamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    timeStamp = datetime.now().timestamp()
     message = {
         'channel_id' : 0,
         'message_id' : MSG_COUNT,
@@ -81,6 +81,7 @@ def get_user_from(field, request):
     i.e if get_user_from(email, payload[email])
     will search each users email whether or not it matches the payload
     '''
+
     auth_store = get_auth_data_store()
     for i in auth_store:
         if i[str(field)] == request:
@@ -93,6 +94,7 @@ def get_user_from(field, request):
         raise InputError(description = 'Invalid u_id')
     if str(field) == 'email':
         raise InputError(description = 'Email does not belong to a registered user')
+    return {}
 
 
 def test_email(email):
@@ -141,6 +143,14 @@ def check_owner(user, channel):
     
     return False
 
+def check_channel_permission(user, channel):
+    for i in channel['members']:
+        if i['u_id'] == user['u_id']:
+            return 'member'
+    for i in channel['owners']:
+        if i['u_id'] == user['u_id']:
+            return 'owner'
+    return False
 
 # Function to check valid userID
 def is_valid_user_id(u_id):
@@ -258,6 +268,7 @@ def get_user_uid(u_id):
         return user
     else:
         raise InputError(description='Invalid u_id')
+
 def reset_message_count():
     global MSG_COUNT
     MSG_COUNT = 1

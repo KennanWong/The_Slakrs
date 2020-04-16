@@ -1,16 +1,24 @@
+'''
+File contains all functions relating to hangman
+'''
+# pylint: disable=W0603
+# pylint: disable=W0702
+# pylint: disable=C0103
+# pylint: disable=C0303
+# pylint: disable=R1711
 from random import randint
 
-from helper_functions import create_message
+import auth
+from helper_functions import create_message, get_user_from
 
 #############################################################
-#                        HANGMAN                            # 
+#                        HANGMAN                            #
 #############################################################
 
-
-HANGMAN_STATES =(
+HANGMAN_STATES = (
     r"""
     _______________________________
-	    
+	
 
 
 
@@ -129,18 +137,28 @@ PHRASE = ''
 EMPTY_GUESS = []
 
 def start(channel):
+    '''
+    Function inititates a game of hangman, by generating
+    a phrase and reseting the game state
+    '''
+    hangman = get_hangman()
+    hangman_join(channel)
     generate_phrase()
     global PHRASE
     global EMPTY_GUESS
     global STATE 
     STATE = 0
     EMPTY_GUESS = '_'*len(PHRASE)
-    display_hangman()
-
+    message(channel, display_hangman())
+    
     return
 
-
 def guess(channel, new_guess):
+    '''
+    Function used when players makes a guess
+    searches if that letter is found within the phrase,
+    and fills it in otherwise it advances the game state
+    '''
     global PHRASE
     global EMPTY_GUESS
     if new_guess not in PHRASE:
@@ -164,8 +182,8 @@ def guess(channel, new_guess):
                 if PHRASE[i] == new_guess:
                     EMPTY_GUESS[i] = new_guess
                 i += 1
-        if EMPTY_GUESS == PHRASE:
-            message(channel, display_hangman()+'\n' + 'You win! Game Over')
+        if str(EMPTY_GUESS) == PHRASE:
+            message(channel, display_hangman()+ '\n'  + 'You win! Game Over')
             channel['hangman_active'] = False
         else: 
             message(channel, display_hangman())
@@ -177,16 +195,53 @@ def guess(channel, new_guess):
 # reuse send_message 
 
 def message(channel, msg):
+    '''
+    Function for the hangman to message the channel with the game state
+    '''
+    hangman = get_hangman()
     new_msg = create_message()
-    new_msg['u_id'] == 'HANGMAN'
+    new_msg['u_id'] = hangman['u_id']
     new_msg['channel_id'] = channel['channel_id']
     new_msg['message'] = msg
 
     channel['messages'].append(new_msg)
     return
 
+def get_hangman():
+    '''
+    Function to get the hangman details, otherwise we need to register the hangman
+    '''
+    hangman = get_user_from('name_first', 'Hangman')
+    if hangman == {}:
+        # if we get returned an empty dictionary register hangman
+        payload = {
+            'email': 'hangman@bot.com',
+            'password': 'Hangman',
+            'name_first': 'Hangman',
+            'name_last': 'Bot'
+        }
+        hangman = auth.register(payload)
+    return hangman
+
+def hangman_join(channel):
+    '''
+    let the hangman join the channel
+    '''
+    hangman = get_hangman()
+    hangman_dets = {
+        'u_id' : hangman['u_id'],
+        'name_first': hangman['name_first'],
+        'name_last': hangman['name_last']
+    }
+    if hangman_dets not in channel['members']:
+        channel['members'].append(hangman_dets)
+    print('Hangman has joined channel')
+    return
 
 def display_hangman():
+    ''' 
+    Function used to generate the raw message file for displaying the game
+    '''
     #print(HANGMAN_STATES[STATE])
 
     global EMPTY_GUESS
@@ -198,16 +253,16 @@ def display_hangman():
     return display_msg
 
 def generate_phrase():
+    '''
+    Function used to generate 
+    '''
     global PHRASE
     wl = open('hangman_words.txt', 'r')
     wordlist = wl.readlines()
-    wl.close
+    wl.close()
     index = randint(0, (len(wordlist) -1))
 
     PHRASE = wordlist[index][:-1]
     print(PHRASE)
 
     return 
-
-
-

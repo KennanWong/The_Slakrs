@@ -2,7 +2,7 @@
 
 
 from error import InputError
-from helper_functions import get_user_token, test_in_channel
+from helper_functions import get_user_token, test_in_channel, get_user_from
 from data_stores import get_channel_data_store, save_channel_store
 
 #pylint compliant
@@ -88,8 +88,8 @@ def List(token): # pylint: disable=C0103
                 'channel_id': channel['channel_id'],
                 'name': channel['name'],
             }
-        if channel_info != {}:
             channels.append(channel_info)
+    print(channels)
 
     return channels
 
@@ -101,7 +101,8 @@ def List(token): # pylint: disable=C0103
 def Listall(token): # pylint: disable=W0613, C0103
     'implementations of channels listall function'
     channel_store = get_channel_data_store()
-
+    
+    user = get_user_from('token', token)
     channels_return = []
     channel_info = {}
 
@@ -114,6 +115,9 @@ def Listall(token): # pylint: disable=W0613, C0103
             'channel_id': channel['channel_id'],
             'name': channel['name']
         }
-        channels_return.append(channel_info)
+        if channel['is_public']:
+            channels_return.append(channel_info)
+        elif test_in_channel(user['u_id'], channel):
+            channels_return.append(channel_info)
 
     return channels_return

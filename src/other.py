@@ -80,41 +80,19 @@ def search(payload):
                         
     for channel in channel_store:
         if test_in_channel(user['u_id'], channel):
+            print("searching in channel: "+ channel['name'])
             for msg in channel['messages']:
-                if re.search(payload['query_str'], msg['message']):
+                if re.search(payload['query_str'].lower(), msg['message'].lower()):
                     result = {
                         'message_id': msg['message_id'],
                         'u_id': msg['u_id'],
                         'message': msg['message'],
-                        'time_created': msg['time_created'].strftime("%H:%M:%S"),
+                        'time_created': msg['time_created'],
                         'reacts': msg['reacts'],
                         'is_pinned': msg['is_pinned']
                     }
                     returnMessage.append(result)
-        
+    
+    print(returnMessage)
+
     return returnMessage
-    
-    
-#############################################################
-#              ADMIN_USERPERMISSION_CHANGE                  #
-############################################################# 
-
-
-def user_permission_change(payload):
-
-    #what does it mean for permision id to not refer to permission id?
-    '''
-    changes the permision of a authorised uid
-    '''
-    if validate_uid(payload['u_id'] is False):
-        raise InputError (description='Invalid u_id')
-
-    owner = get_user_token(payload['token'])
-    
-    chan_user = get_user_uid(payload['u_id'])
-    
-    if owner['slacker_owner'] is True:
-        chan_user['permission_id'] = payload['permission_id']
-        return {}
-        
-    raise AccessError(description='The authorised user is not an owner')

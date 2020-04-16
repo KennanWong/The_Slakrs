@@ -4,7 +4,7 @@ server
 '''
 from error import InputError
 from helper_functions import test_email, generate_token, get_user_from
-from data_stores import get_auth_data_store
+from data_stores import get_auth_data_store, save_auth_store
 
 
 LOGGED_ON = 1
@@ -12,7 +12,7 @@ LOGGED_OFF = 0
 
 
 #############################################################
-#                   AUTH_REGISTER                           # 
+#                   AUTH_REGISTER                           #
 #############################################################
 
 def register(payload):
@@ -73,6 +73,10 @@ def register(payload):
 
     auth_store.append(new_user)
 
+    # for debugging
+    save_auth_store()
+
+
     return new_user
 
 
@@ -89,11 +93,8 @@ def login(payload):
     user = get_user_from('email', email)
 
     # if the user is not currently logged off, raise error
-    if user['status'] != LOGGED_OFF:
-        raise InputError(description = "User already logged in")
-
     if user['password'] != payload['password']:
-        raise InputError(description = "Incorrect password")
+        raise InputError(description="Incorrect password")
 
     user['status'] = LOGGED_ON
     user['token'] = generate_token(user['u_id'])
@@ -110,7 +111,7 @@ def logout(payload):
     '''
     Function to logout a user
     '''
-    user = get_user_from('token',payload['token'])
+    user = get_user_from('token', payload['token'])
     if user['status'] == LOGGED_ON:
         user['status'] = LOGGED_OFF
         user['token'] = ''

@@ -18,6 +18,7 @@ import standup
 import other
 import user
 from error import InputError
+from admin_user_remove import user_remove
 
 #test
 
@@ -277,7 +278,7 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
 
-    
+
     payload = {
         'token': token,
         'channel_id': channel_id
@@ -394,7 +395,7 @@ def channel_join_server():
 @APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner_server():
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -541,6 +542,23 @@ def all_users():
     ret = other.users_all(payload)
     return dumps(ret)
 
-    
+
+#############################################################
+#                     ADMIN_USER_REMOVE                     #
+#############################################################
+@APP.route('/admin/user/remove', methods=['DELETE'])
+def admin_user_remove_server():
+
+    payload = request.get_json()
+
+    # Information from request
+    # token = payload1['token']
+    # user_id_removing = int(payload1['u_id'])
+
+    # Remove owner with user_id from owner members
+    user_remove(payload)
+
+    return dumps({})
+
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))

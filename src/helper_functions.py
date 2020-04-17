@@ -5,13 +5,15 @@ do repetitive tasks
 
 import re
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from error import InputError
 from data_stores import get_auth_data_store, get_channel_data_store
 from data_stores import get_messages_store
 import string
 import random
 MSG_COUNT = 1
+
+MSG_COUNT = len(get_messages_store())+1
 
 
 def generate_token(u_id):
@@ -26,12 +28,14 @@ def create_message():
     Function to generate a blank message dictionary
     '''
     global MSG_COUNT
+
+    timeStamp = datetime.now().timestamp()
     message = {
         'channel_id' : 0,
         'message_id' : MSG_COUNT,
         'u_id' : 0,
         'message': '',
-        'time_created':datetime.now().time(),
+        'time_created':timeStamp,
         'reacts': [],
         'is_pinned': False,
     }
@@ -40,11 +44,11 @@ def create_message():
 
 def get_channel(channel_id):
     '''
-    Function to return the channel data suing a channel_id
+    Function to return the channel data using a channel_id
     '''
     all_channels = get_channel_data_store()
     if len(all_channels) == 0 :
-        raise InputError(description='There are currently no channels')
+        raise InputError(description='There are currently no active channels')
     
     for i in all_channels:
         if i['channel_id'] == int(channel_id):
@@ -95,6 +99,39 @@ def get_user_from(field, request):
         raise InputError(description = 'Email does not belong to a registered user')
 
 
+def get_user_email(email):
+    '''
+    Function to validate a users email and return that users data
+    '''
+    auth_store = get_auth_data_store()
+    for i in auth_store:
+        if i['email'] == email:
+            return i
+    raise InputError(description='Email does not belong to a retgistered user')
+
+def get_user_from(field, request):
+    '''
+    Function will return a users data based on a given a field and test it against
+    a requested value
+    i.e if get_user_from(email, payload[email])
+    will search each users email whether or not it matches the payload
+    '''
+
+    auth_store = get_auth_data_store()
+    for i in auth_store:
+        if i[str(field)] == request:
+            return i
+    
+    if str(field) == 'token':
+        raise InputError(description ='Invalid Token')
+
+    if str(field) == 'u_id':
+        raise InputError(description = 'Invalid u_id')
+    if str(field) == 'email':
+        raise InputError(description = 'Email does not belong to a registered user')
+    return {}
+
+
 def test_email(email):
     '''
     Functionto to test if an email is valid, courtesy of geeksforgeeks.org
@@ -141,6 +178,14 @@ def check_owner(user, channel):
     
     return False
 
+def check_channel_permission(user, channel):
+    for i in channel['members']:
+        if i['u_id'] == user['u_id']:
+            return 'member'
+    for i in channel['owners']:
+        if i['u_id'] == user['u_id']:
+            return 'owner'
+    return False
 
 # Function to check valid userID
 def is_valid_user_id(u_id):
@@ -223,8 +268,6 @@ def append_later(argument):
 def validate_uid(u_id):
     user_store = get_auth_data_store()
     for i in user_store:
-        print("i['u_id]: "+ str(i['u_id']))
-        print("u_id: " + str(u_id))
         if i['u_id'] == int(u_id):
             return True
     
@@ -260,6 +303,7 @@ def get_user_uid(u_id):
         return user
     else:
         raise InputError(description='Invalid u_id')
+
 def reset_message_count():
     global MSG_COUNT
     MSG_COUNT = 1

@@ -60,20 +60,29 @@ def details(token, channel_id):
     # Check if channel exists using helper function
     channel = get_channel(channel_id)
 
+    # If the channel is public safe to display details
+
+    # If not then raise error
+
+    for owner in channel['owners']:
+        owner_members.append(user_details(owner['u_id']))
+        all_members.append(user_details(owner['u_id']))
+    for member in channel['members']:
+        all_members.append(user_details(member['u_id']))
+    ret_package =  {
+        "name": channel['name'],
+        "owner_members": owner_members,
+        "all_members": all_members
+    }
+
     # Get details of owners and members in the channel
-    if test_in_channel(user['u_id'], channel):
+    if channel['is_public']:
+        return ret_package
         # name = channel['name']
-        for owner in channel['owners']:
-            owner_members.append(user_details(owner['u_id']))
-            all_members.append(user_details(owner['u_id']))
-        for member in channel['members']:
-            all_members.append(user_details(member['u_id']))
-        return {
-            "name": channel['name'],
-            "owner_members": owner_members,
-            "all_members": all_members
-        }
+        
     # AccessError when authorised user is not a member of the channel
+    elif test_in_channel(user['u_id'], channel):
+        return ret_package
     else:
         raise AccessError(description='Authorised user is not a member of the channel')
 
@@ -94,7 +103,7 @@ def messages(token, channel_id, start):
         raise AccessError(description='Authorised user is not a member of the channel')
 
     # InputError when start is greater than or equal to the total number of messages in the channel
-    if start >= len(channel['messages']):
+    if start > len(channel['messages']):
         raise InputError(description='Start is greater than or equal to the total number of messages in the channel')
 
     # Incorrect indexing
@@ -109,7 +118,7 @@ def messages(token, channel_id, start):
         return {
             "messages": [],
             "start": start,
-            "end": start
+            "end": -1
         }
 
     messages_list = []
@@ -129,9 +138,11 @@ def messages(token, channel_id, start):
         }
         for reacts in msgs['reacts']:
             for users_reacted in reacts['u_ids']:
-                if u_id in reacts['u_id']:
-                    reacts['is_this_user_reacted'] is True
+                if u_id in reacts['u_ids']:
+                    reacts['is_user_reacted'] = True
         messages_list.append(messages_dict)
+
+    messages_list.reverse()
 
     if start < len(channel['messages']):
         if len(channel['messages'][start:]) > 50:
@@ -247,6 +258,7 @@ def addowner(token, channel_id, u_id):
     # Otherwise user is added as an owner
     else:
         channel['owners'].append(addee_dets)
+        channel['members'].remove(addee_dets)
         #channel['members'].remove(addee_dets)
         return {}
 

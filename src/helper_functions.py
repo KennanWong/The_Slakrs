@@ -9,6 +9,9 @@ from datetime import datetime, timezone
 from error import InputError
 from data_stores import get_auth_data_store, get_channel_data_store
 from data_stores import get_messages_store
+import string
+import random
+MSG_COUNT = 1
 
 MSG_COUNT = len(get_messages_store())+1
 
@@ -53,6 +56,7 @@ def get_channel(channel_id):
     
     raise InputError(description='Invalid channel_id')
 
+
 def get_user_token(token):
     '''
     Function to validate a token and returns the users info
@@ -63,7 +67,7 @@ def get_user_token(token):
         if i['token'] == token:
             return i
     raise InputError(description='Invalid Token')
-
+    
 def get_user_email(email):
     '''
     Function to validate a users email and return that users data
@@ -81,7 +85,6 @@ def get_user_from(field, request):
     i.e if get_user_from(email, payload[email])
     will search each users email whether or not it matches the payload
     '''
-
     auth_store = get_auth_data_store()
     for i in auth_store:
         if i[str(field)] == request:
@@ -94,8 +97,6 @@ def get_user_from(field, request):
         raise InputError(description = 'Invalid u_id')
     if str(field) == 'email':
         raise InputError(description = 'Email does not belong to a registered user')
-    return {}
-
 
 def test_email(email):
     '''
@@ -273,3 +274,8 @@ def reset_message_count():
     global MSG_COUNT
     MSG_COUNT = 1
     return
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+

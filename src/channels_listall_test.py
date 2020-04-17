@@ -19,7 +19,7 @@ def test_listall():
 
     ret = register_and_create()
     user1 = ret['user']
-
+    token = user1['token']
 
     user2 = reg_user2()
 
@@ -30,5 +30,18 @@ def test_listall():
         'is_public': True
     }
     result1 = channels.create(payload1) # pylint: disable=W0612
-    token = user1['token']
-    channels.Listall(token) # pylint: disable=C0304
+
+    result2 = channels.Listall(token) # pylint: disable=C0304
+
+    expected1 = {
+        'channel_id' : 1,
+        'name': 'firstChannel'
+    }
+    
+    expected2 = {
+        'channel_id': 2,
+        'name': 'Slackrs'
+    }
+
+    assert expected1 in result2
+    assert expected2 in result2

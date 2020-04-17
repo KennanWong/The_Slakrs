@@ -21,7 +21,7 @@ import user
 from data_stores import save_data_stores
 from error import InputError
 
-#test
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -102,7 +102,6 @@ def auth_logout():
         return dumps ({
             'is_success':False
         }) 
-
 
 
 #############################################################
@@ -279,15 +278,6 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
 
-    
-    payload = {
-        'token': token,
-        'channel_id': channel_id
-    }
-
-    standup_info = standup.active(payload)
-    return dumps(standup_info)
-    
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -548,6 +538,28 @@ def all_users():
     return dumps({
         'users':ret
     })
+
+
+#############################################################
+#                   AUTH_PASSWORDRESET_REQUEST              #
+#############################################################
+@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_request():
+    payload = request.get_json()
+    auth.request(payload)
+
+    return dumps({})
+    
+
+#############################################################
+#                   AUTH_PASSWORDRESET_RESET                #
+#############################################################
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
+def auth_reset():
+    payload = request.get_json()
+    auth.reset(payload)
+    
+    return dumps({})
 
 
 if __name__ == "__main__":

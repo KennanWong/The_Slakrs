@@ -276,15 +276,6 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
 
-'''  
-    payload = {
-        'token': token,
-        'channel_id': channel_id
-    }
-
-    standup_info = standup.active(payload)
-    return dumps(standup_info)
-'''
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -549,7 +540,8 @@ def auth_request():
     auth.request(payload)
 
     return dumps({})
-'''
+    
+
 #############################################################
 #                   AUTH_PASSWORDRESET_RESET                #
 #############################################################
@@ -560,6 +552,6 @@ def auth_reset():
     
     return dumps({})
 
-'''
+
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

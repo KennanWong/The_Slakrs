@@ -37,7 +37,6 @@ def test_listall():
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-
     req = urllib.request.Request(
         f"{BASE_URL}/channels/listall?token="+str(user1['token'])
         # f"{BASE_URL}/channels/listall",
@@ -54,7 +53,5 @@ def test_listall():
         'name': 'new_channel'
     }
 
-    assert expected in response
-
-    
+    assert expected in response         #pylint disable = C0305
     

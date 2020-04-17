@@ -54,7 +54,6 @@ auth_data = [
     #     'messages':[],
     #     'permission_id': 2,
     #     'slack_owner' : False
-   #      'reset_code':
     # }
 ]
 
@@ -76,7 +75,6 @@ messages_store = [
 reset_data = [
    #'email':
    # 'reset_code':
-   # 'u_id':
 ]
 
 MSG_COUNT=1

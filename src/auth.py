@@ -4,7 +4,7 @@ server
 '''
 import smtplib
 from error import InputError
-from helper_functions import test_email, generate_token, get_user_token, id_generator
+from helper_functions import test_email, generate_token, get_user_token, id_generator, get_user_from
 from data_stores import get_auth_data_store, get_reset_code_store
 
 
@@ -132,54 +132,57 @@ def logout(payload):
 #############################################################
 #                   AUTH_PASSWORDRESET_REQUEST              #
 #############################################################
-def request(payload):
+def request(payload):                       # pylint disable=R1771
+    '''
+    Function to request a reset code
+    '''
 
-    auth_store = get_auth_data_store()
     reset_store = get_reset_code_store()
     send_to_email = test_email(payload['email'])
 
     email_match = 0  # if found = 1
 
-    for i in auth_store:
-        if i['email'] == send_to_email:
-            email_match = 1
-            reset_code = id_generator()
+    user = get_user_from('email', send_to_email)    # pylint: disable=W0612
 
-            code_password = {
-                'email': send_to_email,
-                'reset_code': reset_code,
+    email_match = 1
+    reset_code = id_generator()
 
-            }
-            
-            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            server.login(EMAIL, PASSWORD)
-            server.sendmail(
-                EMAIL,
-                send_to_email,
-                reset_code)
-            server.quit()
+    code_password = {
+        'email': send_to_email,
+        'reset_code': reset_code,
+    }
+
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login(EMAIL, PASSWORD)
+    server.sendmail(
+        EMAIL,
+        send_to_email,
+        reset_code)
+    server.quit()
 
     if email_match == 0:
         raise InputError(description="Email entered does not belong to a user")
 
     reset_store.append(code_password)
 
-    return
-'''
+
 #############################################################
 #                   AUTH_PASSWORDRESET_RESET                #
 #############################################################
-def reset(payload):
-
-    auth_store = get_auth_data_store()
+def reset(payload):                 # pylint disable=R1771
+    '''
+    Function to reset the user's password
+    '''
     reset_store = get_reset_code_store()
 
     for code in reset_store:
         if code['reset_code'] == payload['reset_code']:
-            if len(payload['password']) > 6:
+            requested_email = code['email']
+            user = get_user_from('email', requested_email)
+            if len(payload['new_password']) > 6:
                 new_password = payload['new_password']
+                user['password'] = new_password
 
-            #    user['password'] = new_password
 
             else:
                 raise InputError(description='Password is too short')
@@ -187,4 +190,5 @@ def reset(payload):
         else:
             raise InputError(description='Reset code is incorrect')
 
-'''
+
+                                            

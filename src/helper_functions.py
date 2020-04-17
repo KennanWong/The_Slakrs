@@ -275,25 +275,13 @@ def reset_message_count():
 
 
 def check_owner_slackr(token):
-    auth_store = get_auth_data_store()
     user = get_user_token(token)
-    for user in auth_store:
-        if user['permission_id'] == 1:
-            return True
+    if user['permission_id'] == 1:
+        return True
     return False
 
 def message_belong_user(token, message_id):
     info = find_message(message_id)
-    if info['u_id'] == get_user_token(token)['u_id']:
+    if info['u_id'] == user_id_from_token(token):
         return True
     return False
-'''
-def get_token_uid(u_id):
-    auth_store = get_auth_data_store()
-    for i in auth_store:
-        if i['u_id'] == u_id:
-            return i['token']
-
-    user = get_user_from('u_id', int(u_id))
-'''
-

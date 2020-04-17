@@ -4,7 +4,7 @@ server
 '''
 import smtplib
 from error import InputError
-from helper_functions import test_email, generate_token, get_user_token, id_generator, get_user_from
+from helper_functions import test_email, generate_token, id_generator, get_user_from
 from data_stores import get_auth_data_store, get_reset_code_store, save_auth_store
 
 LOGGED_ON = 1
@@ -13,6 +13,7 @@ LOGGED_OFF = 0
 EMAIL = "slakrs1531@gmail.com"
 PASSWORD = "1531python"
 
+#pylint compliant
 #############################################################
 #                   AUTH_REGISTER                           #
 #############################################################
@@ -180,6 +181,3 @@ def reset(payload):                 # pylint disable=R1771
 
         else:
             raise InputError(description='Reset code is incorrect')
-
-
-                                            

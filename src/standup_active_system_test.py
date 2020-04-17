@@ -49,7 +49,7 @@ def test_active():
     time_finish = (datetime.now() + timedelta(seconds=length)).strftime("%H:%M:%S")
 
     assert response['time_finish'] == time_finish
-   
+
 
 def test_invalid_channel_id():
     'error test'
@@ -57,7 +57,7 @@ def test_invalid_channel_id():
 
     user1 = reg_user1()
    # channel1 = create_ch1(user1)
-    
+
     with pytest.raises(HTTPError):
         req = urllib.request.Request(
             f"{BASE_URL}/standup/active?token="+str(user1['token'])+"&channel_id=1"

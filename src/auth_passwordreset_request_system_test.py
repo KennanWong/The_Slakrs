@@ -4,9 +4,9 @@ Pytest file to test auth_passwordreset on a system level
 
 import urllib
 import json
-from urllib.error import HTTPError
-import flask 
-import pytest
+import flask        #pylint disable = W0611
+import pytest       #pylint disable = W0611
+
 
 
 from system_helper_functions import reg_user1, reset_workspace

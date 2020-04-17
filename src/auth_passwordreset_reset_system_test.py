@@ -4,8 +4,8 @@ Pytest file to test auth_passwordreset on a system level
 
 import urllib
 import json
-from urllib.error import HTTPError
-import flask
+from urllib.error import HTTPError      #pylint disable = C0412
+import flask                            #pylint disable = W0611
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, id_generator
@@ -39,7 +39,7 @@ def test_reset():
     for i in reset_store:
         if i['email'] == 'Kennan@gmail.com':
             code = i['reset_code']
-            
+                                                #pylint disable = C0303
     data1 = json.dumps({
         'reset_code': code,
         'new_password': 'thisiscool'
@@ -95,4 +95,4 @@ def test_invalid_resetcode():
             f"{BASE_URL}/auth/passwordreset/reset",
             data=data,
             headers={'Content-Type':'application/json'}
-        ))
+        ))                                                              #pylint disable = C0303

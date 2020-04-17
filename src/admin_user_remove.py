@@ -2,7 +2,7 @@
 
 from data_stores import get_auth_data_store, get_channel_data_store, get_messages_store
 from helper_functions import get_user_uid, user_details, is_valid_user_id, check_owner_slackr
-from helper_functions import get_token_uid, message_belong_user
+from helper_functions import message_belong_user, #get_token_uid
 import message
 from error import InputError, AccessError
 
@@ -36,7 +36,7 @@ def user_remove(payload):
             channel['owners'].remove(removee_dets)
 
     # Removing any messages the user had sent
-    removee_token = get_token_uid(payload['u_id'])
+    removee_token = removee['token']
 
     for messages in messages_store:
         if message_belong_user(removee_token, messages['message_id']):
@@ -48,16 +48,6 @@ def user_remove(payload):
             message.remove(message_info)
 
     return{}
-
-#reg tow users
-#proviee 1st token
-#remove 2nd
-
-#make sure recorded in json file for user1 2
-#user remove
-#make sure their info isn't in json file
-#channel_data_stores json check user is removed
-#message store json check messages are removed
 
 '''
 def user_remove(token, u_id):

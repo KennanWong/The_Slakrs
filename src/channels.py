@@ -2,8 +2,8 @@
 
 
 from error import InputError
-from helper_functions import get_user_token, test_in_channel
-from data_stores import get_channel_data_store
+from helper_functions import get_user_token, test_in_channel, get_user_from
+from data_stores import get_channel_data_store, save_channel_store
 
 #pylint compliant
 #############################################################
@@ -39,7 +39,8 @@ def create(payload):
                     'is_active': False,
                     'messages': [],
                     'time_finish': [],
-                }
+                },
+                'hangman_active': False
             }
         else:
             new_channel_info = {
@@ -53,7 +54,8 @@ def create(payload):
                     'is_active': False,             # pylint: disable=C0330
                     'messages': [],                 # pylint: disable=C0330
                     'time_finish': [],              # pylint: disable=C0330
-                }                                   # pylint: disable=C0330
+                },                                  # pylint: disable=C0330
+                'hangman_active': False
             }
     else:
         raise InputError(description='Name is too long')
@@ -61,6 +63,7 @@ def create(payload):
     new_channel_info['owners'].append(channel_owner_info)
 
     channel_store.append(new_channel_info)
+    save_channel_store()
 
     return new_channel_info
 
@@ -85,8 +88,8 @@ def List(token): # pylint: disable=C0103
                 'channel_id': channel['channel_id'],
                 'name': channel['name'],
             }
-        if channel_info != {}:
             channels.append(channel_info)
+    print(channels)
 
     return channels
 
@@ -98,7 +101,8 @@ def List(token): # pylint: disable=C0103
 def Listall(token): # pylint: disable=W0613, C0103
     'implementations of channels listall function'
     channel_store = get_channel_data_store()
-
+    
+    user = get_user_from('token', token)
     channels_return = []
     channel_info = {}
 
@@ -111,6 +115,9 @@ def Listall(token): # pylint: disable=W0613, C0103
             'channel_id': channel['channel_id'],
             'name': channel['name']
         }
-        channels_return.append(channel_info)
+        if channel['is_public']:
+            channels_return.append(channel_info)
+        elif test_in_channel(user['u_id'], channel):
+            channels_return.append(channel_info)
 
     return channels_return

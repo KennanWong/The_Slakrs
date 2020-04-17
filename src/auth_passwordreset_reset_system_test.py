@@ -9,7 +9,7 @@ import flask
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, id_generator
-
+from data_stores import get_reset_code_store
 
 #############################################################
 #                     AUTH_PASSWORDRESET_REQUEST            #
@@ -22,10 +22,9 @@ def test_reset():
     Test valid case of test_password_request
     '''
     reset_workspace()
+    reset_store = get_reset_code_store()
 
     user1 = reg_user1()
-
-    reset_code = id_generator()
 
     data = json.dumps({
         'email': 'Kennan@gmail.com'
@@ -37,8 +36,12 @@ def test_reset():
         headers={'Content-Type':'application/json'}
     ))
 
+    for i in reset_store:
+        if i['email'] == 'Kennan@gmail.com':
+            code = i['reset_code']
+            
     data1 = json.dumps({
-        'reset_code': reset_code,
+        'reset_code': code,
         'new_password': 'thisiscool'
     }).encode('utf-8')
 

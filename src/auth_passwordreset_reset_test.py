@@ -17,16 +17,20 @@ def test_reset():
     'testing functionability of passwordreset request'
 
     workspace_reset()
+    reset_store = get_reset_code_store()
 
     user1 = reg_user1()
-    reset_code = id_generator()
 
-    # auth.request({
-    #      'email': 'Kennan@gmail.com'
-    # })
+    auth.request({
+        'email': 'Kennan@gmail.com'
+    })
+
+    for i in reset_store:
+        if i['email'] == 'Kennan@gmail.com':
+            code = i['reset_code']
 
     auth.reset({
-        'reset_code': reset_code,
+        'reset_code': code,
         'new_password': 'thisiscool'
     })
 
@@ -38,7 +42,7 @@ def test_reset():
         if i['password'] == 'thisiscool':
             password_check = 1
 
-    assert password_check is 1
+    assert password_check == 1
 
 def test_invalid_password():
     'error case'
@@ -74,4 +78,5 @@ def test_invalid_resetcode():
         auth.reset({
             'reset_code': 'ABCD',
             'new_password': 'thisiscool'
-        })
+        })                                 #pylint disable = C0304
+             

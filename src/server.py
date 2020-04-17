@@ -559,7 +559,7 @@ def admin_user_remove_server():
 
     payload = request.get_json()
 
-    # Remove user with user_id from slack
+    # Remove owner with user_id from slack
     user_remove(payload)
 
     return dumps({})

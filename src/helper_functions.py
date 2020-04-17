@@ -39,10 +39,10 @@ def create_message():
 
 def get_channel(channel_id):
     '''
-    Function to return the channel data suing a channel_id
+    Function to return the channel data using a channel_id
     '''
     all_channels = get_channel_data_store()
-    if len(all_channels) == 0 :
+    if len(all_channels) == 0:
         raise InputError(description='There are currently no channels')
     
     for i in all_channels:
@@ -64,7 +64,7 @@ def get_user_token(token):
 
 def test_email(email):
     '''
-    Functionto to test if an email is valid, courtesy of geeksforgeeks.org
+    Function to to test if an email is valid, courtesy of geeksforgeeks.org
     '''
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     if re.search(regex, email):
@@ -95,7 +95,7 @@ def find_message(message_id):
             return i
 
     raise InputError(description='Message not found')
-            
+
 
 # function to see if a user is an owner of a channel
 def check_owner(user, channel):
@@ -105,7 +105,7 @@ def check_owner(user, channel):
     for i in channel['owners']:
         if i['u_id'] == user['u_id']:
             return True
-    
+
     return False
 
 
@@ -194,7 +194,7 @@ def validate_uid(u_id):
         print("u_id: " + str(u_id))
         if i['u_id'] == int(u_id):
             return True
-    
+
     return False
 
 #function returns 1 if email has not been used before    
@@ -205,8 +205,8 @@ def check_used_email(email):
             raise InputError(description='Email is already in use')
     else:
         return 1
-        
-#function returns 1 if handle has not been used before    
+
+#function returns 1 if handle has not been used before
 def check_used_handle(handle_str):
     handle_store = get_auth_data_store()
     for i in handle_store:
@@ -214,7 +214,7 @@ def check_used_handle(handle_str):
             raise InputError(description='Handle is already in use')
     else:
         return 1
-        
+
 # function to validate a token and returns the users info
 # otherwise raises an error
 def get_user_uid(u_id):
@@ -227,7 +227,31 @@ def get_user_uid(u_id):
         return user
     else:
         raise InputError(description='Invalid u_id')
+
 def reset_message_count():
     global MSG_COUNT
     MSG_COUNT = 1
     return
+
+
+def check_owner_slackr(token):
+    auth_store = get_auth_data_store()
+    user = get_user_token(token)
+    for user in auth_store:
+        if user['permission_id'] == 1:
+            return True
+    return False
+
+def message_belong_user(token, message_id):
+    info = find_message(message_id)
+    #info = get_message_info(message_id)
+    #user_email = get_user_token(token)['email']
+    if info['u_id'] == get_user_token(token):
+        return True
+    return False
+
+def get_token_uid(u_id):
+    auth_store = get_auth_data_store()
+    for i in auth_store:
+        if i['u_id'] == u_id:
+            return i['token']

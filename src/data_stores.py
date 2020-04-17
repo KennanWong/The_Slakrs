@@ -60,7 +60,7 @@ auth_data = [
 messages_store = [
     # 'channel_id'
     # 'message_id'
-    # 'u_id, 
+    # 'u_id', 
     # 'message'
     # 'time_created'
     # 'reacts'

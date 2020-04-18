@@ -68,7 +68,7 @@ def test_already_pinned():
             headers={'Content-Type':'application/json'}
         ))
 
-def test_invalid_id():
+def test_invalid_message_id():
     'error case test'
     reset_workspace()
 

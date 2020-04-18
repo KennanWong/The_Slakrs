@@ -266,3 +266,11 @@ def generate_phrase():
     print(PHRASE)
 
     return 
+
+def get_phrase():
+    global PHRASE
+    return PHRASE
+
+def get_empty_guess():
+    global EMPTY_GUESS
+    return EMPTY_GUESS

@@ -20,8 +20,9 @@ import other
 import user
 from data_stores import save_data_stores
 from error import InputError
+from admin_user_remove import user_remove
 
-#test
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -102,7 +103,6 @@ def auth_logout():
         return dumps ({
             'is_success':False
         }) 
-
 
 
 #############################################################
@@ -276,14 +276,6 @@ def standup_active():
         'token': token,
         'channel_id': channel_id
     }
-    standup_info = standup.active(payload)
-    return dumps(standup_info)
-
-    
-    payload = {
-        'token': token,
-        'channel_id': channel_id
-    }
 
     standup_info = standup.active(payload)
     return dumps(standup_info)
@@ -396,7 +388,7 @@ def channel_join_server():
 @APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner_server():
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -550,7 +542,41 @@ def all_users():
     })
 
 
+#############################################################
+#                     ADMIN_USER_REMOVE                     #
+#############################################################
+@APP.route('/admin/user/remove', methods=['DELETE'])
+def admin_user_remove_server():
+    payload = request.get_json()
+    
+    # Remove owner with user_id from slack
+    user_remove(payload)
+
+    return dumps({})
+
+
+#############################################################
+#                   AUTH_PASSWORDRESET_REQUEST              #
+#############################################################
+@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_request():
+    payload = request.get_json()
+    auth.request(payload)
+
+    return dumps({})
+    
+
+#############################################################
+#                   AUTH_PASSWORDRESET_RESET                #
+#############################################################
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
+def auth_reset():
+    payload = request.get_json()
+    auth.reset(payload)
+    
+    return dumps({})
+
+
 if __name__ == "__main__":
     threading.Timer(60.0, save_data_stores).start()
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
-

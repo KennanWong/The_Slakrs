@@ -1,7 +1,8 @@
 '''
 A series of helper functions to automate server testing
 '''
-
+import string
+import random
 import urllib
 import json
 
@@ -192,3 +193,6 @@ def send_a_message(user, channel, message):
     ))
     payload = json.load(req)
     return payload
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))

@@ -18,7 +18,7 @@ BASE_URL = 'http://127.0.0.1:8080'
 
 def test_list():
     '''
-    Test a valid use of react on your own message
+    Test for successful case of channels list
     '''
     reset_workspace()
 
@@ -30,9 +30,6 @@ def test_list():
 
     req = urllib.request.Request(
         f"{BASE_URL}/channels/list?token="+str(user1['token'])
-        # f"{BASE_URL}/channels/list",
-        # data=data1,
-        # headers={'Content-Type':'application/json'}
     )
 
     req.get_method = lambda: 'GET'

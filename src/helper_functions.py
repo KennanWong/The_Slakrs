@@ -7,8 +7,7 @@ import re
 import hashlib
 from datetime import datetime, timezone
 from error import InputError
-from data_stores import get_auth_data_store, get_channel_data_store
-from data_stores import get_messages_store
+from data_stores import get_auth_data_store, get_channel_data_store, get_messages_store
 import string
 import random
 MSG_COUNT = 1
@@ -49,11 +48,11 @@ def get_channel(channel_id):
     all_channels = get_channel_data_store()
     if len(all_channels) == 0 :
         raise InputError(description='There are currently no active channels')
-    
+
     for i in all_channels:
         if i['channel_id'] == int(channel_id):
             return i
-    
+
     raise InputError(description='Invalid channel_id')
 
 
@@ -100,7 +99,7 @@ def get_user_from(field, request):
 
 def test_email(email):
     '''
-    Functionto to test if an email is valid, courtesy of geeksforgeeks.org
+    Function to to test if an email is valid, courtesy of geeksforgeeks.org
     '''
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     if re.search(regex, email):
@@ -131,7 +130,7 @@ def find_message(message_id):
             return i
 
     raise InputError(description='Message not found')
-            
+
 
 # function to see if a user is an owner of a channel
 def check_owner(user, channel):
@@ -141,7 +140,7 @@ def check_owner(user, channel):
     for i in channel['owners']:
         if i['u_id'] == user['u_id']:
             return True
-    
+
     return False
 
 def check_channel_permission(user, channel):
@@ -236,7 +235,7 @@ def validate_uid(u_id):
     for i in user_store:
         if i['u_id'] == int(u_id):
             return True
-    
+
     return False
 
 #function returns 1 if email has not been used before    
@@ -247,8 +246,8 @@ def check_used_email(email):
             raise InputError(description='Email is already in use')
     else:
         return 1
-        
-#function returns 1 if handle has not been used before    
+
+#function returns 1 if handle has not been used before
 def check_used_handle(handle_str):
     handle_store = get_auth_data_store()
     for i in handle_store:
@@ -256,7 +255,7 @@ def check_used_handle(handle_str):
             raise InputError(description='Handle is already in use')
     else:
         return 1
-        
+
 # function to validate a token and returns the users info
 # otherwise raises an error
 def get_user_uid(u_id):
@@ -275,7 +274,22 @@ def reset_message_count():
     MSG_COUNT = 1
     return
 
+<<<<<<< HEAD
+
+def check_owner_slackr(token):
+    user = get_user_token(token)
+    if user['permission_id'] == 1:
+        return True
+    return False
+
+def message_belong_user(token, message_id):
+    info = find_message(message_id)
+    if info['u_id'] == user_id_from_token(token):
+        return True
+    return False
+=======
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+>>>>>>> 941534320ba7ed3d3ea8864e5bf10f38d24a2b2f

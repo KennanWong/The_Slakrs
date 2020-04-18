@@ -78,7 +78,7 @@ def test_not_owner():
 
     channel.join(token3, channel_id)
 
-    # AccessError when non-owner tries to make user1 as owner
+    # AccessError when non-owner tries to make user3 as owner
     with pytest.raises(AccessError):
         channel.addowner(token2, channel_id, u_id3)
 

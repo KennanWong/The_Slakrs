@@ -20,6 +20,7 @@ import other
 import user
 from data_stores import save_data_stores
 from error import InputError
+from admin_user_remove import user_remove
 
 
 
@@ -278,6 +279,18 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
 
+<<<<<<< HEAD
+
+    payload = {
+        'token': token,
+        'channel_id': channel_id
+    }
+
+    standup_info = standup.active(payload)
+    return dumps(standup_info)
+    
+=======
+>>>>>>> 941534320ba7ed3d3ea8864e5bf10f38d24a2b2f
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -386,7 +399,7 @@ def channel_join_server():
 @APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner_server():
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -541,6 +554,20 @@ def all_users():
 
 
 #############################################################
+#                     ADMIN_USER_REMOVE                     #
+#############################################################
+@APP.route('/admin/user/remove', methods=['DELETE'])
+def admin_user_remove_server():
+
+    payload = request.get_json()
+
+    # Remove owner with user_id from slack
+    user_remove(payload)
+
+    return dumps({})
+
+
+#############################################################
 #                   AUTH_PASSWORDRESET_REQUEST              #
 #############################################################
 @APP.route("/auth/passwordreset/request", methods=['POST'])
@@ -565,4 +592,3 @@ def auth_reset():
 if __name__ == "__main__":
     threading.Timer(60.0, save_data_stores).start()
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
-

@@ -38,7 +38,7 @@ def test_channel_addowner():
         'token': token2,
         'channel_id': channel_id
     }).encode('utf-8')
-    req = urllib.request.urlopen(urllib.request.Request(
+    urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/channel/join",
         data=data,
         headers={'Content-Type': 'application/json'}

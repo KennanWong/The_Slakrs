@@ -278,4 +278,14 @@ def reset_message_count():
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+def check_owner_slackr(token):
+    user = get_user_token(token)
+    if user['permission_id'] == 1:
+        return True
+    return False
 
+def message_belong_user(token, message_id):
+    info = find_message(message_id)
+    if info['u_id'] == user_id_from_token(token):
+        return True
+    return False

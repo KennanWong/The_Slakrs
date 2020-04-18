@@ -24,7 +24,7 @@ def test_listall():
     user1 = reg_user1()
     user2 = reg_user2()
 
-    channel1 = create_ch1(user1)            
+    channel1 = create_ch1(user1)
 
     data = json.dumps({
         'token':user2['token'],
@@ -37,9 +37,10 @@ def test_listall():
         data=data,
         headers={'Content-Type':'application/json'}
     ))
+    
     req = urllib.request.Request(
         f"{BASE_URL}/channels/listall?token="+str(user1['token'])
-        
+
     )
 
     req.get_method = lambda: 'GET'

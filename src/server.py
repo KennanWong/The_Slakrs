@@ -20,7 +20,7 @@ import other
 import user
 from data_stores import save_data_stores
 from error import InputError
-
+from admin_user_remove import user_remove
 
 
 def defaultHandler(err):
@@ -561,6 +561,18 @@ def auth_reset():
     
     return dumps({})
 
+#############################################################
+#                     ADMIN_USER_REMOVE                     #
+#############################################################
+@APP.route('/admin/user/remove', methods=['DELETE'])
+def admin_user_remove_server():
+
+    payload = request.get_json()
+
+    # Remove user with user_id from slack
+    user_remove(payload)
+
+    return dumps({})
 
 if __name__ == "__main__":
     threading.Timer(60.0, save_data_stores).start()

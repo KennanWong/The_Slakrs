@@ -212,8 +212,9 @@ def get_hangman():
     Function to get the hangman details, otherwise we need to register the hangman
     '''
     hangman = get_user_from('name_first', 'Hangman')
-    if hangman == {}:
+    if hangman == None:
         # if we get returned an empty dictionary register hangman
+        print('if we get returned an empty dictionary register hangman')
         payload = {
             'email': 'hangman@bot.com',
             'password': 'Hangman',

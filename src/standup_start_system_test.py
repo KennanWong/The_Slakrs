@@ -1,16 +1,15 @@
+'this file is the http testing for standup start'
+
 import urllib
 import json
-import flask
-from urllib.error import HTTPError
+from datetime import datetime, timedelta
+import flask                                        # pylint: disable=W0611
+from urllib.error import HTTPError                  # pylint: disable=C0412, C0411
 
 import pytest
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2, send_msg1
 
-import time
-from datetime import datetime, timedelta
-from helper_functions import addSecs
-
+#pylint compliant
 
 #############################################################
 #                   STANDUP_START                           #
@@ -19,7 +18,7 @@ from helper_functions import addSecs
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_start():
-    
+    'successful case'
     reset_workspace()
 
     user1 = reg_user1()
@@ -43,10 +42,11 @@ def test_start():
     assert payload['time_finish'] == time_finish
 
 def test_invalid_id():
+    'error case'
     reset_workspace()
 
     user1 = reg_user1()
-    channel1 = create_ch1(user1)
+
 
     data = json.dumps({
         'token': user1['token'],
@@ -62,7 +62,9 @@ def test_invalid_id():
         ))
 
 def test_already_active():
+    'error case'
     reset_workspace()
+
 
     user1 = reg_user1()
     channel1 = create_ch1(user1)
@@ -74,9 +76,9 @@ def test_already_active():
     }).encode('utf-8')
 
     urllib.request.urlopen(urllib.request.Request(
-            f"{BASE_URL}/standup/start",
-            data=data,
-            headers={'Content-Type':'application/json'}
+            f"{BASE_URL}/standup/start",                    # pylint: disable=C0330
+            data=data,                                      # pylint: disable=C0330
+            headers={'Content-Type':'application/json'}     # pylint: disable=C0330
         ))
 
     with pytest.raises(HTTPError):
@@ -84,4 +86,4 @@ def test_already_active():
             f"{BASE_URL}/standup/start",
             data=data,
             headers={'Content-Type':'application/json'}
-        ))
+        ))                                                   # pylint: disable=C0304

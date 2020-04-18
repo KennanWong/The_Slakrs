@@ -22,7 +22,7 @@ from data_stores import save_data_stores
 from error import InputError
 from admin_user_remove import user_remove
 
-#test
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -103,7 +103,6 @@ def auth_logout():
         return dumps ({
             'is_success':False
         }) 
-
 
 
 #############################################################
@@ -280,6 +279,7 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
 
+<<<<<<< HEAD
 
     payload = {
         'token': token,
@@ -289,6 +289,8 @@ def standup_active():
     standup_info = standup.active(payload)
     return dumps(standup_info)
     
+=======
+>>>>>>> 941534320ba7ed3d3ea8864e5bf10f38d24a2b2f
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -563,6 +565,27 @@ def admin_user_remove_server():
     user_remove(payload)
 
     return dumps({})
+
+#                   AUTH_PASSWORDRESET_REQUEST              #
+#############################################################
+@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_request():
+    payload = request.get_json()
+    auth.request(payload)
+
+    return dumps({})
+    
+
+#############################################################
+#                   AUTH_PASSWORDRESET_RESET                #
+#############################################################
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
+def auth_reset():
+    payload = request.get_json()
+    auth.reset(payload)
+    
+    return dumps({})
+
 
 if __name__ == "__main__":
     threading.Timer(60.0, save_data_stores).start()

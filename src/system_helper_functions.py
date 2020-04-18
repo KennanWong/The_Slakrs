@@ -1,7 +1,8 @@
 '''
 A series of helper functions to automate server testing
 '''
-
+import string
+import random
 import urllib
 import json
 
@@ -174,3 +175,7 @@ def react_to_msg(user, message, react_id):
         headers={'Content-Type':'application/json'}
     ))
     return
+
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))

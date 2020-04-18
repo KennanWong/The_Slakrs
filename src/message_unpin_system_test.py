@@ -90,26 +90,12 @@ def test_already_unpinned():
             headers={'Content-Type':'application/json'}
         ))
 
-def test_invalid_id():
+def test_invalid_message_id():
     'test error case'
     reset_workspace()
 
     user1 = reg_user1()
-    channel1 = create_ch1(user1)
-
-    msg1 = send_msg1(user1, channel1)
-
-    data = json.dumps({
-        'token': user1['token'],
-        'message_id': msg1['message_id'],
-
-    }).encode('utf-8')
-
-    urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/message/pin",
-        data=data,
-        headers={'Content-Type':'application/json'}
-    ))
+    channel1 = create_ch1(user1) #pylint: disable = W0612
 
     data1 = json.dumps({
         'token': user1['token'],
@@ -147,7 +133,7 @@ def test_unauth_member():
 
     data1 = json.dumps({
         'token': user2['token'],
-        'message_id': 1,
+        'message_id': msg1['message_id'],
     }).encode('utf-8')
 
     with pytest.raises(HTTPError):

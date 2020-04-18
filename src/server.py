@@ -566,6 +566,8 @@ def admin_user_remove_server():
 
     return dumps({})
 
+
+#############################################################
 #                   AUTH_PASSWORDRESET_REQUEST              #
 #############################################################
 @APP.route("/auth/passwordreset/request", methods=['POST'])

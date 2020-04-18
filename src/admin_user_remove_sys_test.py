@@ -128,7 +128,7 @@ def test_invalid_userid():
     'Invalid user case'
     reset_workspace()
 
-    user1 = reg_user2()
+    user1 = reg_user1()
     token1 = user1['token']
 
     # Invalid u_id = 100

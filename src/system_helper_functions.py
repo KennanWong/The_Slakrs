@@ -174,3 +174,21 @@ def react_to_msg(user, message, react_id):
         headers={'Content-Type':'application/json'}
     ))
     return
+
+def send_a_message(user, channel, message):
+    '''
+    Function to send a specific message to a specified channel
+    Returns the payload of a message_send request
+    '''
+    data = json.dumps({
+        'token': user['token'],
+        'channel_id': channel['channel_id'],
+        'message': message
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/message/send",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+    payload = json.load(req)
+    return payload

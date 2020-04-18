@@ -73,14 +73,10 @@ def test_invalid_id():
 
     ret = register_and_create()
     user = ret['user']
-    channel1 = ret['channel']
+   
 
-    msg1 = send_msg1(user, channel1)
+    #msg1 = send_msg1(user, channel1)
 
-    message.pin({
-        'token': user['token'],
-        'message_id': msg1['message_id']
-    })
 
     with pytest.raises(InputError):
         message.unpin({

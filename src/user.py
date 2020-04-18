@@ -1,9 +1,12 @@
 # This file contains the implementation of all 'user_' functions for the
 # server
 
-from error import InputError
-from helper_functions import get_user_token, validate_uid, test_email
-from helper_functions import check_used_email, check_used_handle
+from error import InputError, AccessError
+from data_stores import get_channel_data_store
+from channel import addowner, removeowner
+from helper_functions import get_user_from, validate_uid, test_email, get_user_token
+from helper_functions import test_in_channel, check_channel_permission
+from helper_functions import check_used_email, check_used_handle, get_user_from
 
 import urllib.request
 import sys
@@ -24,10 +27,12 @@ def profile(payload):
     if validate_uid(payload['u_id']) is False:
         raise InputError(description='Invalid u_id')
 
-    user = get_user_token(payload['token'])
+    user = get_user_from('token', payload['token'])
     #returns user information
-    #user_two = getUserById(u_id)
-        
+    
+    user2 = get_user_from('u_id', int(payload['u_id']))
+
+
     return ({
         'u_id' : user['u_id'],
         'email' : user['email'],

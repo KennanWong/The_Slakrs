@@ -1,6 +1,8 @@
 '''
 Set of functions used for testing 
 '''
+import string
+import random
 import auth
 import message
 import channels
@@ -107,3 +109,6 @@ def react_to_msg(react_id, msg,user):
     })
 
     return
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))

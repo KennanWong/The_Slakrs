@@ -6,6 +6,7 @@ Contains all routes
 import sys
 import re
 import datetime
+import threading
 from flask_cors import CORS
 
 from json import dumps
@@ -17,9 +18,11 @@ import channels
 import standup
 import other
 import user
+from data_stores import save_data_stores
 from error import InputError
+from admin_user_remove import user_remove
 
-#test
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -102,7 +105,6 @@ def auth_logout():
         }) 
 
 
-
 #############################################################
 #                   CHANNELS_CREATE                         #      
 #############################################################
@@ -127,9 +129,9 @@ def channels_list():
     token = request.args.get('token')
     chann_inf = channels.List(token)
     
-    return dumps(
-        chann_inf
-    )
+    return dumps({
+        'channels': chann_inf
+    })
 
 
 #############################################################
@@ -142,9 +144,9 @@ def channels_listall():
     token = request.args.get('token')
     chann_inf2 = channels.Listall(token)
 
-    return  dumps(
-        chann_inf2
-    )
+    return  dumps({
+        'channels':chann_inf2
+    })
 
 
 #############################################################
@@ -274,14 +276,6 @@ def standup_active():
         'token': token,
         'channel_id': channel_id
     }
-    standup_info = standup.active(payload)
-    return dumps(standup_info)
-
-    
-    payload = {
-        'token': token,
-        'channel_id': channel_id
-    }
 
     standup_info = standup.active(payload)
     return dumps(standup_info)
@@ -314,7 +308,7 @@ def channel_invite_server():
     # Invite user to channel
     invite = channel.invite(token, channel_id, user_id)
     
-    return dumps(invite)
+    return dumps({})
 
 
 #############################################################
@@ -366,7 +360,7 @@ def channel_leave_server():
     # Leave the channel
     leave = channel.leave(token, channel_id)
     
-    return dumps(leave)
+    return dumps({})
     
 
 #############################################################
@@ -384,7 +378,7 @@ def channel_join_server():
     # Join the channel
     join = channel.join(token, channel_id)
 
-    return dumps(join)
+    return dumps({})
         
 
 #############################################################
@@ -394,7 +388,7 @@ def channel_join_server():
 @APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner_server():
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -449,17 +443,19 @@ def search():
         'query_str' : query_str
     }
     messages = other.search(payload)
-    return dumps(messages)
+    return dumps({
+        'messages': messages
+    })
     
 #############################################################
 #                USER PERMISSION CHANGE                     #      
 #############################################################
 @APP.route('/admin/userpermission/change', methods=['POST'])
-def userpermission_change():
+def user_permission_change():
     """ return empty dic, change user's permission """
     payload = request.get_json()
-    user.user_permission_change(payload)
-    return dumps()
+    user.permission_change(payload)
+    return dumps({})
 
 
 #############################################################
@@ -482,7 +478,9 @@ def user_profile():
         'u_id': u_id
     }
     user_info = user.profile(payload)
-    return dumps (user_info)
+    return dumps ({
+        'user':user_info
+    })
     
 
 #############################################################
@@ -539,10 +537,48 @@ def all_users():
         'token': token
     }
     ret = other.users_all(payload)
-    return dumps(ret)
+    return dumps({
+        'users':ret
+    })
 
+
+#############################################################
+#                     ADMIN_USER_REMOVE                     #
+#############################################################
+@APP.route('/admin/user/remove', methods=['DELETE'])
+def admin_user_remove_server():
+    payload = request.get_json()
     
+    # Remove owner with user_id from slack
+    user_remove(payload)
+
+    return dumps({})
+
+
+#############################################################
+#                   AUTH_PASSWORDRESET_REQUEST              #
+#############################################################
+@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_request():
+    payload = request.get_json()
+    auth.request(payload)
+
+    return dumps({})
+    
+
+#############################################################
+#                   AUTH_PASSWORDRESET_RESET                #
+#############################################################
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
+def auth_reset():
+    payload = request.get_json()
+    auth.reset(payload)
+    
+    return dumps({})
+
+
 if __name__ == "__main__":
+<<<<<<< HEAD
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
 
 #############################################################
@@ -563,3 +599,7 @@ def users_profiles_uploadphoto():
     user.users_profiles_uploadphoto(payload)
 
     return dumps({})
+=======
+    threading.Timer(60.0, save_data_stores).start()
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
+>>>>>>> 0cfdb03810302647822add6b77a2fde59ca71cd0

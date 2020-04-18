@@ -276,21 +276,10 @@ def standup_active():
         'token': token,
         'channel_id': channel_id
     }
-    standup_info = standup.active(payload)
-    return dumps(standup_info)
-
-<<<<<<< HEAD
-
-    payload = {
-        'token': token,
-        'channel_id': channel_id
-    }
 
     standup_info = standup.active(payload)
     return dumps(standup_info)
     
-=======
->>>>>>> 941534320ba7ed3d3ea8864e5bf10f38d24a2b2f
 #############################################################
 #                   STANDUP_SEND                            #      
 #############################################################
@@ -558,9 +547,8 @@ def all_users():
 #############################################################
 @APP.route('/admin/user/remove', methods=['DELETE'])
 def admin_user_remove_server():
-
     payload = request.get_json()
-
+    
     # Remove owner with user_id from slack
     user_remove(payload)
 

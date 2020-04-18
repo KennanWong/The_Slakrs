@@ -274,8 +274,6 @@ def reset_message_count():
     MSG_COUNT = 1
     return
 
-<<<<<<< HEAD
-
 def check_owner_slackr(token):
     user = get_user_token(token)
     if user['permission_id'] == 1:
@@ -287,9 +285,8 @@ def message_belong_user(token, message_id):
     if info['u_id'] == user_id_from_token(token):
         return True
     return False
-=======
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
->>>>>>> 941534320ba7ed3d3ea8864e5bf10f38d24a2b2f

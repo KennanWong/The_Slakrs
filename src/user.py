@@ -5,6 +5,12 @@ from error import InputError
 from helper_functions import get_user_token, validate_uid, test_email
 from helper_functions import check_used_email, check_used_handle
 
+import urllib.request
+import sys
+
+from PIL import Image
+import imghdr
+import requests
 #############################################################
 #                      USER_PROFILE                         #      
 #############################################################
@@ -12,7 +18,7 @@ from helper_functions import check_used_email, check_used_handle
 def profile(payload):
     '''
     For a valid user, returns information about their user id, 
-    email, first name, last name, and handle
+    email, first name, last name,  handle and profile_img_url
     '''
     
     if validate_uid(payload['u_id']) is False:
@@ -28,6 +34,7 @@ def profile(payload):
         'name_first' : user['name_first'],
         'name_last' : user['name_last'],
         'handle_str' : user['handle_str'],
+        'profile_img_url' : user['profile_img_url'] 
     })
 
 
@@ -86,4 +93,65 @@ def profile_sethandle(payload):
     user = get_user_token(payload['token'])
     user['handle_str'] = payload['handle_str']
     return {}
+
+
+def users_profiles_uploadphoto(payload):
+
+    #Do a check to see if token is valid and to check if image is jpg
+
+    user = get_user_token(payload['token'])
+    u_id = user['u_id']
+
+    port = sys.argv[1]
+
+    url = f"http://127.0.0.1:{port}/static/"
+    name = f"./static/{u_id}.jpg"
     
+    try:
+        urllib.request.urlretrieve(payload['img_url'], name)
+    except Exception as e:
+        if type(e) != 200:
+            raise InputError(description = "HTTP status not 200")
+        elif imghdr.what(name) != 'jpg':
+            raise InputError(description = "Image not a jpg image")
+        else:
+            pass
+
+    #crop the url image
+    imageobject = Image.open(name)
+    
+    width, height = imageobject.size
+    
+    x_start = payload['x_start']
+    y_start = payload['y_start']
+    x_end = payload['x_end']
+    y_end = payload['y_end']
+
+##
+    #no input
+    if x_start is None and x_end is None and y_start is None and y_end is None:
+        x_start = 0
+        x_end = width
+        y_start = 0
+        y_end = height
+    
+    x_start = int(x_start)
+    y_start = int(y_start)
+    x_end = int(x_end)
+    y_end = int(y_end)
+
+    #x_start and y_start has to be less than width and hight
+    if x_end > width or y_end > height or x_start >= x_end or y_start >= y_end:
+        raise InputError(f"Crop has to be within the dimension ({width} x {height})")
+    cropped = imageobject.crop((x_start,y_start,x_end,y_end))
+##
+
+    cropped.save(name)
+
+    user['profile_img_url'] = url + f"{u_id}.jpg"
+    return {}
+
+
+
+
+

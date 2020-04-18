@@ -544,3 +544,22 @@ def all_users():
     
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
+
+#############################################################
+#                        USERS_PROFILE_IMAGE                #
+#############################################################
+
+@uploadphoto.route('/user/profiles/uploadphoto', methods=['POST'])
+def users_profiles_uploadphoto():
+
+    #token = request.form.get('token')
+    #img_url = str(request.form.get('img_url'))
+    #x_start = int(request.form.get('x_start'))
+    #x_end = int(request.form.get('x_end'))
+    #y_start = int(request.form.get('y_start'))
+    #y_end = int(request.form.get('y_end'))
+    
+    payload = request.get_json()
+    user.users_profiles_uploadphoto(payload)
+
+    return dumps({})

@@ -2,6 +2,7 @@
 
 # pylint: disable=W0611
 # pylint: disable=C0412
+# pylint: disable=C0301
 
 # pylint compliant
 
@@ -16,15 +17,12 @@ import channel
 import channels
 from system_helper_functions import reg_user1, reg_user2, create_ch1, reset_workspace
 
-# pylint: disable=C0301
-
-# pylint compliant
+# channel_details (GET)
 
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_details():
     'Getting details'
-    # channel_details (GET)
     reset_workspace()
 
     user1 = reg_user1()

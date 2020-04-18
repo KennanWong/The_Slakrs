@@ -37,25 +37,15 @@ def test_admin_user_remove_successful():
         data=data,
         headers={'Content-Type': 'application/json'}
     ))
-    # Add owner
+
     data2 = json.dumps({
         'token': token1,
-        'channel_id': channel_id,
         'u_id': u_id2
     }).encode('utf-8')
-    urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/addowner",
-        data=data2,
-        headers={'Content-Type': 'application/json'}
-    ))
-    data3 = json.dumps({
-        'token': token2,
-        'u_id': u_id1
-    }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/admin/user/remove",
-        data=data3,
+        data=data2,
         headers={'Content-Type': 'application/json'}
     )
     req.get_method = lambda: 'DELETE'
@@ -87,22 +77,12 @@ def test_invalid_userid():
         data=data,
         headers={'Content-Type': 'application/json'}
     ))
-    # Add owner
-    data2 = json.dumps({
-        'token': token1,
-        'channel_id': channel_id,
-        'u_id': u_id2
-    }).encode('utf-8')
-    urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/addowner",
-        data=data2,
-        headers={'Content-Type': 'application/json'}
-    ))
+
     data3 = json.dumps({
         'token': token2,
         'u_id': 100
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/admin/user/remove",
         data=data3,
@@ -131,28 +111,15 @@ def test_unauthorised_slackr():
     user2 = reg_user2()
     token2 = user2['token']
     u_id2 = user2['u_id']
-    user3 = reg_user3()
-    token3 = user3['token']
-    u_id3 = user3['u_id']
 
     channel_info = create_ch1(user1)
     channel_id = channel_info['channel_id']
 
-    # Join
-    data = json.dumps({
-        'token': token3,
-        'channel_id': channel_id
-    }).encode('utf-8')
-    urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/join",
-        data=data,
-        headers={'Content-Type': 'application/json'}
-    ))
     data2 = json.dumps({
         'token': token2,
-        'u_id': u_id3
+        'u_id': u_id1
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/admin/user/remove",
         data=data2,

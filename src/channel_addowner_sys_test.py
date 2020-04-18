@@ -2,6 +2,7 @@
 
 # pylint: disable=W0611
 # pylint: disable=C0412
+# pylint: disable=W0611
 
 # pylint compliant
 
@@ -15,13 +16,12 @@ import server
 import channel
 from system_helper_functions import reg_user1, reg_user2, reg_user3, create_ch1, reset_workspace
 
-# pylint: disable=W0611
+# channel_addowner (POST)
 
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_addowner():
     'Normal case'
-    # channel_addowner (POST)
     reset_workspace()
 
     user1 = reg_user1()
@@ -171,10 +171,17 @@ def test_invalid_channel():
         'u_id': u_id2
     }).encode('utf-8')
 
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/channel/addowner",
+        data=data3,
+        headers={'Content-Type': 'application/json'}
+    ))
     with pytest.raises(HTTPError):
+        '''
         urllib.request.urlopen(urllib.request.Request(
             f"{BASE_URL}/channel/addowner",
             data=data3,
             headers={'Content-Type': 'application/json'}
         ))
-        
+        '''
+        json.load(urllib.request.urlopen(req))

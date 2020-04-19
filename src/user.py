@@ -30,19 +30,19 @@ def profile(payload):
     if validate_uid(payload['u_id']) is False:
         raise InputError(description='Invalid u_id')
 
-    user = get_user_from('token', payload['token'])
+    user1 = get_user_from('token', payload['token'])
     #returns user information
 
-    #user2 = get_user_from('u_id', int(payload['u_id']))
+    user2 = get_user_from('u_id', int(payload['u_id']))
 
 
     return ({
-        'u_id' : user['u_id'],
-        'email' : user['email'],
-        'name_first' : user['name_first'],
-        'name_last' : user['name_last'],
-        'handle_str' : user['handle_str'],
-        'profile_img_url' : user['profile_img_url']
+        'u_id' : user2['u_id'],
+        'email' : user2['email'],
+        'name_first' : user2['name_first'],
+        'name_last' : user2['name_last'],
+        'handle_str' : user2['handle_str'],
+        'profile_img_url' : user2['profile_img_url']
     })
 
 

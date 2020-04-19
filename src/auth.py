@@ -179,5 +179,5 @@ def reset(payload):                 # pylint disable=R1771
             else:
                 raise InputError(description='Password is too short')
 
-        
+
         raise InputError(description='Reset code is incorrect')

@@ -3,7 +3,7 @@
 This file contains all 'message_' functions
 
 '''
-from datetime import datetime, timezone
+from datetime import datetime, timezone             #pylint: disable=W0611
 import threading
 import hangman
 from data_stores import get_messages_store, save_messages_store
@@ -62,7 +62,7 @@ def send(payload):
     if txt.split()[0] == '/guess':
         if not channel['hangman_active']:
             hangman.message(channel, 'There is not a current game of hangman running.\n'+
-                            'If you would like to start one, type \hangman into the chat')
+                            'If you would like to start one, type \hangman into the chat')  #pylint: disable=W1401
         else:
             if len(txt.split()) == 2:
                 new_guess = txt.split()[1]
@@ -79,8 +79,8 @@ def send(payload):
         if msg['is_pinned'] is True:
             print('*** '+ msg['message'] + ' ***')
         else:
-            print(msg['message'])
-    '''
+            print(msg['message'])           
+    '''         #pylint: disable=W0105
 
     return new_message
 

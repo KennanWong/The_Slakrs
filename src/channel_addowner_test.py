@@ -98,6 +98,6 @@ def test_invalid_channel():
 
     channel.join(token2, channel_id)
 
-    # Invalid channel_id = 100
+    # Invalid channel_id = 10
     with pytest.raises(InputError):
         channel.addowner(token1, 100, u_id2)

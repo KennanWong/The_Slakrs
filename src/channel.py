@@ -68,7 +68,7 @@ def details(token, channel_id):
 
     # If the channel is public, safe to display details
     # If not then raise error
-    if u_id1 in channel['members']:#test_in_channel(u_id1, channel):
+    if test_in_channel(u_id1, channel):
         for owner in channel['owners']:
             owner_dets = user_details(owner)
             owner_members.append(user_details(owner_dets))

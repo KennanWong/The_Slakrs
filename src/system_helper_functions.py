@@ -17,7 +17,7 @@ def reset_workspace():
         data=[],
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def reg_user1():
     '''
@@ -51,7 +51,7 @@ def logout_user1(token):
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def reg_user2():
     '''
@@ -145,18 +145,21 @@ def send_msg1(user, channel):
 
 
 def invite_to_channel(inviter, invitee, channel):
+    '''
+    'Inviter' to invite the 'invitee' to their 'channel'
+    '''
     data = json.dumps({
         'token': inviter['token'],
         'channel_id': channel['channel_id'],
         'u_id': invitee['u_id']
     }).encode('utf-8')
-    
+
     urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/invite", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
+        f"{BASE_URL}/channel/invite",
+        data=data,
+        headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def react_to_msg(user, message, react_id):
     '''
@@ -174,7 +177,7 @@ def react_to_msg(user, message, react_id):
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def send_a_message(user, channel, message):
     '''
@@ -195,4 +198,7 @@ def send_a_message(user, channel, message):
     return payload
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    '''
+    Function to generate a random 6 character string to act as a reset code
+    '''
     return ''.join(random.choice(chars) for _ in range(size))

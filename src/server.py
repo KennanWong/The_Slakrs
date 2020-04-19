@@ -505,11 +505,14 @@ def search():
 #############################################################
 
 @APP.route('/admin/userpermission/change', methods=['POST'])
+
+
+
 def user_permission_change():
     "Return empty dictionary, change user's permission"
 
     payload = request.get_json()
-    user.permission_change(payload)
+    other.permission_change(payload)
     return dumps({})
 
 
@@ -640,5 +643,17 @@ def auth_reset():
     return dumps({})
 
 if __name__ == "__main__":
-    threading.Timer(60.0, save_data_stores).start()
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
+
+#############################################################
+#                  USERS_PROFILE_UPLOADPHOTO                #
+#############################################################
+
+@APP.route("/user/profile/uploadphoto", methods=['POST'])
+def users_profiles_uploadphoto():
+    'Given a URL of an image on the internet, crops the image within bounds'
+
+    payload = request.get_json()
+    user.users_profiles_uploadphoto(payload)
+
+    return dumps({})

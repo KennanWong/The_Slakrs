@@ -77,7 +77,7 @@ def test_userid_not_owner():
     channel.join(token2, channel_id)
     channel.addowner(token1, channel_id, u_id2)
 
-    # Invalid user_id = 100
+    # Invalid user_id = 10
     with pytest.raises(InputError) as e:
         channel.removeowner(token2, channel_id, 100)
 

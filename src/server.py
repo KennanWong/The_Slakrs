@@ -582,7 +582,7 @@ def all_users():
 def admin_user_remove_server():
     'Remove user from slackr'
     payload = request.get_json()
-
+    
     # Remove owner with user_id from slack
     user_remove(payload)
 

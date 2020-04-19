@@ -8,7 +8,9 @@ import json
 
 BASE_URL = 'http://127.0.0.1:8080'
 
-def reset_workspace():
+#pylint compliant
+
+def reset_workspace():                  #pylint: disable=R1711
     '''
     Helper function to run the /workspace/reset request
     '''
@@ -38,7 +40,7 @@ def reg_user1():
     response = json.load(req)
     return response
 
-def logout_user1(token):
+def logout_user1(token):                        #pylint: disable=R1711
     '''
     Function to logout a user, given a token
     '''
@@ -156,21 +158,13 @@ def invite_to_channel(inviter, invitee, channel):
 
     urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/channel/invite",
-<<<<<<< HEAD
         data=data,
         headers={'Content-Type':'application/json'}
-=======
-        data = data,
-        headers = {'Content-Type':'application/json'}
->>>>>>> 170ebf69d045f99dee65a56b6debaf19ac25c560
     ))
     return ()
 
-def react_to_msg(user, message, react_id):
-    '''
-    Function to have a 'user' to react to a 'message' with react_id
-    'react_id'
-    '''
+def react_to_msg(user, message, react_id):              #pylint: disable=R1711
+    
     data = json.dumps({
         'token': user['token'],
         'message_id': message['message_id'],
@@ -203,15 +197,9 @@ def send_a_message(user, channel, message):
     return payload
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    '''
-    Function to generate a random 6 character string to act as a reset code
-    '''
     return ''.join(random.choice(chars) for _ in range(size))
 
 def reg_sid():
-    '''
-    Registers a user and returns the reponse from the request
-    '''
     data = json.dumps({
         'email' : 'sidu2000@gmail.com',
         'password': 'Sid12345',
@@ -226,3 +214,5 @@ def reg_sid():
 
     response = json.load(req)
     return response
+                                                #pylint: disable = C0304
+    

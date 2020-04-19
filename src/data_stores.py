@@ -11,6 +11,7 @@ saving and generating the data stores
 import json
 import threading
 
+#pylint compliant
 #############################################################
 #                   DATA_STORES                             #
 #############################################################
@@ -22,39 +23,19 @@ auth_store = []
 messages_store = []
 
 # This file contains our data and data structure for the server
-channels_store = []
-
 
 auth_data = []
 
-messages_store = [
-    # 'channel_id'
-    # 'message_id'
-    # 'u_id, 
-    # 'message'
-    # 'time_created'
-    # 'reacts'
-        # {
-        #     'react_id'
-        #     'u_ids' # a list of u_id
-        #     'is_user_reacted'
-        # }
-    # 'is_pinned'
-]
+reset_data = []
 
-reset_data = [
-   #'email':
-   # 'reset_code':
-]
-
-MSG_COUNT=1
+MSG_COUNT = 1
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
     '''
     Function to generate gloabl auth_data store
     '''
     global auth_store
-    if len(auth_store) == 0:
+    if len(auth_store) == 0:                #pylint: disable = C1801
         # initial startup of server, load up previous save
         try:
             with open('auth_data_store.json', 'r') as FILE:
@@ -68,7 +49,7 @@ def get_channel_data_store():
     Function to get channel data store
     '''
     global channels_store
-    if len(channels_store) == 0:
+    if len(channels_store) == 0:            #pylint: disable = C1801
         # initial startup of server, load up previous save
         try:
             with open('channel_data_store.json', 'r') as FILE:
@@ -82,7 +63,7 @@ def get_messages_store():
     Function to generate messages_store
     '''
     global messages_store
-    if len(messages_store) == 0:
+    if len(messages_store) == 0:                        #pylint: disable = C1801
         # initial startup of server, load up previous save
         try:
             with open('messages_data_store.json', 'r') as FILE:
@@ -93,10 +74,12 @@ def get_messages_store():
 
 #Function to get reset data store
 def get_reset_code_store():
+    'saves the users email and reset code for those who request a reset code'
     global reset_data
     return reset_data
 
 def get_message_count():
+    'This retrieves the message count for the server'
     global MSG_COUNT
     return MSG_COUNT
 
@@ -168,6 +151,7 @@ def save_data_stores():
     return
 
 def reset_data_stores():
+    'data store for reset '
     reset_auth_store()
     reset_channel_data_store()
     reset_messages_store()

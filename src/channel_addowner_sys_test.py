@@ -18,7 +18,7 @@ from system_helper_functions import reg_user1, reg_user2, reg_user3, create_ch1,
 
 # channel_addowner (POST)
 
-BASE_URL = 'http://127.0.0.1:4000'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_addowner():
     'Normal case'

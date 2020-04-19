@@ -156,13 +156,8 @@ def invite_to_channel(inviter, invitee, channel):
 
     urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/channel/invite",
-<<<<<<< HEAD
         data=data,
         headers={'Content-Type':'application/json'}
-=======
-        data = data,
-        headers = {'Content-Type':'application/json'}
->>>>>>> 170ebf69d045f99dee65a56b6debaf19ac25c560
     ))
     return ()
 

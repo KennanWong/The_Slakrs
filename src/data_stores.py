@@ -11,6 +11,7 @@ saving and generating the data stores
 import json
 import threading
 
+#pylint compliant
 #############################################################
 #                   DATA_STORES                             #
 #############################################################
@@ -28,38 +29,38 @@ channels_store = [
     #     'name'
     #     'is_public'
     #     'members':[
- 	# 	    {
+    #{
     #             u_id
     #             name_first
     #             Name_last
- 	# 	    }
-    #     ] 
+    # 	    }
+    #     ]
     #     'owners':[
- 	#         {
+    #         {
     #             u_id
     #             name_first
     #             Name_last
- 	# 	    }
+    # 	    }
     #     ]
     #     'messages': [
     #         {
     #             channel_id
     #             message_id
-    #             u_id, 
+    #             u_id,
     #             message
     #             time_created
     #             reacts
     #             is_pinned
     #         }
- 	#     ]
-   #       'standup': [
-   #           {
-   #              is_active
-   #              messages
-   #              time_finish
-   #           }
-   #        ]
-   #     }
+    #     ]
+    #       'standup': [
+    #           {
+    #              is_active
+    #              messages
+    #              time_finish
+    #           }
+    #        ]
+    #     }
 ]
 
 
@@ -82,7 +83,7 @@ auth_data = [
 messages_store = [
     # 'channel_id'
     # 'message_id'
-    # 'u_id, 
+    # 'u_id,
     # 'message'
     # 'time_created'
     # 'reacts'
@@ -95,18 +96,18 @@ messages_store = [
 ]
 
 reset_data = [
-   #'email':
-   # 'reset_code':
+    #'email':
+    # 'reset_code':
 ]
 
-MSG_COUNT=1
+MSG_COUNT = 1
 # Function to generate gloabl auth_data store
 def get_auth_data_store():
     '''
     Function to generate gloabl auth_data store
     '''
     global auth_store
-    if len(auth_store) == 0:
+    if len(auth_store) == 0:                #pylint: disable = C1801
         # initial startup of server, load up previous save
         try:
             with open('auth_data_store.json', 'r') as FILE:
@@ -120,7 +121,7 @@ def get_channel_data_store():
     Function to get channel data store
     '''
     global channels_store
-    if len(channels_store) == 0:
+    if len(channels_store) == 0:            #pylint: disable = C1801
         # initial startup of server, load up previous save
         try:
             with open('channel_data_store.json', 'r') as FILE:
@@ -134,7 +135,7 @@ def get_messages_store():
     Function to generate messages_store
     '''
     global messages_store
-    if len(messages_store) == 0:
+    if len(messages_store) == 0:                        #pylint: disable = C1801
         # initial startup of server, load up previous save
         try:
             with open('messages_data_store.json', 'r') as FILE:
@@ -145,10 +146,12 @@ def get_messages_store():
 
 #Function to get reset data store
 def get_reset_code_store():
+    'saves the users email and reset code for those who request a reset code'
     global reset_data
     return reset_data
 
 def get_message_count():
+    'This retrieves the message count for the server'
     global MSG_COUNT
     return MSG_COUNT
 

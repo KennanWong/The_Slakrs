@@ -654,6 +654,6 @@ def users_profiles_uploadphoto():
     'Given a URL of an image on the internet, crops the image within bounds'
 
     payload = request.get_json()
-    user.users_profiles_uploadphoto(payload)
+    user.user_profile_uploadphoto(payload)
 
     return dumps({})

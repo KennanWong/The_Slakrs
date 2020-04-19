@@ -164,4 +164,4 @@ def test_channel_invite_existing_user():
             f"{BASE_URL}/channel/invite",
             data=data2,
             headers={'Content-Type': 'application/json'}
-        )
+        ))

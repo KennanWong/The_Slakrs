@@ -19,7 +19,7 @@ def reset_workspace():                  #pylint: disable=R1711
         data=[],
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def reg_user1():
     '''
@@ -53,7 +53,7 @@ def logout_user1(token):                        #pylint: disable=R1711
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def reg_user2():
     '''
@@ -146,9 +146,9 @@ def send_msg1(user, channel):
     return payload
 
 
-def invite_to_channel(inviter, invitee, channel):           #pylint: disable=R1711
+def invite_to_channel(inviter, invitee, channel):
     '''
-    Function to invite an user to the channel
+    'Inviter' to invite the 'invitee' to their 'channel'
     '''
     data = json.dumps({
         'token': inviter['token'],
@@ -161,13 +161,10 @@ def invite_to_channel(inviter, invitee, channel):           #pylint: disable=R17
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def react_to_msg(user, message, react_id):              #pylint: disable=R1711
-    '''
-    Function to have a 'user' to react to a 'message' with react_id
-    'react_id'
-    '''
+    
     data = json.dumps({
         'token': user['token'],
         'message_id': message['message_id'],
@@ -179,7 +176,7 @@ def react_to_msg(user, message, react_id):              #pylint: disable=R1711
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-    return
+    return ()
 
 def send_a_message(user, channel, message):
     '''
@@ -200,15 +197,10 @@ def send_a_message(user, channel, message):
     return payload
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    '''
-    Function to generate a 6 character reset code used to reset an users password
-    '''
     return ''.join(random.choice(chars) for _ in range(size))
 
 def reg_sid():
-    '''
-    Registers a user and returns the reponse from the request
-    '''
+    
     data = json.dumps({
         'email' : 'sidu2000@gmail.com',
         'password': 'Sid12345',

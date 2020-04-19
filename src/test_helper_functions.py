@@ -6,6 +6,7 @@ import random
 import auth
 import message
 import channels
+import channel
 
 #pylint compliant
 
@@ -67,13 +68,13 @@ def register_and_create():
         'channel':new_channel
     }
 
-def send_msg1(user, channel):
+def send_msg1(user1, channel1):
     '''
     Helper function to send a message
     '''
     payload = {
-        'token':user['token'],
-        'channel_id': channel['channel_id'],
+        'token':user1['token'],
+        'channel_id': channel1['channel_id'],
         'message' : 'testing'
     }
 
@@ -93,12 +94,12 @@ def create_ch1(user):
     return new_channel
 
 
-def invite_to_ch1(user1, user2, channel):               #pylint: disable = R1711
+def invite_to_ch1(user1, user2, ch1):
     '''
     Function for user1 to invite user2 to
     channel
     '''
-    channel.invite(user1['token'], channel['channel_id'], user2['u_id'])
+    channel.invite(user1['token'], ch1['channel_id'], user2['u_id'])
 
     return
 

@@ -1,14 +1,18 @@
 '''
 Pytest file to test message_react on a system level
 '''
+
+# pylint: disable=W0611
+
 import urllib
 import json
-import flask
 from urllib.error import HTTPError
 
+import flask
 import pytest
+
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2, send_msg1
+from system_helper_functions import reg_user2, send_msg1, invite_to_channel
 
 
 #############################################################
@@ -43,8 +47,11 @@ def test_react1():
 
     assert payload == {}
 
-'''
+
 def test_react2():
+    '''
+    Test another user in a channel attempting to react to another person message
+    '''
     reset_workspace()
 
     user1 = reg_user1()
@@ -60,44 +67,14 @@ def test_react2():
     }).encode('utf-8')
 
     req = urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/message/react", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
-    ))
-
-    payload = json.load(req)
-
-    assert payload == {}
-'''
-
-def test_already_reacted():
-    '''
-    Test reacting to a message they have already reacted to
-    '''
-    reset_workspace()
-
-    user1 = reg_user1()
-    channel1 = create_ch1(user1)
-    msg1 = send_msg1(user1, channel1)
-
-    data = json.dumps({
-        'token': user1['token'],
-        'message_id': msg1['message_id'],
-        'react_id': 1
-    }).encode('utf-8')
-
-    urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/message/react",
         data=data,
         headers={'Content-Type':'application/json'}
     ))
 
-    with pytest.raises(HTTPError):
-        urllib.request.urlopen(urllib.request.Request(
-            f"{BASE_URL}/message/react",
-            data=data,
-            headers={'Content-Type':'application/json'}
-        ))
+    payload = json.load(req)
+
+    assert payload == {}
 
 def test_invalid_msg_id():
     '''

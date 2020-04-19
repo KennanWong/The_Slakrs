@@ -7,8 +7,7 @@ import pytest
 import channel
 import message
 from test_helper_functions import reg_user2, register_and_create
-from data_stores import get_auth_data_store
-from data_stores import get_messages_store, reset_auth_store
+from data_stores import reset_data_stores, get_messages_store
 from error import InputError, AccessError
 
 
@@ -21,14 +20,14 @@ def test_send1():
     '''
     Test valid use of message_send
     '''
-    reset_auth_store()
+    reset_data_stores()
     ret = register_and_create()
     user = ret['user']
-    channel = ret['channel']
+    channel1 = ret['channel']
 
     payload = {
         'token':user['token'],
-        'channel_id': channel['channel_id'],
+        'channel_id': channel1['channel_id'],
         'message' : 'testing'
     }
 
@@ -37,17 +36,20 @@ def test_send1():
     message_store = get_messages_store()
 
     assert message_test in message_store
-    assert message_test in channel['messages']
+    assert message_test in channel1['messages']
 
 
 
 def test_send2():
-    # a member of a channel sends a message
+    '''
+    A member of a channel sends a message
+    '''
+    reset_data_stores()
     ret = register_and_create()
     user = ret['user']
     channel1 = ret['channel']
 
-    user2 =  reg_user2()
+    user2 = reg_user2()
 
     channel.invite(user['token'], channel1['channel_id'], user2['u_id'])
 
@@ -57,25 +59,21 @@ def test_send2():
         'message' : 'testing'
     })
 
-    assert message_test in channel1['messages'] 
-
-
+    assert message_test in channel1['messages']
 
 def test_long_msg():
     '''
     Test to send a message more thatn 1000 characters, should raise an Input error
     '''
-    reset_auth_store()
-    auth_store = get_auth_data_store()
-    print(auth_store)
+    reset_data_stores()
     ret = register_and_create()
     user = ret['user']
-    channel = ret['channel']
+    channel1 = ret['channel']
 
     with pytest.raises(InputError):
         message.send({
             'token': user['token'],
-            'channel_id': channel['channel_id'],
+            'channel_id': channel1['channel_id'],
             'message': 'To manage the transition from trimesters to hexamesters in 2020,'+
                        'UNSW has established a new focus on building an in-house digital'+
                        ' collaboration and communication tool for groups and teams to support'+
@@ -98,7 +96,7 @@ def test_unauthorised():
     '''
     Test a user sending a message into a channel in which they are not a part of
     '''
-    reset_auth_store()
+    reset_data_stores()
     ret = register_and_create()
     channel1 = ret['channel']
 

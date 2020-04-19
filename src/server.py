@@ -62,8 +62,9 @@ def echo():
 
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
-    'Register a user and add it to the userStore'
-
+    '''
+    Function to register a new user to the slack
+    '''
     payload = request.get_json()
     new_user = auth.register(payload)
 
@@ -79,8 +80,9 @@ def auth_register():
 
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
-    'To login a user and return a token'
-
+    '''
+    Function to login a user to a slack
+    '''
     payload = request.get_json()
     user1 = auth.login(payload)
 
@@ -96,6 +98,9 @@ def auth_login():
 
 @APP.route("/auth/logout", methods=['POST'])
 def auth_logout():
+    '''
+    Function logout a user from a slack
+    '''
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
@@ -113,7 +118,9 @@ def auth_logout():
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
-    'To create a channel'
+    '''
+    Function to create a new channel in the slack
+    '''
     payload = request.get_json()
     new_channel = channels.create(payload)
     return dumps({
@@ -127,7 +134,9 @@ def channels_create():
 
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
-    'To display all the channels an user is part of'
+    '''
+    Function to list all channels a user is a part of
+    '''
     token = request.args.get('token')
     chann_inf = channels.List(token)
 
@@ -183,7 +192,9 @@ def message_unpin():
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
-
+    '''
+    Function to send a message to a channel
+    '''
     payload = request.get_json()
     new_message = message.send(payload)
 
@@ -198,6 +209,10 @@ def message_send():
 
 @APP.route("/message/sendlater", methods=['POST'])
 def message_sendlater():
+    '''
+    Function to send a message to a channel at a specified time 
+    in the future
+    '''
     payload = request.get_json()
 
     new_message_id = message.sendlater(payload)
@@ -213,7 +228,9 @@ def message_sendlater():
 
 @APP.route("/message/remove", methods=['DELETE'])
 def message_remove():
-
+    '''
+    Function to remove a message from a channel
+    '''
     payload = request.get_json()
     message.remove(payload)
 
@@ -226,6 +243,10 @@ def message_remove():
 
 @APP.route("/message/edit", methods=['PUT'])
 def message_edit():
+    '''
+    Function to edit a given message in a channel
+    '''
+    payload = request.get_json()
 
     payload = request.get_json()
     message.edit(payload)
@@ -239,7 +260,9 @@ def message_edit():
 
 @APP.route("/message/react", methods=['POST'])
 def message_react():
-
+    '''
+    Function to react to a given message in a channel
+    '''
     payload = request.get_json()
     message.react(payload)
 
@@ -252,7 +275,9 @@ def message_react():
 
 @APP.route("/message/unreact", methods=['POST'])
 def message_unreact():
-
+    '''
+    Function to unreact to a given message in a channel
+    '''
     payload = request.get_json()
     message.unreact(payload)
 
@@ -507,8 +532,8 @@ def user_profile():
         'u_id': u_id
     }
     user_info = user.profile(payload)
-    return dumps({
-        'user':user_info
+    return dumps ({
+        'user': user_info
     })
 
 

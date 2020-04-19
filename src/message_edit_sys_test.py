@@ -1,14 +1,18 @@
 '''
 Pytest file to test message_edit on a system level
 '''
+
+# pylint: disable=W0611
+
 import urllib
 import json
-import flask
 from urllib.error import HTTPError
+
+import flask
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2, send_msg1
+from system_helper_functions import reg_user2, send_msg1, invite_to_channel
 
 
 #############################################################
@@ -44,8 +48,11 @@ def test_edit1():
 
     assert response == {}
 
-'''     WAITING FOR channel/invite
+
 def test_edit2():
+    '''
+    The owner of a slack is editing a message
+    '''
     reset_workspace()
 
     user1 = reg_user1()
@@ -61,15 +68,14 @@ def test_edit2():
     }).encode('utf-8')
 
     req = urllib.request.Request(
-        f"{BASE_URL}/message/edit", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
+        f"{BASE_URL}/message/edit",
+        data=data,
+        headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
     response = json.load(urllib.request.urlopen(req))
 
     assert response == {}
-'''
 
 def test_edit3():
     '''
@@ -97,9 +103,10 @@ def test_edit3():
 
     assert response == {}
 
-'''
 def test_unauth_edit1():
-
+    '''
+    Someone who is not an owner is attempting to edit a message
+    '''
     reset_workspace()
 
     user1 = reg_user1()
@@ -115,14 +122,14 @@ def test_unauth_edit1():
     }).encode('utf-8')
 
     req = urllib.request.Request(
-        f"{BASE_URL}/message/edit", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
+        f"{BASE_URL}/message/edit",
+        data=data,
+        headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
-        response = json.load(urllib.request.urlopen(req))
-'''
+        json.load(urllib.request.urlopen(req))
+
 
 def test_unauth_edit2():
     '''

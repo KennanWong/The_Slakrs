@@ -69,16 +69,17 @@ def test_channel_leave_unauthorised():
     'User is not a member case'
     reset_workspace()
 
-    #user1 = reg_user1()
+    user1 = reg_user1()
     user2 = reg_user2()
     token2 = user2['token']
 
-    #channel_info = create_ch1(user1)
+    channel_info = create_ch1(user1)
+    channel_id = channel_info['channel_id']
 
     # Attempt for user to leave channel they aren't a member of (user2)
     data = json.dumps({
         'token': token2,
-        'channel_id': 100
+        'channel_id': channel_id
     }).encode('utf-8')
 
     with pytest.raises(HTTPError):

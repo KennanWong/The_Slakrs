@@ -97,8 +97,7 @@ def test_invalid_channel():
     channel_id = channel_info['channel_id']
 
     channel.join(token2, channel_id)
-    channel.addowner(token1, channel_id, u_id2)
 
     # Invalid channel_id = 100
     with pytest.raises(InputError):
-        channel.addowner(token2, 100, u_id2)
+        channel.addowner(token1, 100, u_id2)

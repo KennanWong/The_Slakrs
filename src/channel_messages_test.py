@@ -114,20 +114,6 @@ def test_others1():
         channel.messages(token1, channel_id, "asdf")
 
 def test_others2():
-    'Other errors, when start is bigger than total number of messages'
-    workspace_reset()
-
-    ret = register_and_create()
-    user1 = ret['user']
-    token1 = user1['token']
-    channelInfo = ret['channel']
-    channel_id = channelInfo['channel_id']
-
-    # InputError when start is bigger than number of messages
-    with pytest.raises(InputError) as e:
-        channel.messages(token1, channel_id, 12345)
-
-def test_others3():
     'Other errors, when start is negative'
     workspace_reset()
 

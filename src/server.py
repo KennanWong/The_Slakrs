@@ -5,6 +5,7 @@ Contains all routes
 
 #pylint: disable=W0611
 #pylint: disable=C0103
+#pylint: disable=R1705
 
 import sys
 import re
@@ -24,10 +25,10 @@ import user
 from admin_user_remove import user_remove
 from data_stores import save_data_stores
 from error import InputError
-from admin_user_remove import user_remove
 
 def defaultHandler(err):
-    'Given from gitlab'
+    'Given from gitlab pull'
+
     response = err.get_response()
     print('response', err, err.get_response())
     response.data = dumps({
@@ -47,6 +48,8 @@ APP.register_error_handler(Exception, defaultHandler)
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
+    'Given from gitlab pull'
+
     data = request.args.get('data')
     if data == 'echo':
         raise InputError(description='Cannot echo "echo"')
@@ -62,9 +65,8 @@ def echo():
 
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
-    '''
-    Function to register a new user to the slack
-    '''
+    'Function to register a new user to the Slack'
+
     payload = request.get_json()
     new_user = auth.register(payload)
 
@@ -80,9 +82,8 @@ def auth_register():
 
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
-    '''
-    Function to login a user to a slack
-    '''
+    'Function to login a user to a Slack'
+
     payload = request.get_json()
     user1 = auth.login(payload)
 
@@ -98,9 +99,8 @@ def auth_login():
 
 @APP.route("/auth/logout", methods=['POST'])
 def auth_logout():
-    '''
-    Function logout a user from a slack
-    '''
+    'Function to logout a user from a Slack'
+
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
@@ -118,9 +118,8 @@ def auth_logout():
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
-    '''
-    Function to create a new channel in the slack
-    '''
+    'Function to create a new channel in the slack'
+
     payload = request.get_json()
     new_channel = channels.create(payload)
     return dumps({
@@ -134,9 +133,8 @@ def channels_create():
 
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
-    '''
-    Function to list all channels a user is a part of
-    '''
+    'Function to list all channels a user is a part of'
+
     token = request.args.get('token')
     chann_inf = channels.List(token)
 
@@ -152,6 +150,7 @@ def channels_list():
 @APP.route("/channels/listall", methods=['GET'])
 def channels_listall():
     'To display all the channels created on the server'
+
     token = request.args.get('token')
     chann_inf2 = channels.Listall(token)
 
@@ -167,6 +166,7 @@ def channels_listall():
 @APP.route("/message/pin", methods=['POST'])
 def message_pin():
     'To pin a users message'
+
     payload = request.get_json()
     message.pin(payload)
 
@@ -180,6 +180,7 @@ def message_pin():
 @APP.route("/message/unpin", methods=['POST'])
 def message_unpin():
     'To unpin a users message'
+
     payload = request.get_json()
     message.unpin(payload)
 
@@ -192,9 +193,8 @@ def message_unpin():
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
-    '''
-    Function to send a message to a channel
-    '''
+    'Function to send a message to a channel'
+
     payload = request.get_json()
     new_message = message.send(payload)
 
@@ -209,10 +209,8 @@ def message_send():
 
 @APP.route("/message/sendlater", methods=['POST'])
 def message_sendlater():
-    '''
-    Function to send a message to a channel at a specified time 
-    in the future
-    '''
+    'Function to send a message to a channel at a specified time in the future'
+
     payload = request.get_json()
 
     new_message_id = message.sendlater(payload)
@@ -228,9 +226,8 @@ def message_sendlater():
 
 @APP.route("/message/remove", methods=['DELETE'])
 def message_remove():
-    '''
-    Function to remove a message from a channel
-    '''
+    'Function to remove a message from a channel'
+
     payload = request.get_json()
     message.remove(payload)
 
@@ -243,10 +240,7 @@ def message_remove():
 
 @APP.route("/message/edit", methods=['PUT'])
 def message_edit():
-    '''
-    Function to edit a given message in a channel
-    '''
-    payload = request.get_json()
+    'Function to edit a given message in a channel'
 
     payload = request.get_json()
     message.edit(payload)
@@ -260,9 +254,8 @@ def message_edit():
 
 @APP.route("/message/react", methods=['POST'])
 def message_react():
-    '''
-    Function to react to a given message in a channel
-    '''
+    'Function to react to a given message in a channel'
+
     payload = request.get_json()
     message.react(payload)
 
@@ -275,9 +268,8 @@ def message_react():
 
 @APP.route("/message/unreact", methods=['POST'])
 def message_unreact():
-    '''
-    Function to unreact to a given message in a channel
-    '''
+    'Function to unreact to a given message in a channel'
+
     payload = request.get_json()
     message.unreact(payload)
 
@@ -291,6 +283,7 @@ def message_unreact():
 @APP.route("/standup/start", methods=['POST'])
 def standup_start():
     'To start a standup'
+
     payload = request.get_json()
     end_time = standup.start(payload)
 
@@ -306,6 +299,7 @@ def standup_start():
 @APP.route("/standup/active", methods=['GET'])
 def standup_active():
     'To check if a standup is currently active'
+
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
 
@@ -325,6 +319,7 @@ def standup_active():
 @APP.route("/standup/send", methods=['POST'])
 def standup_send():
     'To send messages during a standup'
+
     payload = request.get_json()
     standup.send(payload)
 
@@ -523,9 +518,6 @@ def user_permission_change():
 @APP.route('/user/profile', methods=['GET'])
 def user_profile():
     "Return 'email', 'name_first', 'name_last', 'handle_str', unpin a message"
-    '''
-    MIGHT NEED TO BE CHANGED; should it return the person who makes the call or the profile of the u_id
-    '''
 
     token = request.args.get('token')
     u_id = request.args.get('u_id')
@@ -535,7 +527,7 @@ def user_profile():
         'u_id': u_id
     }
     user_info = user.profile(payload)
-    return dumps ({
+    return dumps({
         'user': user_info
     })
 
@@ -608,6 +600,7 @@ def all_users():
 @APP.route('/admin/user/remove', methods=['DELETE'])
 def admin_user_remove_server():
     'Remove user from slackr'
+
     payload = request.get_json()
 
     # Remove owner with user_id from slack
@@ -622,7 +615,7 @@ def admin_user_remove_server():
 
 @APP.route("/auth/passwordreset/request", methods=['POST'])
 def auth_request():
-    'To request a resetcode to reset a users password'
+    "To request a reset code to reset a user's password"
 
     payload = request.get_json()
     auth.request(payload)
@@ -636,17 +629,16 @@ def auth_request():
 
 @APP.route("/auth/passwordreset/reset", methods=['POST'])
 def auth_reset():
-    'To reset the users password'
+    "To reset a user's password"
+
     payload = request.get_json()
     auth.reset(payload)
 
     return dumps({})
 
-if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
 
 #############################################################
-#                  USERS_PROFILE_UPLOADPHOTO                #
+#                 USERS_PROFILE_UPLOADPHOTO                 #
 #############################################################
 
 @APP.route("/user/profile/uploadphoto", methods=['POST'])
@@ -657,3 +649,7 @@ def users_profiles_uploadphoto():
     user.user_profile_uploadphoto(payload)
 
     return dumps({})
+
+
+if __name__ == "__main__":
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 

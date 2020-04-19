@@ -164,24 +164,17 @@ def test_invalid_channel():
         data=data2,
         headers={'Content-Type': 'application/json'}
     ))
+
     # Invalid channel_id = 100
     data3 = json.dumps({
-        'token': token2,
+        'token': token1,
         'channel_id': 100,
         'u_id': u_id2
     }).encode('utf-8')
 
-    req = urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/addowner",
-        data=data3,
-        headers={'Content-Type': 'application/json'}
-    ))
     with pytest.raises(HTTPError):
-        '''
         urllib.request.urlopen(urllib.request.Request(
             f"{BASE_URL}/channel/addowner",
             data=data3,
             headers={'Content-Type': 'application/json'}
         ))
-        '''
-        json.load(urllib.request.urlopen(req))

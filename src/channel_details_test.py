@@ -54,14 +54,13 @@ def test_channel_details_unauthorised():
     workspace_reset()
 
     ret = register_and_create()
-    channel_info = ret['channel']
     user2 = reg_user2()
     token2 = user2['token']
 
+    channel_info = ret['channel']
     channel_id = channel_info['channel_id']
 
-	# AccessError when we try to get details of channel where the user isn't a
-    # member
+	# AccessError when we try to get details of channel where the user isn't a member
     # user2 isn't a member
     with pytest.raises(AccessError) as e:
         channel.details(token2, channel_id)

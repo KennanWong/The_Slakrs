@@ -60,7 +60,7 @@ def test_channel_messages_invalid_channel():
     ))
 
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/messages?token="+str(token2)+"&channel_id="+100+"&start="+int(start)
+        f"{BASE_URL}/channel/messages?token="+str(token2)+"&channel_id=100"+"&start="+int(start)
     )
     req.get_method = lambda: 'GET'
 
@@ -90,7 +90,7 @@ def test_channel_messages_start_excess():
     ))
 
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start="+50
+        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start=50"
     )
     req.get_method = lambda: 'GET'
 
@@ -120,7 +120,7 @@ def test_channel_messages_unauthorised():
     ))
 
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start="+50
+        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start=50"
     )
     req.get_method = lambda: 'GET'
 
@@ -138,14 +138,14 @@ def test_others1():
     channel_id = channel1['channel_id']
 #CANT BE TYPE INT
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start="int(start)
+        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start=asdf"
     )
     req.get_method = lambda: 'GET'
 
     with pytest.raises(HTTPError):
         json.load(urllib.request.urlopen(req))
 
-def test_others3():
+def test_others2():
     'Other errors, when start is negative'
     reset_workspace()
 
@@ -156,7 +156,7 @@ def test_others3():
     channel_id = channel1['channel_id']
 
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start="-1
+        f"{BASE_URL}/channel/messages?token="+str(token1)+"&channel_id="+str(channel_id)+"&start=-1"
     )
     req.get_method = lambda: 'GET'
 

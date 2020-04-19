@@ -23,8 +23,8 @@ def test_channel_join_successful():
     channel_info = ret['channel']
     channel_id = channel_info['channel_id']
 
-    #channel.leave(token1, channel_id)
-    #channel.join(token1, channel_id)
+    channel.leave(token1, channel_id)
+    channel.join(token1, channel_id)
 
     assert channel.details(token1, channel_id)['name'] == 'firstChannel'
     assert channel.details(token1, channel_id)['owner_members'] == [{

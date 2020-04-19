@@ -27,7 +27,8 @@ from error import InputError
 
 
 def defaultHandler(err):
-    'Given from gitlab'
+    'Given from gitlab pull'
+
     response = err.get_response()
     print('response', err, err.get_response())
     response.data = dumps({
@@ -113,6 +114,7 @@ def auth_logout():
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
+    'To create a channel'
 
     payload = request.get_json()
     new_channel = channels.create(payload)
@@ -127,6 +129,7 @@ def channels_create():
 
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
+    'To display all channels a user is part of'
 
     token = request.args.get('token')
     chann_inf = channels.List(token)
@@ -142,6 +145,7 @@ def channels_list():
 
 @APP.route("/channels/listall", methods=['GET'])
 def channels_listall():
+    'To display all channels created on the server'
 
     token = request.args.get('token')
     chann_inf2 = channels.Listall(token)
@@ -157,6 +161,7 @@ def channels_listall():
 
 @APP.route("/message/pin", methods=['POST'])
 def message_pin():
+    'To pin a users message'
 
     payload = request.get_json()
     message.pin(payload)
@@ -170,6 +175,7 @@ def message_pin():
 
 @APP.route("/message/unpin", methods=['POST'])
 def message_unpin():
+    'To unpin a users message'
 
     payload = request.get_json()
     message.unpin(payload)
@@ -265,6 +271,7 @@ def message_unreact():
 
 @APP.route("/standup/start", methods=['POST'])
 def standup_start():
+    'To start a standup'
 
     payload = request.get_json()
     end_time = standup.start(payload)
@@ -280,6 +287,7 @@ def standup_start():
 
 @APP.route("/standup/active", methods=['GET'])
 def standup_active():
+    'To check if a standup is currently active'
 
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
@@ -299,6 +307,7 @@ def standup_active():
 
 @APP.route("/standup/send", methods=['POST'])
 def standup_send():
+    'To send messages during a standup'
 
     payload = request.get_json()
     standup.send(payload)
@@ -496,9 +505,6 @@ def user_permission_change():
 @APP.route('/user/profile', methods=['GET'])
 def user_profile():
     "Return 'email', 'name_first', 'name_last', 'handle_str', unpin a message"
-    '''
-    MIGHT NEED TO BE CHANGED; should it return the person who makes the call or the profile of the u_id
-    '''
 
     token = request.args.get('token')
     u_id = request.args.get('u_id')
@@ -581,6 +587,7 @@ def all_users():
 @APP.route('/admin/user/remove', methods=['DELETE'])
 def admin_user_remove_server():
     'Remove user from slackr'
+
     payload = request.get_json()
 
     # Remove owner with user_id from slack
@@ -595,6 +602,7 @@ def admin_user_remove_server():
 
 @APP.route("/auth/passwordreset/request", methods=['POST'])
 def auth_request():
+    "To request a reset code to reset a user's password"
 
     payload = request.get_json()
     auth.request(payload)
@@ -608,9 +616,24 @@ def auth_request():
 
 @APP.route("/auth/passwordreset/reset", methods=['POST'])
 def auth_reset():
+    "To reset a user's password"
 
     payload = request.get_json()
     auth.reset(payload)
+
+    return dumps({})
+
+
+#############################################################
+#                 USERS_PROFILE_UPLOADPHOTO                 #
+#############################################################
+
+@APP.route("/user/profile/uploadphoto", methods=['POST'])
+def users_profiles_uploadphoto():
+    'Given a URL of an image on the internet, crops the image within bounds'
+
+    payload = request.get_json()
+    user.users_profiles_uploadphoto(payload)
 
     return dumps({})
 

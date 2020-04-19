@@ -1,5 +1,5 @@
 '''
-Set of functions used for testing 
+Set of functions used for testing
 '''
 import string
 import random
@@ -8,9 +8,11 @@ import message
 import channels
 import channel
 
+#pylint compliant
 
 # function to register user1
 def reg_user1():
+    'registers first user'
     payload = {
         'email' : 'Kennan@gmail.com',
         'password': 'Wong123',
@@ -22,6 +24,7 @@ def reg_user1():
 
 # function to register user2
 def reg_user2():
+    'registers second user'
     payload = {
         'email' : 'Cindy@gmail.com',
         'password': 'Tran123',
@@ -33,6 +36,7 @@ def reg_user2():
 
 # function to register user3
 def reg_user3():
+    'registers third user'
     payload = {
         'email' : 'Thomas@gmail.com',
         'password': 'Shelby123',
@@ -44,6 +48,7 @@ def reg_user3():
 
 # function used to register a user and then create a channel
 def register_and_create():
+    'registers first user and creates a chanenl'
     payload1 = {
         'email' : 'Kennan@gmail.com',
         'password': 'Wong123',
@@ -98,7 +103,7 @@ def invite_to_ch1(user1, user2, ch1):
 
     return
 
-def react_to_msg(react_id, msg,user):
+def react_to_msg(react_id, msg, user):          #pylint: disable=W0613, R1711
     '''
     Function to react to 'message' with
     react id of 'react_id'
@@ -112,4 +117,5 @@ def react_to_msg(react_id, msg,user):
     return
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    'generates a 6 character reset code'
     return ''.join(random.choice(chars) for _ in range(size))

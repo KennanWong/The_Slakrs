@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"channel_id": 1, "name": "firstChannel", "is_public": true, "members": [], "owners": [{"u_id": 1, "name_first": "Kennan", "name_last": "Wong"}], "messages": [], "standup": {"is_active": false, "messages": [], "time_finish": []}, "hangman_active": false, "hangman_data": []}]
+=======
+[]
+>>>>>>> 735b701e4fe5e545bccbe737b4da8794ae07da77

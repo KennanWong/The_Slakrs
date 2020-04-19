@@ -90,6 +90,6 @@ def test_channel_invite_existing_user():
     channel.invite(token1, channel_id, u_id2)
 
     # InputError when user tries to invite someone who is already a member of
-    # the channe
+    # the channel
     with pytest.raises(InputError) as e:
         channel.invite(token1, channel_id, u_id2)

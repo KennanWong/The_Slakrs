@@ -68,22 +68,16 @@ def details(token, channel_id):
 
     # If the channel is public, safe to display details
     # If not then raise error
-    if test_in_channel(u_id1, channel):
-        for owner in channel['owners']:
-            owner_dets = user_details(owner)
-            owner_members.append(user_details(owner_dets))
-            all_members.append(user_details(owner_dets))
-        for member in channel['members']:
-            member_dets = user_details(member)
-            all_members.append(user_details(member_dets))
-        return {
-            #ret_package = {
-            "name": channel['name'],
-            "owner_members": owner_members,
-            "all_members": all_members
-        }
-    else:
-        raise AccessError(description='Authorised user is not a member of the channel')
+    for owner in channel['owners']:
+        owner_members.append(user_details(owner['u_id']))
+        all_members.append(user_details(owner['u_id']))
+    for member in channel['members']:
+        all_members.append(user_details(member['u_id']))
+    ret_package = {
+        "name": channel['name'],
+        "owner_members": owner_members,
+        "all_members": all_members
+    }
 
     # Get details of owners and members in the channel
     #if channel['is_public']:
@@ -91,8 +85,10 @@ def details(token, channel_id):
         #name = channel['name']
 
     # AccessError when authorised user is not a member of the channel
-    #if test_in_channel(u_id1, channel):
-    #    return ret_package
+    if test_in_channel(u_id1, channel):
+        return ret_package
+    else:
+        raise AccessError(description='Authorised user is not a member of the channel')
 
 #############################################################
 #                  CHANNEL_MESSAGES                         #

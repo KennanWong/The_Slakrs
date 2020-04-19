@@ -1,39 +1,26 @@
 '''
-Pytest file to test functionality of user_ functions on a system 
+Pytest file to test functionality of user_ functions on a system
 level
 '''
 
-import pytest
-import urllib
 import json
-import flask
+import urllib
 from urllib.error import HTTPError
+import pytest
 
-import server
-import user
-import other
 from system_helper_functions import reset_workspace, reg_user1
-from data_stores import get_auth_data_store, reset_auth_store
-from helper_functions import get_user_token
-from error import InputError
-from system_helper_functions import reg_user1, reg_user2, send_msg1
 
-
-
-'''
 #############################################################
 #                   USER_PROFILE                            #
 #############################################################
-'''
 
-BASE_URL = 'http://127.0.0.1:2345'
+BASE_URL = 'http://127.0.0.1:8080'
 
 def test_profile_working():
-    # create a user
-
+    '''
+    This test has all correct variables
+    '''
     reset_workspace()
-
-    user1 = reg_user1()
 
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b&u_id=1"
@@ -46,9 +33,11 @@ def test_profile_working():
     assert response['name_last'] == 'Wong'
 
 def test_profile_invalid_u_id():
-    reset_workspace()
+    '''
+    Test for invalid u_id
+    '''
 
-    user1 = reg_user1()
+    reset_workspace()
 
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile?token=6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b&u_id=2"
@@ -62,43 +51,45 @@ def test_profile_invalid_u_id():
 #############################################################
 
 def test_user_profile_setname_working():
-    reset_workspace()   
-        
-    
+    '''
+    This test has all correct variables
+    '''
+
+    reset_workspace()
+
     details = reg_user1()
-      
-    uid = details['u_id']
-    
+
     data = json.dumps({
         'token': details['token'],
         'name_first': "Jeff",
         'name_last': "Son"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/setname",
         data=data,
         headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
-    response = json.load(urllib.request.urlopen(req))   
+    response = json.load(urllib.request.urlopen(req))
     assert response == {}
-    
-    
+
 def test_user_profile_setname_short():
 
-    reset_workspace()   
-    
+    '''
+    Test for when the name is too short
+    '''
+
+    reset_workspace()
+
     details = reg_user1()
-      
-    uid = details['u_id']
-    
+
     data = json.dumps({
         'token': details['token'],
         'name_first': "I",
         'name_last': "Son"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/setname",
         data=data,
@@ -107,47 +98,43 @@ def test_user_profile_setname_short():
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
         json.load(urllib.request.urlopen(req))
- 
 
-'''
 #############################################################
 #                   USER_PROFILE_SETEMAIL                   #
 #############################################################
-''' 
-    
+
 def test_user_profile_setemail_working():
-    reset_workspace()   
-      
+    reset_workspace()
+
     details = reg_user1()
-      
-    uid = details['u_id']
-    
+
     data = json.dumps({
         'token': details['token'],
         'email': "varun@gmail.com"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/setemail",
         data=data,
         headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
-    response = json.load(urllib.request.urlopen(req))   
+    response = json.load(urllib.request.urlopen(req))
     assert response == {}
-    
-    
-def test_user_profile_setemail_inval1():
 
-    reset_workspace()   
-            
+def test_user_profile_setemail_inval1():
+    '''
+    Invalid email is used as input for this test
+    '''
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'email': "varungmail.com"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/setname",
         data=data,
@@ -156,19 +143,18 @@ def test_user_profile_setemail_inval1():
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
         response = json.load(urllib.request.urlopen(req))
-        
-        
+
 def test_user_profile_setemail_inval2():
 
-    reset_workspace()   
-            
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'email': ".com"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/setname",
         data=data,
@@ -177,19 +163,20 @@ def test_user_profile_setemail_inval2():
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
         response = json.load(urllib.request.urlopen(req))
-        
-        
-def test_user_profile_setemail_inval3():
 
-    reset_workspace()   
-            
+def test_user_profile_setemail_inval3():
+    '''
+    Imvalid email is used. Email has no gmail.com
+    '''
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'email': "varunkash@"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/setname",
         data=data,
@@ -199,45 +186,46 @@ def test_user_profile_setemail_inval3():
     with pytest.raises(HTTPError):
         response = json.load(urllib.request.urlopen(req))
 
-
-'''
 #############################################################
 #                  USER_PROFILE_SETHANLE                    #
 #############################################################
-'''
-    
+
 def test_user_profile_sethandle():
 
-    reset_workspace()   
-            
+    '''
+    This has all correct imputs and checks that it works
+    '''
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'handle_str': "validhandle"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/sethandle",
         data=data,
         headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'PUT'
-    response = json.load(urllib.request.urlopen(req))   
+    response = json.load(urllib.request.urlopen(req))
     assert response == {}
-    
 
 def test_user_profile_sethandle_invalhandle():
+    '''
+    Tests with an invalid handle
+    '''
+    reset_workspace()
 
-    reset_workspace()   
-            
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'handle_str': "A"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/sethandle",
         data=data,
@@ -245,19 +233,21 @@ def test_user_profile_sethandle_invalhandle():
     )
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
-        json.load(urllib.request.urlopen(req))   
-    
-def test_user_profile_sethandle_invalhandle2():
+        json.load(urllib.request.urlopen(req))
 
-    reset_workspace()   
-            
+def test_user_profile_sethandle_invalhandle2():
+    '''
+    Invalid handle is used as input and checks that it returns error
+    '''
+    reset_workspace()
+
     details = reg_user1()
     string_50 = "a" * 50
     data = json.dumps({
         'token': details['token'],
         'handle_str': string_50
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/sethandle",
         data=data,
@@ -265,11 +255,12 @@ def test_user_profile_sethandle_invalhandle2():
     )
     req.get_method = lambda: 'PUT'
     with pytest.raises(HTTPError):
-        json.load(urllib.request.urlopen(req))  
-
-
+        json.load(urllib.request.urlopen(req))
 
 def test_users_all_working():
+    '''
+    This has correct inputs and checks the function works correctly
+    '''
     reset_workspace()
 
     user1 = reg_user1()
@@ -287,7 +278,7 @@ def test_users_all_working():
     )
     req.get_method = lambda: 'GET'
     response = json.load(urllib.request.urlopen(req))['users']
-    
+
     test_user = {
         'u_id': 1,
         'email': 'Kennan@gmail.com',
@@ -299,20 +290,22 @@ def test_users_all_working():
     print(user1_dets)
     print(test_user)
     print(response)
-    
+
     assert test_user in response
-'''
+
 #############################################################
 #                  USER_PROFILE_UPLOADPHOTO                 #
 #############################################################
-'''
 
 def test_user_uploadphoto_valurl():
+    '''
+    This tests the funciton under correct inputs
+    '''
 
-    reset_workspace()   
-            
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'img_url': "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/An_up-close_picture_of_a_curious_male_domestic_shorthair_tabby_cat.jpg",
@@ -321,7 +314,7 @@ def test_user_uploadphoto_valurl():
         'x_end': 1,
         'y_end': 1
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/uploadphoto",
         data=data,
@@ -334,11 +327,15 @@ def test_user_uploadphoto_valurl():
 
 
 def test_user_uploadphoto_invalurl():
+    '''
+    Test checks the function returns error message with an
+    invalid url
+    '''
 
-    reset_workspace()   
-            
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details['token'],
         'img_url': "invalid.url.google",
@@ -347,7 +344,7 @@ def test_user_uploadphoto_invalurl():
         'x_end': 1,
         'y_end': 1
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/uploadphoto",
         data=data,
@@ -355,20 +352,21 @@ def test_user_uploadphoto_invalurl():
     )
 
 def test_user_uploadphoto_invaltoken():
+    '''
+    Test checks the function with an invalid token.
+    '''
 
-    reset_workspace()   
-            
-    details = reg_user1()
-    
+    reset_workspace()
+
     data = json.dumps({
-        'token': invalidtoken,
+        'token': "invalidtoken",
         'img_url': "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/An_up-close_picture_of_a_curious_male_domestic_shorthair_tabby_cat.jpg",
         'x_start': 1,
         'y_start': 1,
         'x_end': 1,
         'y_end': 1
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/uploadphoto",
         data=data,
@@ -376,20 +374,23 @@ def test_user_uploadphoto_invaltoken():
     )
 
 def test_user_uploadphoto_invalborders():
+    '''
+    Test check the fucntion returns an error
+    when invali borders are given
+    '''
+    reset_workspace()
 
-    reset_workspace()   
-            
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details[token],
         'img_url': "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/An_up-close_picture_of_a_curious_male_domestic_shorthair_tabby_cat.jpg",
-        'x_start': d,
-        'y_start': adef,
-        'x_end': aded,
-        'y_end': pizza
+        'x_start': "d",
+        'y_start': "adef",
+        'x_end': "aded",
+        'y_end': "pizza"
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/uploadphoto",
         data=data,
@@ -397,11 +398,14 @@ def test_user_uploadphoto_invalborders():
     )
 
 def test_user_uploadphoto_invalborderstwo():
+    '''
+    Checks with invalid border values
+    '''
 
-    reset_workspace()   
-            
+    reset_workspace()
+
     details = reg_user1()
-    
+
     data = json.dumps({
         'token': details[token],
         'img_url': "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/An_up-close_picture_of_a_curious_male_domestic_shorthair_tabby_cat.jpg",
@@ -410,10 +414,9 @@ def test_user_uploadphoto_invalborderstwo():
         'x_end': -50,
         'y_end': -50
     }).encode('utf-8')
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/user/profile/uploadphoto",
         data=data,
         headers={'Content-Type':'application/json'}
     )
-

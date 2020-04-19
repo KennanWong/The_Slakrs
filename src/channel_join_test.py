@@ -69,6 +69,6 @@ def test_channel_join_private():
     token2 = user2['token']
 
     # AccessError when user2 tries to join channel where the authorised user
-    # isn't an admin
+    # isn't an admi
     with pytest.raises(AccessError) as e:
         channel.join(token2, channel_id)

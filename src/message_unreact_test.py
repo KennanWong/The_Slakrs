@@ -9,7 +9,7 @@ import message
 from other import workspace_reset
 from test_helper_functions import reg_user2
 from test_helper_functions import create_ch1, reg_user1, send_msg1
-from test_helper_functions import react_to_msg
+from test_helper_functions import react_to_msg, invite_to_ch1
 from helper_functions import find_message
 from error import InputError
 
@@ -41,18 +41,18 @@ def test_unreact1():
         if i['react_id'] == 1:
             assert user1['u_id'] not in i['u_ids']
 
-'''
+
 def test_unreact():
-    
+    '''
     Test a valid case of message_unreact to a message someone
     else had sent
-    
+    '''
     workspace_reset()
     user1 = reg_user1()
     user2 = reg_user2()
     channel1 = create_ch1(user1)
     invite_to_ch1(user1, user2, channel1)
-    msg1 = send_msg1(user1,channel1)
+    msg1 = send_msg1(user1, channel1)
 
     # react to the message
     react_to_msg(1, msg1, user2)
@@ -68,7 +68,7 @@ def test_unreact():
     for i in message1_reacts:
         if i['react_id'] == 1:
             assert user2['u_id'] not in i['u_ids']
-'''
+
 
 def test_not_reacted():
     '''

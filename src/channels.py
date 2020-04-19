@@ -40,7 +40,8 @@ def create(payload):
                     'messages': [],
                     'time_finish': [],
                 },
-                'hangman_active': False
+                'hangman_active': False,
+                'hangman_data' : []
             }
         else:
             new_channel_info = {

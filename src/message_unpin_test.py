@@ -76,8 +76,6 @@ def test_invalid_id():
    
 
     #msg1 = send_msg1(user, channel1)
-
-
     with pytest.raises(InputError):
         message.unpin({
             'token': user['token'],

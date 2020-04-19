@@ -3,7 +3,7 @@
 This file contains all 'message_' functions
 
 '''
-from datetime import datetime, timezone
+from datetime import datetime
 import threading
 import hangman
 from data_stores import get_messages_store, save_messages_store
@@ -42,19 +42,12 @@ def send(payload):
     new_message['message'] = txt
     new_message['channel_id'] = payload['channel_id']
 
-    # append it to the messages_store
-    messages = get_messages_store()
-    messages.append(new_message)
-    save_messages_store()
-
-    # append it to the channels file
     channel['messages'].append(new_message)
-    save_channel_store()
 
     if txt == '/hangman':
         if not channel['hangman_active']:
-            channel['hangman_active'] = True
             hangman.start(channel)
+            channel['hangman_active'] = True
         else:
             hangman.message(channel, 'There is already an active game running')
             hangman.message(channel, hangman.display_hangman())
@@ -62,7 +55,7 @@ def send(payload):
     if txt.split()[0] == '/guess':
         if not channel['hangman_active']:
             hangman.message(channel, 'There is not a current game of hangman running.\n'+
-                            'If you would like to start one, type \hangman into the chat')
+                            r'If you would like to start one, type \hangman into the chat')
         else:
             if len(txt.split()) == 2:
                 new_guess = txt.split()[1]
@@ -73,14 +66,13 @@ def send(payload):
             else:
                 hangman.message(channel, 'Invalid guess, guess again')
 
-    '''
-    # debugging purposes
-    for msg in channel['messages']:
-        if msg['is_pinned'] is True:
-            print('*** '+ msg['message'] + ' ***')
-        else:
-            print(msg['message'])
-    '''
+    # append it to the messages_store
+    messages = get_messages_store()
+    messages.append(new_message)
+    save_messages_store()
+
+    # append it to the channels file
+    save_channel_store()
 
     return new_message
 
@@ -172,15 +164,14 @@ def pin(payload): # pylint: disable=R1711
     if message['is_pinned'] is True:
         raise InputError(description='Message is already pinned')
 
-    else:
-        if test_in_channel(user['u_id'], channel) is True:
-            if check_owner(user, channel) is True:
-                message['is_pinned'] = True
-                print(message)
-            else:
-                raise InputError(description='You do not have permission')
-        else:
-            raise AccessError(description='You do not have permission')
+    if not test_in_channel(user['u_id'], channel):
+        raise AccessError(description='You do not have permission to pin this message')
+
+    if not check_owner(user, channel):
+        raise InputError(description='You do not have permission')
+
+    message['is_pinned'] = True
+
     return
 
 #############################################################
@@ -188,7 +179,6 @@ def pin(payload): # pylint: disable=R1711
 #############################################################
 def unpin(payload): # pylint: disable=R1711
     'testing functionability for message unpin'
-
 
     user = get_user_from('token', payload['token'])
     message = find_message(payload['message_id'])
@@ -198,14 +188,13 @@ def unpin(payload): # pylint: disable=R1711
     if message['is_pinned'] is False:
         raise InputError(description='Message is already unpinned')
 
-    else:
-        if test_in_channel(user['u_id'], channel) is True:
-            if check_owner(user, channel) is True:
-                message['is_pinned'] = False
-            else:
-                raise InputError(description='You do not have permission')
-        else:
-            raise AccessError(description='You do not have permission')
+    if not test_in_channel(user['u_id'], channel):
+        raise AccessError(description='You do not have permission to unpin this message')
+
+    if not check_owner(user, channel):
+        raise InputError(description='You do not have permission')
+
+    message['is_pinned'] = False
 
     return
 

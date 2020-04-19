@@ -479,7 +479,7 @@ def user_profile():
     }
     user_info = user.profile(payload)
     return dumps ({
-        'user':user_info
+        'user': user_info
     })
     
 

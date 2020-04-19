@@ -1,6 +1,6 @@
 import pytest
 from error import InputError
-from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle, user_profile_uploadphoto
 from auth import auth_register
 from test_helper_functions import reg_user1, reg_user2, register_and_create, send_msg1
 from other import workspace_reset
@@ -22,7 +22,7 @@ def test_profile_working():
     uid = details['u_id']
     
     #test that the returned values are correct
-    payload {
+    payload = {
         'token' : register['token'],
         'u_id' : uid
     
@@ -43,7 +43,7 @@ def test_profile_invalid_uID1():
     
     details = reg_user1()	
        
-    payload {
+    payload = {
         'token' : details['token'],
         'u_id' : "NOT_VALID_UID"
     
@@ -57,7 +57,7 @@ def test_profile_invalid_uID2():
     
     details = reg_user1()
     
-    payload{
+    payload = {
         'token' : details['token'],
         'u_id' : "22tt3t3tt3r4r"
     }    
@@ -71,7 +71,7 @@ def test_profile_invalid_uID3():
     details = reg_user1()
     
         
-    payload{
+    payload = {
         'token' : details['token'],
         'u_id' : "126261261----22322323"
     }    
@@ -99,15 +99,15 @@ def test_user_profile_setname_working():
     name_first2 = "Jeff"
     name_last2 = "Jefferson"
     
-    payload5{
+    payload5 = {
         'token' : details['token'],
-        'name_first' : name_first2
+        'name_first' : name_first2,
         'name_last' : name_last2     
     }
         
     assert (user_profile_setname(payload5) == {})
 
-    payload3{
+    payload3 = {
         'token' : details['token'],
         'u_id' : details['u_id']       
     }
@@ -125,7 +125,7 @@ def test_user_profile_setname_same_name():
     first = details['name_first']
     last = details['name_last']
     
-    payload{
+    payload = {
         'token' : details['token'],
         'name_first' : first,
         'name_last' : last       
@@ -133,7 +133,7 @@ def test_user_profile_setname_same_name():
     
     user_profile_setname(payload) 
     
-    payload2{
+    payload2 = {
         'token' : details['token'],
         'u_id' : uid 
     }
@@ -150,23 +150,23 @@ def test_user_profile_setname_length_border():
     string_50 = "a" * 50
     string_1 = "a"
     
-    payload1{
+    payload1 = {
         'token' : details['token'],
         'name_first' : "ValidString",
         'name_last' : string_50       
     }
     
-    payload2{
+    payload2 = {
         'token' : details['token'],
         'name_first' : "ValidString",
         'name_last' : string_1       
     }
-    payload3{
+    payload3 = {
         'token' : details['token'],
         'name_first' : string_50,
         'name_last' : "ValidString"       
     }
-    payload4{
+    payload4 = {
         'token' : details['token'],
         'name_first' : string_1,
         'name_last' : string_50       
@@ -183,7 +183,7 @@ def test_user_profile_setname_name_first_short():
     details = reg_user1()
     valid_last = "THISISAVALIDLASTNAME"
     
-    payload{
+    payload = {
         'token' : details['token'],
         'name_first' : "",
         'name_last' : valid_last       
@@ -198,7 +198,7 @@ def test_user_profile_setname_name_last_short():
     details = reg_user1()
     valid_first = "THISISAVALIDFIRSTNAME"
     
-    payload{
+    payload = {
         'token' : details['token'],
         'name_first' : valid_first,
         'name_last' : ""       
@@ -211,7 +211,7 @@ def test_user_profile_setname_name_both_short():
     workspace_reset()
     
     details = reg_user1()
-    payload{
+    payload = {
         'token' : details['token'],
         'name_first' : "",
         'name_last' : ""       
@@ -227,7 +227,7 @@ def test_user_profile_setname_name_first_long():
     token = details['token']
     string_51 = "a" * 51
     
-    payload{
+    payload = {
         'token' : details['token'],
         'name_first' : string_51,
         'name_last' : "THISISAVALIDNAME"       
@@ -243,7 +243,7 @@ def test_user_profile_setname_name_last_long():
     token = details['token']
     string_51 = "a" * 51
     
-    payload{
+    payload = {
         'token' : details['token'],
         'name_first' : "THISISAVALIDNAME",
         'name_last' : string_51       
@@ -256,7 +256,7 @@ def test_user_profile_setname_invalidToken():
     workspace_reset()
     
     details = reg_user1()
-    payload{
+    payload = {
         'token' : "INVALID",
         'name_first' : "THISISAVALIDNAME",
         'name_last' : "ValidName"       
@@ -279,7 +279,7 @@ def test_user_profile_setemail_working():
     token = details['token']
     uid = details['u_id']
     
-    payload{
+    payload = {
         'token' : token,
         'email' : "new_email@gmail.com"     
     }
@@ -287,7 +287,7 @@ def test_user_profile_setemail_working():
     #tests under working conditions
     
     assert (user_profile_setemail(payload) == {})
-    payload2{
+    payload2 = {
         'token' : token,
         'u_id' : uid 
     }
@@ -308,19 +308,19 @@ def test_user_profile_setemail_invalidEmail():
     uid = details['u_id']
 
     #function will fail if the email provided is invalid
-    payload1{
+    payload1 = {
         'token' : token,
         'email' : "@gmail.com"     
     }
-    payload2{
+    payload2 = {
         'token' : token,
         'email' : "email@.com"     
     }
-    payload3{
+    payload3 = {
         'token' : token,
         'email' : "new_email@gmail."     
     }
-    payload4{
+    payload4 = {
         'token' : token,
         'email' : "new_emailgmail.com"     
     }
@@ -355,12 +355,12 @@ def test_user_profile_setemail_already_used():
     email2 = details2['email']
     #changing email to one already in use causes function to fail
     
-    payload1{
+    payload1 = {
         'token' : token1,
         'email' : email2     
     }
     
-    payload2{
+    payload2 = {
         'token' : token2,
         'email' : email1     
     }
@@ -441,17 +441,20 @@ def test_user_profile_sethandle_already_used():
     valid_handle = "ValidHandle"    
     
     #test handle already used
-    payload1{
+
+    payload1 = {
         'token' : token1,
         'handle_str' : valid_handle     
     }
-    payload2{
+
+    payload2 = {
         'token' : token1,
-        'u_id' : uid1     
+        'u_id' : uid1
     }
-    payload3{
+
+    payload3 = {
         'token' : token2,
-        'handle_str' : valid_handle     
+        'handle_str' : valid_handle
     }
     
     
@@ -462,4 +465,41 @@ def test_user_profile_sethandle_already_used():
     with pytest.raises(InputError):
         user_profile_sethandle(payload3)
 
+
+#########################
+# UPLOAD PHOTO#
+######################
+def test_user_profile_uploadphoto_correct():
+    workspace_reset()
+
+    #register user
+
+    details = reg_user1
+    token = details['token']
+    url = "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/16/14/asset/46d3bcfa9ed6/sub-buzz-1180-1587047168-1.jpg"
+    #test part
+    #assume x_start, y_start, x_end, y_end are all within the dimensions
+    user_profile_uploadphoto(token, url, 0,0,100,100)
+    assert( data['users'][1]['img_profile_url'] != None )
     
+def test_user_profile_uploadphoto_error1():
+    workspace_reset()    
+    #img_url is return an HTTP status other than 200
+
+    details = reg_user1
+    token = details['token']
+    url = "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/16/14/asset/46d3bcfa9ed6/sub-buzz-1180-1587047168-1.jpg"
+
+    with pytest.raises(ValueError, match=r"*"):
+        user_profile_uploadphoto(token, "notArealUrl.jpg", 300, 100, 100, 100)
+        
+def test_user_profile_uploadphoto_error2():
+    workspace_reset()    
+    #x_start, y_start, x_end, y_end are not within the dimensions of the image
+    
+    url = "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/16/14/asset/46d3bcfa9ed6/sub-buzz-1180-1587047168-1.jpg"
+    details = reg_user1
+    token = details['token']
+
+    with pytest.raises(ValueError, match=r"*"):
+        user_profile_uploadphoto(token, url, 99999999999, 999999999999, 999999999999, 999999999999)

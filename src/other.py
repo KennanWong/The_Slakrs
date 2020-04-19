@@ -7,7 +7,7 @@ from data_stores import get_auth_data_store, get_channel_data_store
 from data_stores import reset_messages_store
 from helper_functions import reset_message_count, get_user_token
 from helper_functions import test_in_channel, validate_uid
-from helper_functions import get_user_uid
+from helper_functions import get_user_uid, get_user_from
 from error import AccessError, InputError
 
 #############################################################
@@ -49,6 +49,7 @@ def users_all(payload):
             'name_first': i['name_first'],
             'name_last': i['name_last'],
             'handle_str': i['handle_str'],
+            'profile_img_url': i['profile_img_url']
         }
         ret.append(user_data)
     
@@ -96,3 +97,46 @@ def search(payload):
     print(returnMessage)
 
     return returnMessage
+
+
+#############################################################
+#              ADMIN_USERPERMISSION_CHANGE                  #
+############################################################# 
+
+
+def permission_change(payload):
+
+    #what does it mean for permision id to not refer to permission id?
+    '''
+    changes the permision of a authorised uid
+    We must also update their permissions in all channels they have joined
+    '''
+    
+    if validate_uid(payload['u_id']) is False:
+        raise InputError (description='Invalid u_id')
+
+    owner = get_user_token(payload['token'])
+    change_user = get_user_from('u_id', payload['u_id'])
+    
+    if owner['permission_id'] != 1:
+        raise AccessError(description='The authorised user is not an owner')
+
+    change_user['permission_id'] = payload['permission_id']
+    
+    '''
+    Update their permissions in all channels they are apart of
+    '''
+    '''
+    channels_store = get_channel_data_store()
+    for channel in channels_store:
+        if test_in_channel(change_user['u_id'], channel):
+            if payload['permission_id'] == 1:
+            # if change permission to 1 --> now an owner in all channels
+                current_permission = check_channel_permission(change_user, channel)
+                if current_permission == 'member':
+                    addowner(owner['token'], channel['channel_id'], change_user['u_id'])
+                
+            elif payload['permission_id'] ==  2:
+            # if change permission to 2 --> now a member in all channels
+                removeowner(owner['token'], channel['channel_id'], change_user['u_id'])
+    '''

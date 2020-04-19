@@ -451,10 +451,13 @@ def search():
 #                USER PERMISSION CHANGE                     #      
 #############################################################
 @APP.route('/admin/userpermission/change', methods=['POST'])
+
+
+
 def user_permission_change():
     """ return empty dic, change user's permission """
     payload = request.get_json()
-    user.permission_change(payload)
+    other.permission_change(payload)
     return dumps({})
 
 
@@ -494,7 +497,7 @@ def user_profile_setname():
     """
     payload = request.get_json()
     user.profile_setname(payload)
-    return({})
+    return dumps ({})
 
 #############################################################
 #                   USER_PROFILE_SETEMAIL                   #
@@ -507,7 +510,7 @@ def user_profile_setemail():
     """
     payload = request.get_json()
     user.profile_setemail(payload)
-    return({})
+    return dumps({})
 
 #############################################################
 #                   USER_PROFILE_SETHANDLE                  #
@@ -520,7 +523,7 @@ def user_profile_sethandle():
     """
     payload = request.get_json()
     user.profile_sethandle(payload)
-    return({})
+    return dumps({})
     
 #############################################################
 #                        USERS_ALL                          #
@@ -578,28 +581,17 @@ def auth_reset():
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080)) 
 
 #############################################################
-#                        USERS_PROFILE_IMAGE                #
+#                  USERS_PROFILE_UPLOADPHOTO                #
 #############################################################
 
-@uploadphoto.route('/user/profiles/uploadphoto', methods=['POST'])
+@APP.route("/user/profile/uploadphoto", methods=['POST'])
 def users_profiles_uploadphoto():
+    'Given a URL of an image on the internet, crops the image within bounds'
 
-    #token = request.form.get('token')
-    #img_url = str(request.form.get('img_url'))
-    #x_start = int(request.form.get('x_start'))
-    #x_end = int(request.form.get('x_end'))
-    #y_start = int(request.form.get('y_start'))
-    #y_end = int(request.form.get('y_end'))
-    
     payload = request.get_json()
     user.users_profiles_uploadphoto(payload)
 
     return dumps({})
-=======
-    threading.Timer(60.0, save_data_stores).start()
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
->>>>>>> 0cfdb03810302647822add6b77a2fde59ca71cd0

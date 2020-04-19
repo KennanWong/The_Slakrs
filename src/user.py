@@ -14,6 +14,8 @@ import sys
 from PIL import Image
 import imghdr
 import requests
+
+image_index = 0
 #############################################################
 #                      USER_PROFILE                         #      
 #############################################################
@@ -99,32 +101,40 @@ def profile_sethandle(payload):
     user['handle_str'] = payload['handle_str']
     return {}
 
+#############################################################
+#                   USER_PROFILE_UPLOADPHOTO                #
+#############################################################
 
-def users_profiles_uploadphoto(payload):
+def user_profile_uploadphoto(payload):
 
+    '''
+    Given a URL of an image on the internet, crops the image within bounds
+    '''
     #Do a check to see if token is valid and to check if image is jpg
+
+    global image_index
+    image_index += 1
 
     user = get_user_token(payload['token'])
     u_id = user['u_id']
 
     port = sys.argv[1]
 
-    url = f"http://127.0.0.1:{port}/static/"
-    name = f"./static/{u_id}.jpg"
+    url = f"http://localhost:{port}/static/"
+    filePath = './static/' + str(image_index) +'.jpg'
     
     try:
-        urllib.request.urlretrieve(payload['img_url'], name)
+        urllib.request.urlretrieve(payload['img_url'], filePath)
     except Exception as e:
         if type(e) != 200:
             raise InputError(description = "HTTP status not 200")
-        elif imghdr.what(name) != 'jpg':
+        elif imghdr.what(filePath) != 'jpg':
             raise InputError(description = "Image not a jpg image")
         else:
             pass
 
     #crop the url image
-    imageobject = Image.open(name)
-    
+    imageobject = Image.open(filePath)    
     width, height = imageobject.size
     
     x_start = payload['x_start']
@@ -132,31 +142,21 @@ def users_profiles_uploadphoto(payload):
     x_end = payload['x_end']
     y_end = payload['y_end']
 
-##
-    #no input
     if x_start is None and x_end is None and y_start is None and y_end is None:
         x_start = 0
         x_end = width
         y_start = 0
         y_end = height
-    
-    x_start = int(x_start)
-    y_start = int(y_start)
-    x_end = int(x_end)
-    y_end = int(y_end)
 
-    #x_start and y_start has to be less than width and hight
+    #raises an input error if the values provided are outside
+    #the bounds of the image
     if x_end > width or y_end > height or x_start >= x_end or y_start >= y_end:
-        raise InputError(f"Crop has to be within the dimension ({width} x {height})")
-    cropped = imageobject.crop((x_start,y_start,x_end,y_end))
-##
+        raise InputError("Crop has to be within the dimensions of the photo")
+    cropped = imageobject.crop((x_start, y_start, x_end, y_end))
 
-    cropped.save(name)
+    cropped.save(filePath)
 
-    user['profile_img_url'] = url + f"{u_id}.jpg"
+    user['profile_img_url'] = url + ".jpg"
     return {}
-
-
-
 
 

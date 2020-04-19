@@ -1,6 +1,6 @@
 'this file is the integration tests for channels list'
 
-import pytest           #pylint disable = W0611
+import pytest           #pylint: disable = W0611
 
 import channels
 from other import workspace_reset
@@ -36,7 +36,7 @@ def test_list2():
     'testing alternate case of channels list'
     workspace_reset()
 
-    ret = register_and_create()
+    register_and_create()
 
     user2 = reg_user2()
     token2 = user2['token']
@@ -46,7 +46,7 @@ def test_list2():
         'name': 'Slackrs',
         'is_public': True
     }
-    result1 = channels.create(payload1)
+    channels.create(payload1)
 
     result2 = channels.List(token2)
 

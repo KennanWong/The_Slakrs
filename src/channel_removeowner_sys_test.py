@@ -15,11 +15,12 @@ import server
 import channel
 from system_helper_functions import reg_user1, reg_user2, create_ch1, reset_workspace
 
+# channel_removeowner (POST)
+
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_removeowner():
     'Normal case'
-    # channel_removeowner (POST)
     reset_workspace()
 
     user1 = reg_user1()

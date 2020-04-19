@@ -3,7 +3,7 @@
 This file contains all 'message_' functions
 
 '''
-from datetime import datetime
+from datetime import datetime, timezone             #pylint: disable=W0611
 import threading
 import hangman
 from data_stores import get_messages_store, save_messages_store

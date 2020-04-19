@@ -1,4 +1,5 @@
 'This file contains all channel functions'
+
 from data_stores import get_auth_data_store, get_channel_data_store
 from helper_functions import user_id_from_token, get_channel, test_in_channel
 from helper_functions import user_details, is_valid_user_id, get_user_token
@@ -7,8 +8,12 @@ from error import InputError, AccessError
 
 # pylint: disable=W0612
 # pylint: disable=C1801
-# pylint: disable = C0301
-# pylint: disable = R0912
+# pylint: disable=C0301
+# pylint: disable=R0912
+# pylint: disable=R1705
+# pylint: disable=R1710
+
+#pylint compliant
 
 #############################################################
 #                  CHANNEL_INVITE                           #
@@ -60,8 +65,7 @@ def details(token, channel_id):
     # Check if channel exists using helper function
     channel = get_channel(channel_id)
 
-    # If the channel is public safe to display details
-
+    # If the channel is public, safe to display details
     # If not then raise error
 
     for owner in channel['owners']:
@@ -69,7 +73,7 @@ def details(token, channel_id):
         all_members.append(user_details(owner['u_id']))
     for member in channel['members']:
         all_members.append(user_details(member['u_id']))
-    ret_package =  {
+    ret_package = {
         "name": channel['name'],
         "owner_members": owner_members,
         "all_members": all_members
@@ -79,7 +83,7 @@ def details(token, channel_id):
     if channel['is_public']:
         return ret_package
         # name = channel['name']
-        
+
     # AccessError when authorised user is not a member of the channel
     elif test_in_channel(user['u_id'], channel):
         return ret_package
@@ -102,6 +106,10 @@ def messages(token, channel_id, start):
     if not test_in_channel(u_id, channel):
         raise AccessError(description='Authorised user is not a member of the channel')
 
+    # InputError if start is not of type int
+    if not isinstance(start, int):
+        raise InputError(description='Start is not of type integer')
+
     # InputError when start is greater than or equal to the total number of messages in the channel
     if start > len(channel['messages']):
         raise InputError(description='Start is greater than or equal to the total number of messages in the channel')
@@ -109,9 +117,6 @@ def messages(token, channel_id, start):
     # Incorrect indexing
     if start < 0 or start > len(channel['messages']):
         raise InputError(description='Incorrect indexing')
-
-    if not isinstance(start, int):
-        raise InputError(description='Start is not of type integer')
 
     # When there are 0 messages
     if (len(channel['messages'])) == 0:
@@ -182,7 +187,7 @@ def leave(token, channel_id):
     print(channel['owners'])
     if user_det in channel['owners']:
         channel['owners'].remove(user_det)
-        
+
     print(channel['members'])
     if user_det in channel['members']:
         channel['members'].remove(user_det)

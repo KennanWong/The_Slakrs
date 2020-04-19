@@ -3,13 +3,16 @@ Main serve file for flask server
 Contains all routes
 '''
 
+#pylint: disable=W0611
+#pylint: disable=C0103
+
 import sys
 import re
 import datetime
 import threading
-from flask_cors import CORS
-
 from json import dumps
+
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 import auth
 import message
@@ -18,13 +21,13 @@ import channels
 import standup
 import other
 import user
+from admin_user_remove import user_remove
 from data_stores import save_data_stores
 from error import InputError
 from admin_user_remove import user_remove
 
-
-
 def defaultHandler(err):
+    'Given from gitlab'
     response = err.get_response()
     print('response', err, err.get_response())
     response.data = dumps({
@@ -53,9 +56,8 @@ def echo():
 
 
 
-
 #############################################################
-#                   AUTH_REGISTER                           #      
+#                       AUTH_REGISTER                       #
 #############################################################
 
 @APP.route("/auth/register", methods=['POST'])
@@ -68,16 +70,14 @@ def auth_register():
 
     return dumps({
         'u_id': new_user['u_id'],
-       'token': new_user['token'],
+        'token': new_user['token'],
     })
 
 
 #############################################################
-#                   AUTH_LOGIN                              #      
+#                        AUTH_LOGIN                         #
 #############################################################
 
-
-# to login a user and return a token
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
     '''
@@ -85,7 +85,7 @@ def auth_login():
     '''
     payload = request.get_json()
     user1 = auth.login(payload)
-    
+
     return dumps({
         'u_id' : user1['u_id'],
         'token' : user1['token']
@@ -93,7 +93,7 @@ def auth_login():
 
 
 #############################################################
-#                   AUTH_LOGOUT                             #      
+#                        AUTH_LOGOUT                        #
 #############################################################
 
 @APP.route("/auth/logout", methods=['POST'])
@@ -107,15 +107,14 @@ def auth_logout():
             'is_success':True
         })
     else:
-        return dumps ({
+        return dumps({
             'is_success':False
-        }) 
+        })
 
 
 #############################################################
-#                   CHANNELS_CREATE                         #      
+#                      CHANNELS_CREATE                      #
 #############################################################
-
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
@@ -124,12 +123,13 @@ def channels_create():
     '''
     payload = request.get_json()
     new_channel = channels.create(payload)
-    return dumps ({
+    return dumps({
         'channel_id': new_channel['channel_id']
     })
 
+
 #############################################################
-#                   CHANNELS_LIST                           #      
+#                       CHANNELS_LIST                       #
 #############################################################
 
 @APP.route("/channels/list", methods=['GET'])
@@ -139,21 +139,19 @@ def channels_list():
     '''
     token = request.args.get('token')
     chann_inf = channels.List(token)
-    
+
     return dumps({
         'channels': chann_inf
     })
 
 
 #############################################################
-#                   CHANNELS_LISTALL                        #      
+#                     CHANNELS_LISTALL                      #
 #############################################################
 
 @APP.route("/channels/listall", methods=['GET'])
 def channels_listall():
-    '''
-    Function to
-    '''
+    'To display all the channels created on the server'
     token = request.args.get('token')
     chann_inf2 = channels.Listall(token)
 
@@ -163,32 +161,33 @@ def channels_listall():
 
 
 #############################################################
-#                   MESSAGE_PIN                             #      
+#                        MESSAGE_PIN                        #
 #############################################################
 
 @APP.route("/message/pin", methods=['POST'])
 def message_pin():
+    'To pin a users message'
     payload = request.get_json()
     message.pin(payload)
 
     return dumps({})
 
+
 #############################################################
-#                   MESSAGE_UNPIN                             #      
+#                       MESSAGE_UNPIN                       #
 #############################################################
 
 @APP.route("/message/unpin", methods=['POST'])
 def message_unpin():
-    
+    'To unpin a users message'
     payload = request.get_json()
     message.unpin(payload)
 
     return dumps({})
-    
 
 
 #############################################################
-#                   MESSAGE_SEND                            #      
+#                       MESSAGE_SEND                        #
 #############################################################
 
 @APP.route("/message/send", methods=['POST'])
@@ -202,10 +201,12 @@ def message_send():
     return dumps({
         'message_id': new_message['message_id']
     })
-    
+
+
 #############################################################
-#                   MESSAGE_SENDLATER                       #      
+#                     MESSAGE_SENDLATER                     #
 #############################################################
+
 @APP.route("/message/sendlater", methods=['POST'])
 def message_sendlater():
     '''
@@ -213,18 +214,16 @@ def message_sendlater():
     in the future
     '''
     payload = request.get_json()
-    
+
     new_message_id = message.sendlater(payload)
 
     return dumps({
         'message_id':new_message_id
     })
 
-    
-
 
 #############################################################
-#                   MESSAGE_REMOVE                          #      
+#                      MESSAGE_REMOVE                       #
 #############################################################
 
 @APP.route("/message/remove", methods=['DELETE'])
@@ -238,9 +237,10 @@ def message_remove():
     return dumps({})
 
 
-#############################################################    
-#                   MESSAGE_EDIT                            #      
 #############################################################
+#                       MESSAGE_EDIT                        #
+#############################################################
+
 @APP.route("/message/edit", methods=['PUT'])
 def message_edit():
     '''
@@ -248,14 +248,16 @@ def message_edit():
     '''
     payload = request.get_json()
 
+    payload = request.get_json()
     message.edit(payload)
 
     return dumps({})
 
 
 #############################################################
-#                    MESSAGE_REACT                          #      
+#                       MESSAGE_REACT                       #
 #############################################################
+
 @APP.route("/message/react", methods=['POST'])
 def message_react():
     '''
@@ -268,8 +270,9 @@ def message_react():
 
 
 #############################################################
-#                   MESSAGE_UNREACT                         #      
+#                      MESSAGE_UNREACT                      #
 #############################################################
+
 @APP.route("/message/unreact", methods=['POST'])
 def message_unreact():
     '''
@@ -280,26 +283,29 @@ def message_unreact():
 
     return dumps({})
 
+
 #############################################################
-#                   STANDUP_START                           #      
+#                       STANDUP_START                       #
 #############################################################
+
 @APP.route("/standup/start", methods=['POST'])
 def standup_start():
+    'To start a standup'
     payload = request.get_json()
     end_time = standup.start(payload)
-
 
     return dumps({
         'time_finish':end_time
     })
 
 
+#############################################################
+#                      STANDUP_ACTIVE                       #
+#############################################################
 
-#############################################################
-#                   STANDUP_ACTIVE                          #      
-#############################################################
 @APP.route("/standup/active", methods=['GET'])
 def standup_active():
+    'To check if a standup is currently active'
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
 
@@ -307,28 +313,30 @@ def standup_active():
         'token': token,
         'channel_id': channel_id
     }
-
     standup_info = standup.active(payload)
+
     return dumps(standup_info)
-    
+
+
 #############################################################
-#                   STANDUP_SEND                            #      
+#                       STANDUP_SEND                        #
 #############################################################
+
 @APP.route("/standup/send", methods=['POST'])
 def standup_send():
+    'To send messages during a standup'
     payload = request.get_json()
     standup.send(payload)
 
-    return ({
-    })
+    return ({})
 
-#LOOK AT INVALID TOKEN
 #############################################################
-#                   CHANNEL_INVITE                          #      
+#                      CHANNEL_INVITE                       #
 #############################################################
 
 @APP.route('/channel/invite', methods=['POST'])
 def channel_invite_server():
+    'Invite user to a channel'
     payload = request.get_json()
 
     # Information from request
@@ -337,34 +345,36 @@ def channel_invite_server():
     user_id = int(payload['u_id'])
 
     # Invite user to channel
-    invite = channel.invite(token, channel_id, user_id)
-    
+    channel.invite(token, channel_id, user_id)
+
     return dumps({})
 
 
 #############################################################
-#                   CHANNEL_DETAILS                         #      
+#                      CHANNEL_DETAILS                      #
 #############################################################
 
 @APP.route('/channel/details', methods=['GET'])
 def channel_details_server():
+    'Get details of a channel'
+
     # Information from request
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    
+
     details = channel.details(token, channel_id)
 
-    
     return dumps(details)
-    
+
 
 #############################################################
-#                     CHANNEL_MESSAGES                      #      
+#                     CHANNEL_MESSAGES                      #
 #############################################################
 
 @APP.route('/channel/messages', methods=['GET'])
 def channel_messages_server():
-    
+    'Returns messages from channel'
+
     # Information from request
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
@@ -372,52 +382,57 @@ def channel_messages_server():
 
     messages = channel.messages(token, channel_id, start)
 
-
     return dumps(messages)
 
 
 #############################################################
-#                       CHANNEL_LEAVE                       #      
+#                       CHANNEL_LEAVE                       #
 #############################################################
 
 @APP.route('/channel/leave', methods=['POST'])
 def channel_leave_server():
+    'User leaves channel'
+
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
 
     # Leave the channel
-    leave = channel.leave(token, channel_id)
-    
+    channel.leave(token, channel_id)
+
     return dumps({})
-    
+
 
 #############################################################
-#                   CHANNEL_JOIN                            #      
+#                       CHANNEL_JOIN                        #
 #############################################################
 
 @APP.route('/channel/join', methods=['POST'])
 def channel_join_server():
+    'User joins channel'
+
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
 
     # Join the channel
-    join = channel.join(token, channel_id)
+    channel.join(token, channel_id)
 
     return dumps({})
-        
+
 
 #############################################################
-#                   CHANNEL_ADDOWNER                        #      
+#                     CHANNEL_ADDOWNER                      #
 #############################################################
 
 @APP.route('/channel/addowner', methods=['POST'])
 def channel_addowner_server():
+    'Able to add a member as an owner'
+
     payload = request.get_json()
 
     # Information from request
@@ -427,19 +442,20 @@ def channel_addowner_server():
 
     # Add owner with user_id to owner members
     channel.addowner(token, channel_id, user_id_adding)
-    
-    #return dumps(addowner)
+
     return dumps({})
-    
+
 
 #############################################################
-#                   CHANNEL_REMOVEOWNER                     #      
+#                    CHANNEL_REMOVEOWNER                    #
 #############################################################
 
 @APP.route('/channel/removeowner', methods=['POST'])
 def channel_removeowner_server():
+    'Able to remove an owner as an owner'
+
     payload = request.get_json()
-    
+
     # Information from request
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -452,20 +468,25 @@ def channel_removeowner_server():
 
 
 #############################################################
-#                   WORKSPACE_RESET                         #      
+#                   WORKSPACE_RESET                         #
 #############################################################
+
 @APP.route("/workspace/reset", methods=['POST'])
 def workspace_reset():
+    'Resetting the workspace'
+
     other.workspace_reset()
     return dumps({})
 
-    
+
 #############################################################
-#                         SEARCH                            #      
-#############################################################   
+#                          SEARCH                           #
+#############################################################
+
 @APP.route('/search', methods=['GET'])
 def search():
-    """ return messages """
+    'Return messages'
+
     token = request.args.get('token')
     query_str = request.args.get('query_str')
 
@@ -477,30 +498,32 @@ def search():
     return dumps({
         'messages': messages
     })
-    
+
+
 #############################################################
-#                USER PERMISSION CHANGE                     #      
+#                  USER PERMISSION CHANGE                   #
 #############################################################
+
 @APP.route('/admin/userpermission/change', methods=['POST'])
 def user_permission_change():
-    """ return empty dic, change user's permission """
+    "Return empty dictionary, change user's permission"
+
     payload = request.get_json()
     user.permission_change(payload)
     return dumps({})
 
 
 #############################################################
-#                      USER_PROFILE                         #      
+#                       USER_PROFILE                        #
 #############################################################
 
 @APP.route('/user/profile', methods=['GET'])
 def user_profile():
-    """ 
-    return 'email', 'name_first', 'name_last', 'handle_str', unpin a msg 
-    """
+    "Return 'email', 'name_first', 'name_last', 'handle_str', unpin a message"
     '''
     MIGHT NEED TO BE CHANGED; should it return the person who makes the call or the profile of the u_id
     '''
+
     token = request.args.get('token')
     u_id = request.args.get('u_id')
 
@@ -512,7 +535,7 @@ def user_profile():
     return dumps ({
         'user': user_info
     })
-    
+
 
 #############################################################
 #                   USER_PROFILE_SETNAME                    #
@@ -520,12 +543,13 @@ def user_profile():
 
 @APP.route('/user/profile/setname', methods=['PUT'])
 def user_profile_setname():
-    """ 
-    return empty dic, change user's name 
-    """
+    "Return empty dictionary, change user's name"
+
     payload = request.get_json()
     user.profile_setname(payload)
-    return({})
+
+    return dumps({})
+
 
 #############################################################
 #                   USER_PROFILE_SETEMAIL                   #
@@ -533,35 +557,36 @@ def user_profile_setname():
 
 @APP.route('/user/profile/setemail', methods=['PUT'])
 def user_profile_setemail():
-    """ 
-    return empty dic, change user's email 
-    """
+    "Return empty dictionary, change user's email"
+
     payload = request.get_json()
     user.profile_setemail(payload)
-    return({})
+
+    return dumps({})
+
 
 #############################################################
-#                   USER_PROFILE_SETHANDLE                  #
+#                  USER_PROFILE_SETHANDLE                   #
 #############################################################
 
 @APP.route('/user/profile/sethandle', methods=['PUT'])
 def user_profile_sethandle():
-    """ 
-    return empty dic, change user's handle 
-    """
+    "Return empty dictionary, change user's handle"
+
     payload = request.get_json()
     user.profile_sethandle(payload)
-    return({})
-    
+
+    return dumps({})
+
+
 #############################################################
-#                        USERS_ALL                          #
+#                         USERS_ALL                         #
 #############################################################
 
 @APP.route('/users/all', methods=['GET'])
 def all_users():
-    """ 
-    Returns a list of all users and their associated details
-    """
+    "Returns a list of all users and their associated details"
+
     token = request.args.get('token')
 
     payload = {
@@ -576,10 +601,12 @@ def all_users():
 #############################################################
 #                     ADMIN_USER_REMOVE                     #
 #############################################################
+
 @APP.route('/admin/user/remove', methods=['DELETE'])
 def admin_user_remove_server():
+    'Remove user from slackr'
     payload = request.get_json()
-    
+
     # Remove owner with user_id from slack
     user_remove(payload)
 
@@ -587,26 +614,30 @@ def admin_user_remove_server():
 
 
 #############################################################
-#                   AUTH_PASSWORDRESET_REQUEST              #
+#                AUTH_PASSWORDRESET_REQUEST                 #
 #############################################################
+
 @APP.route("/auth/passwordreset/request", methods=['POST'])
 def auth_request():
+    'To request a resetcode to reset a users password'
+
     payload = request.get_json()
     auth.request(payload)
 
     return dumps({})
-    
+
 
 #############################################################
-#                   AUTH_PASSWORDRESET_RESET                #
+#                 AUTH_PASSWORDRESET_RESET                  #
 #############################################################
+
 @APP.route("/auth/passwordreset/reset", methods=['POST'])
 def auth_reset():
+    'To reset the users password'
     payload = request.get_json()
     auth.reset(payload)
-    
-    return dumps({})
 
+    return dumps({})
 
 if __name__ == "__main__":
     threading.Timer(60.0, save_data_stores).start()

@@ -42,7 +42,7 @@ def test_send():
         'message': 'test'
     })
 
-    
+
 
 def test_invalid_id():
     'testing error case'

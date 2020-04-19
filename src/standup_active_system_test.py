@@ -2,7 +2,7 @@
 
 import urllib
 import json
-from urllib.error import HTTPError
+from urllib.error import HTTPError          # pylint: disable=C0412
 from datetime import datetime, timedelta
 import flask                     # pylint: disable=W0611
 
@@ -37,7 +37,7 @@ def test_active():
     ))
 
     req = urllib.request.Request(
-        f"{BASE_URL}/standup/active?token="+str(user1['token'])+"&channel_id="+str(channel1['channel_id'])
+        f"{BASE_URL}/standup/active?token="+str(user1['token'])+"&channel_id="+str(channel1['channel_id']) # pylint: disable=C0301
     )
 
     req.get_method = lambda: 'GET'

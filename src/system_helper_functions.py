@@ -156,8 +156,13 @@ def invite_to_channel(inviter, invitee, channel):
 
     urllib.request.urlopen(urllib.request.Request(
         f"{BASE_URL}/channel/invite",
+<<<<<<< HEAD
         data=data,
         headers={'Content-Type':'application/json'}
+=======
+        data = data,
+        headers = {'Content-Type':'application/json'}
+>>>>>>> 170ebf69d045f99dee65a56b6debaf19ac25c560
     ))
     return ()
 
@@ -202,3 +207,22 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     Function to generate a random 6 character string to act as a reset code
     '''
     return ''.join(random.choice(chars) for _ in range(size))
+
+def reg_sid():
+    '''
+    Registers a user and returns the reponse from the request
+    '''
+    data = json.dumps({
+        'email' : 'sidu2000@gmail.com',
+        'password': 'Sid12345',
+        'name_first': 'SId',
+        'name_last': 'Sat'
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/auth/register",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+
+    response = json.load(req)
+    return response

@@ -102,7 +102,7 @@ def List(token): # pylint: disable=C0103
 def Listall(token): # pylint: disable=W0613, C0103
     'implementations of channels listall function'
     channel_store = get_channel_data_store()
-    
+
     user = get_user_from('token', token)
     channels_return = []
     channel_info = {}

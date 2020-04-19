@@ -8,7 +8,7 @@ import flask                                    # pylint: disable=W0611
 
 import pytest
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2, send_msg1
+from system_helper_functions import reg_user2, send_msg1, invite_to_channel
 
 #pylint compliant
 #############################################################
@@ -109,8 +109,9 @@ def test_unauth_member():
             headers={'Content-Type':'application/json'}
         ))
 
-'''
+
 def test_unauth_owner():
+    'error case test'
     reset_workspace()
 
     user1 = reg_user1()
@@ -132,4 +133,4 @@ def test_unauth_owner():
             data=data,
             headers={'Content-Type':'application/json'}
         ))
-'''                                         # pylint: disable=W0105, C0304
+                                         # pylint: disable=W0105, C0304

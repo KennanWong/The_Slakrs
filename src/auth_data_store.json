@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"u_id": 1, "email": "Kennan@gmail.com", "password": "Wong123", "name_first": "Kennan", "name_last": "Wong", "handle_str": "kennanwong", "token": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b", "status": 1, "messages": [], "permission_id": 1, "slack_owner": true}, {"u_id": 2, "email": "Cindy@gmail.com", "password": "Tran123", "name_first": "Cindy", "name_last": "Tran", "handle_str": "cindytran", "token": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35", "status": 1, "messages": [], "permission_id": 2, "slack_owner": false}]
+=======
+[{"u_id": 1, "email": "wongkennan@gmail.com", "password": "Wong123", "name_first": "Kennan", "name_last": "Wong", "handle_str": "kennanwong", "token": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b", "status": 1, "messages": [], "permission_id": 1, "slack_owner": true}]
+>>>>>>> 9b987178b8818090d1f097b603581952a46e9afc

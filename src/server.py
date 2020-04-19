@@ -614,19 +614,6 @@ def auth_reset():
 
     return dumps({})
 
-#############################################################
-#                     ADMIN_USER_REMOVE                     #
-#############################################################
-@APP.route('/admin/user/remove', methods=['DELETE'])
-def admin_user_remove_server():
-
-    payload = request.get_json()
-
-    # Remove user with user_id from slack
-    user_remove(payload)
-
-    return dumps({})
-
 if __name__ == "__main__":
     threading.Timer(60.0, save_data_stores).start()
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))

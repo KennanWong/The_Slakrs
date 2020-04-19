@@ -23,9 +23,9 @@ def test_list():
     reset_workspace()
 
     user1 = reg_user1()
-    user2 = reg_user2()
+    reg_user2()
 
-    channel1 = create_ch1(user1)
+    create_ch1(user1)
 
 
     req = urllib.request.Request(

@@ -4,14 +4,14 @@ Pytest file to test auth_passwordreset on a system level
 
 import urllib
 import json
-import flask        #pylint disable = W0611
-import pytest       #pylint disable = W0611
+import flask        #pylint: disable = W0611
+import pytest       #pylint: disable = W0611
 
 
 
 from system_helper_functions import reg_sid, reset_workspace
 
-
+#pylint compliant
 #############################################################
 #                     AUTH_PASSWORDRESET_REQUEST            #
 #############################################################
@@ -24,7 +24,7 @@ def test_request():
     '''
     reset_workspace()
 
-    user1 = reg_sid()         #pylint disable = W0612
+    reg_sid()         #pylint disable = W0612
 
     data = json.dumps({
         'email': 'sidu2000@gmail.com'

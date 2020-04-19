@@ -72,4 +72,3 @@ def test_channel_join_private():
     # isn't an admin
     with pytest.raises(AccessError) as e:
         channel.join(token2, channel_id)
-        

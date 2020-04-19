@@ -4,7 +4,7 @@ Pytest file to test functionality of message_send
 
 import pytest
 
-# import channel
+import channel
 import message
 from test_helper_functions import reg_user2, register_and_create
 from data_stores import get_auth_data_store
@@ -40,29 +40,25 @@ def test_send1():
     assert message_test in channel['messages']
 
 
-'''
+
 def test_send2():
     # a member of a channel sends a message
     ret = register_and_create()
     user = ret['user']
-    channel = ret['channel']
+    channel1 = ret['channel']
 
     user2 =  reg_user2()
 
-    channel.join({
-        'token': user2['token'],
-        'channel_id' : channel['channel_id'],
-        'u_id': user2['u_id']
-    })
+    channel.invite(user['token'], channel1['channel_id'], user2['u_id'])
 
     message_test = message.send({
         'token':user2['token'],
-        'channel_id': channel['channel_id'],
+        'channel_id': channel1['channel_id'],
         'message' : 'testing'
     })
 
-    assert message_test in channel['messages'] 
-'''
+    assert message_test in channel1['messages'] 
+
 
 
 def test_long_msg():

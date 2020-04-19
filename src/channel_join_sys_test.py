@@ -15,11 +15,12 @@ import server
 import channel
 from system_helper_functions import reg_user1, reg_user2, create_ch1, create_pvt_ch, reset_workspace
 
+# channnel_join (POST)
+
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_join():
     'Normal join case'
-    # channnel_join (POST)
     reset_workspace()
 
     user1 = reg_user1()

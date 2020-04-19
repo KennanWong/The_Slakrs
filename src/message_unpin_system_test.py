@@ -10,7 +10,7 @@ import pytest
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
 from system_helper_functions import reg_user2, send_msg1, invite_to_channel
 
-#pylint  ompliant
+#pylint compliant
 #############################################################
 #                   MESSAGE_UNPIN                           #
 #############################################################

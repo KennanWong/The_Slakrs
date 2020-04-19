@@ -22,11 +22,11 @@ def test_channel_leave_successful():
     channel_info = ret['channel']
     channel_id = channel_info['channel_id']
 
-    #user2 = reg_user2()
-    #token2 = user2['token']
+    user2 = reg_user2()
+    token2 = user2['token']
 
-    #channel.join(token2, channel_id)
-    #channel.leave(token2, channel_id)
+    channel.join(token2, channel_id)
+    channel.leave(token2, channel_id)
 
     assert channel.details(token1, channel_id)['name'] == 'firstChannel'
     assert channel.details(token1, channel_id)['owner_members'] == [{

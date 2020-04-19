@@ -5,6 +5,7 @@ Contains all routes
 
 #pylint: disable=W0611
 #pylint: disable=C0103
+#pylint: disable=R1705
 
 import sys
 import re
@@ -24,7 +25,6 @@ import user
 from admin_user_remove import user_remove
 from data_stores import save_data_stores
 from error import InputError
-from admin_user_remove import user_remove
 
 def defaultHandler(err):
     'Given from gitlab pull'
@@ -48,6 +48,8 @@ APP.register_error_handler(Exception, defaultHandler)
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
+    'Given from gitlab pull'
+
     data = request.args.get('data')
     if data == 'echo':
         raise InputError(description='Cannot echo "echo"')
@@ -63,7 +65,7 @@ def echo():
 
 @APP.route("/auth/register", methods=['POST'])
 def auth_register():
-    'Register a user and add it to the userStore'
+    'Function to register a new user to the Slack'
 
     payload = request.get_json()
     new_user = auth.register(payload)
@@ -80,7 +82,7 @@ def auth_register():
 
 @APP.route("/auth/login", methods=['POST'])
 def auth_login():
-    'To login a user and return a token'
+    'Function to login a user to a Slack'
 
     payload = request.get_json()
     user1 = auth.login(payload)
@@ -97,6 +99,8 @@ def auth_login():
 
 @APP.route("/auth/logout", methods=['POST'])
 def auth_logout():
+    'Function to logout a user from a Slack'
+
     payload = request.get_json()
     if auth.logout(payload):
         return dumps({
@@ -189,6 +193,7 @@ def message_unpin():
 
 @APP.route("/message/send", methods=['POST'])
 def message_send():
+    'Function to send a message to a channel'
 
     payload = request.get_json()
     new_message = message.send(payload)
@@ -204,6 +209,8 @@ def message_send():
 
 @APP.route("/message/sendlater", methods=['POST'])
 def message_sendlater():
+    'Function to send a message to a channel at a specified time in the future'
+
     payload = request.get_json()
 
     new_message_id = message.sendlater(payload)
@@ -219,6 +226,7 @@ def message_sendlater():
 
 @APP.route("/message/remove", methods=['DELETE'])
 def message_remove():
+    'Function to remove a message from a channel'
 
     payload = request.get_json()
     message.remove(payload)
@@ -232,6 +240,7 @@ def message_remove():
 
 @APP.route("/message/edit", methods=['PUT'])
 def message_edit():
+    'Function to edit a given message in a channel'
 
     payload = request.get_json()
     message.edit(payload)
@@ -245,6 +254,7 @@ def message_edit():
 
 @APP.route("/message/react", methods=['POST'])
 def message_react():
+    'Function to react to a given message in a channel'
 
     payload = request.get_json()
     message.react(payload)
@@ -258,6 +268,7 @@ def message_react():
 
 @APP.route("/message/unreact", methods=['POST'])
 def message_unreact():
+    'Function to unreact to a given message in a channel'
 
     payload = request.get_json()
     message.unreact(payload)

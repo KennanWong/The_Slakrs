@@ -1,6 +1,6 @@
 import pytest
 from error import InputError
-from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle, user_profile_uploadphoto
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from auth import auth_register
 from test_helper_functions import reg_user1, reg_user2, register_and_create, send_msg1
 from other import workspace_reset
@@ -24,8 +24,7 @@ def test_profile_working():
     #test that the returned values are correct
     payload = {
         'token' : register['token'],
-        'u_id' : uid
-    
+        'u_id' : uid    
     }
     
     profile = user_profile(payload)
@@ -101,7 +100,7 @@ def test_user_profile_setname_working():
     
     payload5 = {
         'token' : details['token'],
-        'name_first' : name_first2,
+        'name_first' : name_first2
         'name_last' : name_last2     
     }
         
@@ -441,20 +440,17 @@ def test_user_profile_sethandle_already_used():
     valid_handle = "ValidHandle"    
     
     #test handle already used
-
     payload1 = {
         'token' : token1,
         'handle_str' : valid_handle     
     }
-
     payload2 = {
         'token' : token1,
-        'u_id' : uid1
+        'u_id' : uid1     
     }
-
     payload3 = {
         'token' : token2,
-        'handle_str' : valid_handle
+        'handle_str' : valid_handle     
     }
     
     
@@ -465,41 +461,4 @@ def test_user_profile_sethandle_already_used():
     with pytest.raises(InputError):
         user_profile_sethandle(payload3)
 
-
-#########################
-# UPLOAD PHOTO#
-######################
-def test_user_profile_uploadphoto_correct():
-    workspace_reset()
-
-    #register user
-
-    details = reg_user1
-    token = details['token']
-    url = "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/16/14/asset/46d3bcfa9ed6/sub-buzz-1180-1587047168-1.jpg"
-    #test part
-    #assume x_start, y_start, x_end, y_end are all within the dimensions
-    user_profile_uploadphoto(token, url, 0,0,100,100)
-    assert( data['users'][1]['img_profile_url'] != None )
     
-def test_user_profile_uploadphoto_error1():
-    workspace_reset()    
-    #img_url is return an HTTP status other than 200
-
-    details = reg_user1
-    token = details['token']
-    url = "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/16/14/asset/46d3bcfa9ed6/sub-buzz-1180-1587047168-1.jpg"
-
-    with pytest.raises(ValueError, match=r"*"):
-        user_profile_uploadphoto(token, "notArealUrl.jpg", 300, 100, 100, 100)
-        
-def test_user_profile_uploadphoto_error2():
-    workspace_reset()    
-    #x_start, y_start, x_end, y_end are not within the dimensions of the image
-    
-    url = "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/16/14/asset/46d3bcfa9ed6/sub-buzz-1180-1587047168-1.jpg"
-    details = reg_user1
-    token = details['token']
-
-    with pytest.raises(ValueError, match=r"*"):
-        user_profile_uploadphoto(token, url, 99999999999, 999999999999, 999999999999, 999999999999)

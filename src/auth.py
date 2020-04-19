@@ -61,7 +61,8 @@ def register(payload):
         'status' : LOGGED_ON,
         'messages':[],
         'permission_id': 2,
-        'slack_owner' : False
+        'slack_owner' : False,
+        'profile_img_url': "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/15/19/campaign_images/fdc9b0680e75/the-social-media-shame-machine-is-in-overdrive-ri-2-4824-1586980284-7_dblbig.jpg"
     }
 
     if u_id == 1:

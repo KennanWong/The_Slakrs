@@ -118,7 +118,7 @@ def auth_logout():
 
 @APP.route("/channels/create", methods=['POST'])
 def channels_create():
-    'To create a channel'
+    'Function to create a new channel in the slack'
 
     payload = request.get_json()
     new_channel = channels.create(payload)
@@ -133,7 +133,7 @@ def channels_create():
 
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
-    'To display all the channels an user is part of'
+    'Function to list all channels a user is a part of'
 
     token = request.args.get('token')
     chann_inf = channels.List(token)
@@ -525,7 +525,7 @@ def user_profile():
     }
     user_info = user.profile(payload)
     return dumps({
-        'user':user_info
+        'user': user_info
     })
 
 

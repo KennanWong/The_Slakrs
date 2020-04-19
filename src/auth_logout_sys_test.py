@@ -2,7 +2,7 @@
 Pytest file to test auth_logout on a system level
 '''
 
-
+# pylint: disable=W0611
 import urllib
 import json
 import flask

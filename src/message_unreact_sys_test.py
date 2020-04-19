@@ -1,14 +1,19 @@
 '''
 Pytest file to test message_unreact on a system level
 '''
+
+# pylint: disable=W0611
+
 import urllib
 import json
-import flask
 from urllib.error import HTTPError
+
+import flask
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
 from system_helper_functions import reg_user2, send_msg1, react_to_msg
+from system_helper_functions import invite_to_channel
 
 #############################################################
 #                   MESSAGE_UNREACT                           #
@@ -43,8 +48,12 @@ def test_unreact1():
 
     assert payload == {}
 
-'''
+
 def test_react2():
+    '''
+    Test a user reacting to anothers users message in a channel
+    '''
+
     reset_workspace()
 
     user1 = reg_user1()
@@ -61,15 +70,15 @@ def test_react2():
     }).encode('utf-8')
 
     req = urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/message/unreact", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
+        f"{BASE_URL}/message/unreact",
+        data=data,
+        headers={'Content-Type':'application/json'}
     ))
 
     payload = json.load(req)
 
     assert payload == {}
-'''
+
 
 def test_not_reacted():
     '''

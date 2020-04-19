@@ -2,10 +2,13 @@
 Pytest file to test functionality of auth_register on a system
 level
 '''
+# pylint: disable=W0611
+
 import urllib
 import json
-import flask
 from urllib.error import HTTPError
+
+import flask
 import pytest
 
 from system_helper_functions import reset_workspace

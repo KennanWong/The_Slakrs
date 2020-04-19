@@ -1,1 +1,0 @@
-[{"channel_id": 1, "name": "new_channel", "is_public": true, "members": [], "owners": [{"u_id": 1, "name_first": "Kennan", "name_last": "Wong"}], "messages": [], "standup": {"is_active": false, "messages": [], "time_finish": []}, "hangman_active": false}]

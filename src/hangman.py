@@ -6,6 +6,7 @@ File contains all functions relating to hangman
 # pylint: disable=C0103
 # pylint: disable=C0303
 # pylint: disable=R1711
+# pylint: disable=C0301
 from random import randint
 
 import auth
@@ -128,29 +129,29 @@ HANGMAN_STATES = (
         """,
 )
 
-STATE = 0
-
 FINAL_STATE = 9
 
 PHRASE = ''
 
 EMPTY_GUESS = []
 
+PREVIOUS_GUESSES = []
+
+STATE = len(PREVIOUS_GUESSES)
+
 def start(channel):
     '''
     Function inititates a game of hangman, by generating
     a phrase and reseting the game state
     '''
-    hangman = get_hangman()
+    get_game_data(channel)
     hangman_join(channel)
     generate_phrase()
-    global PHRASE
     global EMPTY_GUESS
-    global STATE 
-    STATE = 0
     EMPTY_GUESS = '_'*len(PHRASE)
     message(channel, display_hangman())
     
+    save_hangman(channel)
     return
 
 def guess(channel, new_guess):
@@ -159,16 +160,21 @@ def guess(channel, new_guess):
     searches if that letter is found within the phrase,
     and fills it in otherwise it advances the game state
     '''
+    get_game_data(channel)
     global PHRASE
     global EMPTY_GUESS
+    global PREVIOUS_GUESSES
+    global STATE
+    STATE = len(PREVIOUS_GUESSES)
     if new_guess not in PHRASE:
-        global STATE
-        STATE += 1
+        if new_guess not in PREVIOUS_GUESSES:
+            PREVIOUS_GUESSES.append(new_guess)
+        STATE = len(PREVIOUS_GUESSES)
         if STATE == FINAL_STATE:
             # reached hangman, end the game, expose the word with losing message
             EMPTY_GUESS = PHRASE
             message(channel, display_hangman() + '\n' + 'The hangman is dead. Game Over')
-            channel['hangman_active'] = False
+            reset_game(channel)
         else:
             message(channel, display_hangman())
     else:
@@ -182,11 +188,16 @@ def guess(channel, new_guess):
                 if PHRASE[i] == new_guess:
                     EMPTY_GUESS[i] = new_guess
                 i += 1
-        if str(EMPTY_GUESS) == PHRASE:
+        print(len(EMPTY_GUESS))
+        print(len(PHRASE))
+        if EMPTY_GUESS == list(PHRASE):
             message(channel, display_hangman()+ '\n'  + 'You win! Game Over')
-            channel['hangman_active'] = False
+            reset_game(channel)
         else: 
             message(channel, display_hangman())
+        
+    save_hangman(channel)
+
     return
 
 
@@ -212,7 +223,7 @@ def get_hangman():
     Function to get the hangman details, otherwise we need to register the hangman
     '''
     hangman = get_user_from('name_first', 'Hangman')
-    if hangman == None:
+    if hangman is None:
         # if we get returned an empty dictionary register hangman
         print('if we get returned an empty dictionary register hangman')
         payload = {
@@ -236,7 +247,8 @@ def hangman_join(channel):
     }
     if hangman_dets not in channel['members']:
         channel['members'].append(hangman_dets)
-    print('Hangman has joined channel')
+        
+    
     return
 
 def display_hangman():
@@ -246,10 +258,14 @@ def display_hangman():
     #print(HANGMAN_STATES[STATE])
 
     global EMPTY_GUESS
+    global PREVIOUS_GUESSES
     guess_revised = " ".join(EMPTY_GUESS)
     # print ('\t'+ str(guess_revised))
-
-    display_msg = HANGMAN_STATES[STATE] + "\n\t" + str(guess_revised)
+    if PREVIOUS_GUESSES == []:
+        display_msg = HANGMAN_STATES[STATE] + "\n\t" + str(guess_revised)
+    else:
+        previous_guesses_revised = " ".join(PREVIOUS_GUESSES)
+        display_msg = HANGMAN_STATES[STATE] + "\n\t" + str(guess_revised) + "\n\n" + 'Previous Guesses: ' + previous_guesses_revised
 
     return display_msg
 
@@ -264,14 +280,57 @@ def generate_phrase():
     index = randint(0, (len(wordlist) -1))
 
     PHRASE = wordlist[index][:-1]
-    print(PHRASE)
 
     return 
 
-def get_phrase():
+def save_hangman(channel):
+    '''
+    Function to save the hangman game to a channel
+    '''
     global PHRASE
-    return PHRASE
-
-def get_empty_guess():
     global EMPTY_GUESS
-    return EMPTY_GUESS
+    global STATE
+    global PREVIOUS_GUESSES
+    hangman_data = {
+        'phrase': PHRASE,
+        'empty_guess': EMPTY_GUESS,
+        'state': STATE,
+        'previous_guesses': PREVIOUS_GUESSES
+    }
+    channel['hangman_data'] = hangman_data
+    return
+
+def get_game_data(channel):
+    '''
+    Function to retrieve the game data from a channel
+    '''
+    global PHRASE
+    global EMPTY_GUESS
+    global STATE
+    global PREVIOUS_GUESSES
+    if channel['hangman_data'] != []:
+        print('loading up previous game')
+        hangman_data = channel['hangman_data']
+        PHRASE = hangman_data['phrase']
+        EMPTY_GUESS = hangman_data['empty_guess']
+        STATE = hangman_data['state']
+        PREVIOUS_GUESSES = hangman_data['previous_guesses']
+    else:
+        print('new_game')
+    return
+
+def reset_game(channel):
+    '''
+    Function to reset the game of hangman in a server and set all the variables to their default values
+    '''
+    channel['hangman_active'] = False
+    channel['hangman_data'] = []
+    global PHRASE
+    global EMPTY_GUESS
+    global STATE
+    global PREVIOUS_GUESSES
+    PHRASE = ''
+    EMPTY_GUESS = []
+    STATE = 0
+    PREVIOUS_GUESSES = []
+    return

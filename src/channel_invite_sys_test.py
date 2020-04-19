@@ -15,11 +15,12 @@ import server
 import channel
 from system_helper_functions import reg_user1, reg_user2, reg_user3, create_ch1, reset_workspace
 
+# channel_invite (POST)
+
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_invite_successful():
     'Successful case'
-    # channel_invite (POST)
     reset_workspace()
 
     # Register users

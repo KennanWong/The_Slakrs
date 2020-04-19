@@ -167,7 +167,7 @@ def reset(payload):                 # pylint disable=R1771
     Function to reset the user's password
     '''
     reset_store = get_reset_code_store()
-
+    print(reset_store)
     for code in reset_store:
         if code['reset_code'] == payload['reset_code']:
             requested_email = code['email']
@@ -175,10 +175,10 @@ def reset(payload):                 # pylint disable=R1771
             if len(payload['new_password']) > 6:
                 new_password = payload['new_password']
                 user['password'] = new_password
-
+                return
 
             else:
                 raise InputError(description='Password is too short')
 
-        else:
-            raise InputError(description='Reset code is incorrect')
+
+        raise InputError(description='Reset code is incorrect')

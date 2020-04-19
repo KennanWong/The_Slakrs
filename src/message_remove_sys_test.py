@@ -1,10 +1,14 @@
 '''
 Pytest file to test message_react on a system level
 '''
+
+# pylint: disable=W0611
+
 import urllib
 import json
-import flask
 from urllib.error import HTTPError
+
+import flask
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
@@ -44,7 +48,9 @@ def test_remove1():
 
 
 def test_remove2():
-    # the admin of a channel attempting to remove another users emssage
+    '''
+    The admin of a channel attempting to remove another users message
+    '''
     reset_workspace()
 
     user1 = reg_user1()
@@ -59,9 +65,9 @@ def test_remove2():
     }).encode('utf-8')
 
     req = urllib.request.Request(
-        f"{BASE_URL}/message/remove", 
-        data = data, 
-        headers = {'Content-Type':'application/json'}
+        f"{BASE_URL}/message/remove",
+        data=data,
+        headers={'Content-Type':'application/json'}
     )
     req.get_method = lambda: 'DELETE'
     response = json.load(urllib.request.urlopen(req))
@@ -93,9 +99,12 @@ def test_no_msg():
     with pytest.raises(HTTPError):
         json.load(urllib.request.urlopen(req))
 
-'''
-def test_unauth_remove1():
 
+def test_unauth_remove1():
+    '''
+    Test if a user is attempting to remove a message from
+    a channel that they are not a part of
+    '''
     reset_workspace()
 
     user1 = reg_user1()
@@ -109,15 +118,15 @@ def test_unauth_remove1():
     }).encode('utf-8')
 
     req = urllib.request.Request(
-            f"{BASE_URL}/message/remove", 
-            data = data, 
-            headers = {'Content-Type':'application/json'}
-        )
+        f"{BASE_URL}/message/remove",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    )
     req.get_method = lambda: 'DELETE'
 
     with pytest.raises(HTTPError):
         json.load(urllib.request.urlopen(req))
-'''
+
 
 def test_unauth_remove2():
     '''

@@ -6,7 +6,7 @@ from test_helper_functions import reg_user1
 from data_stores import get_reset_code_store
 
 
-
+#pylint compliant
 #############################################################
 #                   AUTH_PASSWORDRESET_REQUEST              #
 #############################################################
@@ -15,7 +15,7 @@ def test_request():
     'testing functionability of passwordreset request'
 
     workspace_reset()
-    user1 = reg_user1()         #pylint disable = W0612
+    reg_user1()         #pylint disable = W0612
 
     auth.request({
         'email': 'Kennan@gmail.com'

@@ -22,63 +22,10 @@ auth_store = []
 messages_store = []
 
 # This file contains our data and data structure for the server
-channels_store = [
-    # {
-    #     'channel_id'
-    #     'name'
-    #     'is_public'
-    #     'members':[
- 	# 	    {
-    #             u_id
-    #             name_first
-    #             Name_last
- 	# 	    }
-    #     ] 
-    #     'owners':[
- 	#         {
-    #             u_id
-    #             name_first
-    #             Name_last
- 	# 	    }
-    #     ]
-    #     'messages': [
-    #         {
-    #             channel_id
-    #             message_id
-    #             u_id, 
-    #             message
-    #             time_created
-    #             reacts
-    #             is_pinned
-    #         }
- 	#     ]
-   #       'standup': [
-   #           {
-   #              is_active
-   #              messages
-   #              time_finish
-   #           }
-   #        ]
-   #     }
-]
+channels_store = []
 
 
-auth_data = [
-    # new_user = {
-    #     'u_id' : u_id,
-    #     'email': email,
-    #     'password': password,
-    #     'name_first': first_name,
-    #     'name_last': last_name,
-    #     'handle_str': handle.lower(),
-    #     'token': token,
-    #     'status' : LOGGED_ON,
-    #     'messages':[],
-    #     'permission_id': 2,
-    #     'slack_owner' : False
-    #     'profile_img_url': "https://img.buzzfeed.com/buzzfeed-static/static/2020-04/15/19/campaign_images/fdc9b0680e75/the-social-media-shame-machine-is-in-overdrive-ri-2-4824-1586980284-7_dblbig.jpg"
-    # }
-]
+auth_data = []
 
 messages_store = [
     # 'channel_id'
@@ -146,8 +93,8 @@ def get_messages_store():
 
 #Function to get reset data store
 def get_reset_code_store():
-   global reset_data
-   return reset_data
+    global reset_data
+    return reset_data
 
 def get_message_count():
     global MSG_COUNT
@@ -219,3 +166,8 @@ def save_data_stores():
     save_messages_store()
     threading.Timer(60.0, save_data_stores).start()
     return
+
+def reset_data_stores():
+    reset_auth_store()
+    reset_channel_data_store()
+    reset_messages_store()

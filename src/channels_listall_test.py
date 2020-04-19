@@ -37,7 +37,7 @@ def test_listall():
         'channel_id' : 1,
         'name': 'firstChannel'
     }
-    
+
     expected2 = {
         'channel_id': 2,
         'name': 'Slackrs'

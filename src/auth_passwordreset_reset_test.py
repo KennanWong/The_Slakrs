@@ -9,7 +9,7 @@ from error import InputError
 from data_stores import get_reset_code_store, get_auth_data_store
 
 
-
+#pylint compliant
 #############################################################
 #                   AUTH_PASSWORDRESET_RESET                #
 #############################################################
@@ -19,7 +19,7 @@ def test_reset():
     workspace_reset()
     reset_store = get_reset_code_store()
 
-    user1 = reg_user1()
+    reg_user1()
 
     auth.request({
         'email': 'Kennan@gmail.com'
@@ -49,7 +49,7 @@ def test_invalid_password():
 
     workspace_reset()
 
-    user1 = reg_user1()
+    reg_user1()
 
     reset_code = id_generator()
 
@@ -68,7 +68,7 @@ def test_invalid_resetcode():
 
     workspace_reset()
 
-    user1 = reg_user1()
+    reg_user1()
 
     auth.request({
         'email': 'Kennan@gmail.com'

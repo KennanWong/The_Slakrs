@@ -5,6 +5,8 @@ from helper_functions import get_user_uid, user_details, is_valid_user_id, check
 from helper_functions import message_belong_user
 from error import InputError, AccessError
 
+# pylint compliant
+
 def user_remove(payload):
     'This is the function for admin_user_remove'
 
@@ -12,8 +14,8 @@ def user_remove(payload):
     channel_store = get_channel_data_store()
     messages_store = get_messages_store()
 
-    #remover_id = user_id_from_token(payload['token'])
-    #remover_dets = user_details(remover_id)
+    # remover_id = user_id_from_token(payload['token'])
+    # remover_dets = user_details(remover_id)
 
     removee = get_user_uid(payload['u_id'])
     removee_dets = user_details(payload['u_id'])

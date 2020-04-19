@@ -5,10 +5,10 @@ Pytest file to test functionality of message_remove
 import pytest
 
 import message
-# import channel
-import channels
+import channel
 from other import workspace_reset
 from test_helper_functions import reg_user2, register_and_create, send_msg1
+from test_helper_functions import invite_to_ch1
 from data_stores import get_messages_store
 from error import AccessError
 
@@ -41,11 +41,11 @@ def test_edit1():
 
     assert msg1['message'] == 'edit'
 
-'''
+
 def test_edit2():
-    
+    '''
     Test if an owner is editing another users message
-    
+    '''
     workspace_reset()
 
     ret = register_and_create()
@@ -54,11 +54,7 @@ def test_edit2():
 
     user2 = reg_user2()
 
-    channel.invite({
-        'token': user1['token'],
-        'channel_id': channel1['channel_id'],
-        'u_id': user2['u_id']
-    })
+    channel.invite(user1['token'], channel1['channel_id'], user2['u_id'])
 
     msg1 = send_msg1(user2, channel1)
 
@@ -69,8 +65,6 @@ def test_edit2():
     })
 
     assert msg1['message'] == 'edit'
-'''
-
 
 def test_edit3():
     '''
@@ -95,10 +89,12 @@ def test_edit3():
     assert msg1 not in message_store
     assert msg1 not in channel1['messages']
 
-'''
+
 def test_unauth_edit1():
-    # Someone is attempting to edit another users message but they are not an
-    # owner
+    '''
+    Someone is attempting to edit another users message but they are not an
+    owner
+    '''
     workspace_reset()
 
     ret = register_and_create()
@@ -107,21 +103,17 @@ def test_unauth_edit1():
 
     user2 = reg_user2()
 
-    channel.invite({
-        'token': user1['token'],
-        'channel_id': channel1['channel_id'],
-        'u_id': user2['u_id']
-    })
+    invite_to_ch1(user1, user2, channel1)
 
     msg1 = send_msg1(user1, channel1)
-    
+
     with pytest.raises(AccessError):
         message.edit({
             'token': user2['token'],
             'message_id': msg1['message_id'],
             'message': 'edit'
         })
-'''
+
 
 def test_unauth_edit2():
     '''

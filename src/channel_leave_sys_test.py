@@ -15,11 +15,12 @@ import server
 import channel
 from system_helper_functions import reg_user1, reg_user2, create_ch1, reset_workspace
 
+# channel_leave (POST)
+
 BASE_URL = 'http://127.0.0.1:8080'
 
 def test_channel_leave():
     'Normal leave case'
-    # channel_leave (POST)
     reset_workspace()
 
     user1 = reg_user1()

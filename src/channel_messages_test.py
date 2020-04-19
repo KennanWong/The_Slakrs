@@ -7,7 +7,7 @@ from test_helper_functions import reg_user2, register_and_create
 from error import InputError, AccessError
 
 # pylint: disable=W0612
-# pylint: disable=C010
+# pylint: disable=C0103
 
 # pylint compliant
 

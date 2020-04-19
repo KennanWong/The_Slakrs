@@ -101,6 +101,7 @@ def test_invalid_channel2():
         data=data2,
         headers={'Content-Type': 'application/json'}
     ))
+
     # Invalid channel_id = 100
     data3 = json.dumps({
         'token': token2,

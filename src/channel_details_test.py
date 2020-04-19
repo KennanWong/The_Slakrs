@@ -22,7 +22,7 @@ def test_channel_details_successful():
 
     channel_info = ret['channel']
     channel_id = channel_info['channel_id']
-
+    '''
     assert channel.details(token1, channel_id)['name'] == 'firstChannel'
     assert channel.details(token1, channel_id)['owner_members'] == [{
         'u_id': u_id1,
@@ -34,6 +34,21 @@ def test_channel_details_successful():
         'name_first': 'Kennan',
         'name_last': 'Wong'
     }]
+    '''
+    assert channel.details(token1, channel_id) == {
+        'name': 'firstChannel',
+        'all_members': [{
+            'u_id': u_id1,
+            'name_first': 'Kennan',
+            'name_last': 'Wong'
+        }],
+        'owner_members': [{
+            'u_id': u_id1,
+            'name_first': 'Kennan',
+            'name_last': 'Wong'
+        }]
+    }
+    
 
 def test_channel_details_invalid_channel():
     'Invalid channel case'
@@ -54,10 +69,10 @@ def test_channel_details_unauthorised():
     workspace_reset()
 
     ret = register_and_create()
-    channel_info = ret['channel']
     user2 = reg_user2()
     token2 = user2['token']
 
+    channel_info = ret['channel']
     channel_id = channel_info['channel_id']
 
 	# AccessError when we try to get details of channel where the user isn't a member

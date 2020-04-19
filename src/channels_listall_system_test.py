@@ -52,6 +52,12 @@ def test_listall():
         'name': 'new_channel'
     }
 
+    expected2 = {
+        'channel_id': 2,
+        'name': 'new_channel'
+    }
 
-    assert expected in response         #pylint disable = C0305
+
+    assert expected in response        #pylint disable = C0305
+    assert expected2 in response       #pylint disable = C0305
     

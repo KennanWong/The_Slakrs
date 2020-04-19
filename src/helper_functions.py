@@ -46,7 +46,7 @@ def get_channel(channel_id):
     Function to return the channel data using a channel_id
     '''
     all_channels = get_channel_data_store()
-    if len(all_channels) == 0 :
+    if len(all_channels) == 0:
         raise InputError(description='There are currently no active channels')
 
     for i in all_channels:
@@ -66,7 +66,8 @@ def get_user_token(token):
         if i['token'] == token:
             return i
     raise InputError(description='Invalid Token')
-    
+
+
 def get_user_email(email):
     '''
     Function to validate a users email and return that users data
@@ -88,7 +89,7 @@ def get_user_from(field, request):
     for i in auth_store:
         if i[str(field)] == request:
             return i
-    
+
     if str(field) == 'token':
         raise InputError(description ='Invalid Token')
 
@@ -163,7 +164,7 @@ def is_valid_user_id(u_id):
 
 
 
-# Fucntion to get details of a user
+# Function to get details of a user
 def user_details(u_id):
     auth_store = get_auth_data_store()
     for user in auth_store:

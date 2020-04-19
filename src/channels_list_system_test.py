@@ -34,7 +34,7 @@ def test_list():
 
     req.get_method = lambda: 'GET'
 
-    response = json.load(urllib.request.urlopen(req))
+    response = json.load(urllib.request.urlopen(req))['channels']
 
     expected = {
         'channel_id' : 1,
@@ -42,17 +42,3 @@ def test_list():
     }
 
     assert expected in response
-
-'''
-    # assert user2 returned list is empty
-    req = urllib.request.Request(
-        f"{BASE_URL}/channels/list?token="+str(user1['token'])
-        # f"{BASE_URL}/channels/list",
-        # data=data1,
-        # headers={'Content-Type':'application/json'}
-    )
-
-    req.get_method = lambda: 'GET'
-
-    response = json.load(urllib.request.urlopen(req))
-'''

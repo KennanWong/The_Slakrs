@@ -8,7 +8,7 @@ from urllib.error import HTTPError      #pylint disable = C0412
 import flask                            #pylint disable = W0611
 import pytest
 
-from system_helper_functions import reg_user1, reset_workspace, id_generator
+from system_helper_functions import reg_user1, reset_workspace, id_generator, reg_sid
 from data_stores import get_reset_code_store
 
 #############################################################
@@ -22,12 +22,11 @@ def test_reset():
     Test valid case of test_password_request
     '''
     reset_workspace()
-    reset_store = get_reset_code_store()
 
-    user1 = reg_user1()
+    user1 = reg_sid()
 
     data = json.dumps({
-        'email': 'Kennan@gmail.com'
+        'email': 'sidu2000@gmail.com'
     }).encode('utf-8')
 
     req = urllib.request.urlopen(urllib.request.Request(
@@ -36,8 +35,11 @@ def test_reset():
         headers={'Content-Type':'application/json'}
     ))
 
+    reset_store = get_reset_code_store()
+    code = ''
+    print(reset_store)
     for i in reset_store:
-        if i['email'] == 'Kennan@gmail.com':
+        if i['email'] == 'sidu2000@gmail.com':
             code = i['reset_code']
                                                 #pylint disable = C0303
     data1 = json.dumps({

@@ -9,7 +9,7 @@ import pytest       #pylint disable = W0611
 
 
 
-from system_helper_functions import reg_user1, reset_workspace
+from system_helper_functions import reg_sid, reset_workspace
 
 
 #############################################################
@@ -24,10 +24,10 @@ def test_request():
     '''
     reset_workspace()
 
-    user1 = reg_user1()         #pylint disable = W0612
+    user1 = reg_sid()         #pylint disable = W0612
 
     data = json.dumps({
-        'email': 'Kennan@gmail.com'
+        'email': 'sidu2000@gmail.com'
     }).encode('utf-8')
 
     req = urllib.request.urlopen(urllib.request.Request(

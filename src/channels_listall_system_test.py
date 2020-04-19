@@ -37,7 +37,7 @@ def test_listall():
         data=data,
         headers={'Content-Type':'application/json'}
     ))
-    
+
     req = urllib.request.Request(
         f"{BASE_URL}/channels/listall?token="+str(user1['token'])
 
@@ -45,12 +45,13 @@ def test_listall():
 
     req.get_method = lambda: 'GET'
 
-    response = json.load(urllib.request.urlopen(req))
+    response = json.load(urllib.request.urlopen(req))['channels']
 
     expected = {
         'channel_id' : 1,
         'name': 'new_channel'
     }
+
 
     assert expected in response         #pylint disable = C0305
     

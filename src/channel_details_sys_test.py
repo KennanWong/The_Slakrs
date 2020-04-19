@@ -26,12 +26,14 @@ def test_channel_details():
     reset_workspace()
 
     user1 = reg_user1()
+    token1 = user1['token']
     u_id1 = user1['u_id']
 
     channel1 = create_ch1(user1)
+    channel_id = channel1['channel_id']
 
     req = urllib.request.Request(
-        f"{BASE_URL}/channel/details?token="+str(user1['token'])+"&channel_id="+str(channel1['channel_id'])
+        f"{BASE_URL}/channel/details?token="+str(token1)+"&channel_id="+str(channel_id)
     )
     req.get_method = lambda: 'GET'
 
@@ -56,15 +58,35 @@ def test_channel_details_invalid_channel():
     # Register users
     user1 = reg_user1()
     token1 = user1['token']
-    user2 = reg_user2()
-    u_id2 = user2['u_id']
+
+    req = urllib.request.Request(
+        f"{BASE_URL}/channel/details?token="+str(token1)+"&channel_id=100"
+    )
+    req.get_method = lambda: 'GET'
 
     # Attempt to get details of an invalid channel
     # Invalid channel_id = 100
-
     with pytest.raises(HTTPError):
-        req = urllib.request.Request(
-            f"{BASE_URL}/channel/details?token="+str(user1['token'])+"&channel_id=1"
-        )
-        req.get_method = lambda: 'GET'
+        json.load(urllib.request.urlopen(req))
+
+def test_channel_details_unauthorised():
+    'User is not a member case'
+    reset_workspace()
+
+    # Register users
+    user1 = reg_user1()
+    user2 = reg_user2()
+    token2 = user2['token']
+
+    channel1 = create_ch1(user1)
+    channel_id = channel1['channel_id']
+
+    req = urllib.request.Request(
+        f"{BASE_URL}/channel/details?token="+str(token2)+"&channel_id="+str(channel_id)
+    )
+    req.get_method = lambda: 'GET'
+
+	# AccessError when we try to get details of channel where the user isn't a member
+    # user2 isn't a member
+    with pytest.raises(HTTPError):
         json.load(urllib.request.urlopen(req))

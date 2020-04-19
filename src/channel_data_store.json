@@ -1,0 +1,1 @@
+[{"channel_id": 1, "name": "firstChannel", "is_public": true, "members": [], "owners": [{"u_id": 1, "name_first": "Kennan", "name_last": "Wong"}], "messages": [], "standup": {"is_active": false, "messages": [], "time_finish": []}, "hangman_active": false, "hangman_data": []}]

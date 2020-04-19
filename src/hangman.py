@@ -188,9 +188,7 @@ def guess(channel, new_guess):
                 if PHRASE[i] == new_guess:
                     EMPTY_GUESS[i] = new_guess
                 i += 1
-        print(len(EMPTY_GUESS))
-        print(len(PHRASE))
-        if EMPTY_GUESS == list(PHRASE):
+        if list(EMPTY_GUESS) == list(PHRASE):
             message(channel, display_hangman()+ '\n'  + 'You win! Game Over')
             reset_game(channel)
         else: 

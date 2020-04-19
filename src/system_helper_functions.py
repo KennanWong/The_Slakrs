@@ -150,10 +150,10 @@ def invite_to_channel(inviter, invitee, channel):
         'channel_id': channel['channel_id'],
         'u_id': invitee['u_id']
     }).encode('utf-8')
-    
+
     urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/invite", 
-        data = data, 
+        f"{BASE_URL}/channel/invite",
+        data = data,
         headers = {'Content-Type':'application/json'}
     ))
     return
@@ -196,3 +196,22 @@ def send_a_message(user, channel, message):
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
+def reg_sid():
+    '''
+    Registers a user and returns the reponse from the request
+    '''
+    data = json.dumps({
+        'email' : 'sidu2000@gmail.com',
+        'password': 'Sid12345',
+        'name_first': 'SId',
+        'name_last': 'Sat'
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/auth/register",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+
+    response = json.load(req)
+    return response

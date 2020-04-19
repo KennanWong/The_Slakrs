@@ -145,8 +145,8 @@ def get_messages_store():
 
 #Function to get reset data store
 def get_reset_code_store():
-   global reset_data
-   return reset_data
+    global reset_data
+    return reset_data
 
 def get_message_count():
     global MSG_COUNT

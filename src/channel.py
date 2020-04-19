@@ -58,6 +58,7 @@ def invite(token, channel_id, u_id):
 def details(token, channel_id):
     'This is the function for channel_details'
     user = get_user_token(token)
+    u_id1 = user['u_id']
 
     owner_members = []
     all_members = []
@@ -67,7 +68,6 @@ def details(token, channel_id):
 
     # If the channel is public, safe to display details
     # If not then raise error
-
     for owner in channel['owners']:
         owner_members.append(user_details(owner['u_id']))
         all_members.append(user_details(owner['u_id']))
@@ -82,10 +82,10 @@ def details(token, channel_id):
     # Get details of owners and members in the channel
     if channel['is_public']:
         return ret_package
-        # name = channel['name']
+        #name = channel['name']
 
     # AccessError when authorised user is not a member of the channel
-    elif test_in_channel(user['u_id'], channel):
+    if test_in_channel(u_id1, channel):
         return ret_package
     else:
         raise AccessError(description='Authorised user is not a member of the channel')
@@ -115,7 +115,7 @@ def messages(token, channel_id, start):
         raise InputError(description='Start is greater than or equal to the total number of messages in the channel')
 
     # Incorrect indexing
-    if start < 0 or start > len(channel['messages']):
+    if start < 0:
         raise InputError(description='Incorrect indexing')
 
     # When there are 0 messages

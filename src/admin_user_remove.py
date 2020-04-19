@@ -25,12 +25,12 @@ def user_remove(payload):
         raise InputError(description='Invalid user_id')
 
     removee_token = removee['token']
-
+    
     # Removing any messages the user had sent
     for messages in messages_store:
         if message_belong_user(removee_token, messages['message_id']):
             messages_store.remove(messages)
-
+    
     # Removing user from any channels they were in
     for channel in channel_store:
         if removee_dets in channel['members']:
@@ -46,5 +46,8 @@ def user_remove(payload):
         raise AccessError(description='User is not an owner of the slackr')
     else:
         auth_store.remove(removee)
-
+    
     return{}
+
+
+    

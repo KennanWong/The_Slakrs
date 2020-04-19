@@ -24,7 +24,7 @@ import user
 from admin_user_remove import user_remove
 from data_stores import save_data_stores
 from error import InputError
-
+from admin_user_remove import user_remove
 
 def defaultHandler(err):
     'Given from gitlab pull'
@@ -129,7 +129,7 @@ def channels_create():
 
 @APP.route("/channels/list", methods=['GET'])
 def channels_list():
-    'To display all channels a user is part of'
+    'To display all the channels an user is part of'
 
     token = request.args.get('token')
     chann_inf = channels.List(token)
@@ -145,7 +145,7 @@ def channels_list():
 
 @APP.route("/channels/listall", methods=['GET'])
 def channels_listall():
-    'To display all channels created on the server'
+    'To display all the channels created on the server'
 
     token = request.args.get('token')
     chann_inf2 = channels.Listall(token)
@@ -313,7 +313,6 @@ def standup_send():
     standup.send(payload)
 
     return ({})
-
 
 #############################################################
 #                      CHANNEL_INVITE                       #

@@ -6,7 +6,7 @@ import random
 import urllib
 import json
 
-BASE_URL = 'http://127.0.0.1:8080'
+BASE_URL = 'http://127.0.0.1:4000'
 
 def reset_workspace():
     '''
@@ -150,10 +150,10 @@ def invite_to_channel(inviter, invitee, channel):
         'channel_id': channel['channel_id'],
         'u_id': invitee['u_id']
     }).encode('utf-8')
-    
+
     urllib.request.urlopen(urllib.request.Request(
-        f"{BASE_URL}/channel/invite", 
-        data = data, 
+        f"{BASE_URL}/channel/invite",
+        data = data,
         headers = {'Content-Type':'application/json'}
     ))
     return
@@ -176,6 +176,42 @@ def react_to_msg(user, message, react_id):
     ))
     return
 
+def send_a_message(user, channel, message):
+    '''
+    Function to send a specific message to a specified channel
+    Returns the payload of a message_send request
+    '''
+    data = json.dumps({
+        'token': user['token'],
+        'channel_id': channel['channel_id'],
+        'message': message
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/message/send",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+    payload = json.load(req)
+    return payload
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
+def reg_sid():
+    '''
+    Registers a user and returns the reponse from the request
+    '''
+    data = json.dumps({
+        'email' : 'sidu2000@gmail.com',
+        'password': 'Sid12345',
+        'name_first': 'SId',
+        'name_last': 'Sat'
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/auth/register",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+
+    response = json.load(req)
+    return response

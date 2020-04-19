@@ -3,15 +3,10 @@ Pytest file to test functionality of auth_register
 '''
 
 import pytest
-import urllib
-import json
-import flask
 
-import server
 import auth
 from other import workspace_reset
-from data_stores import get_auth_data_store, reset_auth_store
-from helper_functions import get_user_token
+from data_stores import get_auth_data_store
 from error import InputError
 
 
@@ -36,7 +31,6 @@ def test_register1():
     auth_store = get_auth_data_store()
 
     assert result1 in auth_store
-    return
 
 def test_invalid_email_reg():
     '''
@@ -54,6 +48,10 @@ def test_invalid_email_reg():
 
 
 def test_email_used():
+    '''
+    Test register on an email which has already
+    been used to register a user
+    '''
     workspace_reset()
     payload = {
         'email' : 'Kennan@gmail.com',
@@ -130,6 +128,6 @@ def test_register_double1():
         'name_last': 'Wong'
     }
     auth.register(payload)
-   
+
     with pytest.raises(InputError):
         auth.register(payload)

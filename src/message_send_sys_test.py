@@ -2,14 +2,17 @@
 Pytest file to test message_send on a system level
 '''
 
+# pylint: disable=W0611
+
 import urllib
 import json
-import flask
 from urllib.error import HTTPError
+
+import flask
 import pytest
 
 from system_helper_functions import reg_user1, reset_workspace, create_ch1
-from system_helper_functions import reg_user2
+from system_helper_functions import reg_user2, invite_to_channel
 
 
 #############################################################
@@ -29,6 +32,32 @@ def test_send1():
 
     data = json.dumps({
         'token': user1['token'],
+        'channel_id': ch1['channel_id'],
+        'message': 'testing'
+    }).encode('utf-8')
+    req = urllib.request.urlopen(urllib.request.Request(
+        f"{BASE_URL}/message/send",
+        data=data,
+        headers={'Content-Type':'application/json'}
+    ))
+    payload = json.load(req)
+
+    assert payload['message_id'] == 1
+
+def test_send2():
+    '''
+    Test valid use of message_send
+    '''
+    reset_workspace()
+
+    user1 = reg_user1()
+    user2 = reg_user2()
+    ch1 = create_ch1(user1)
+
+    invite_to_channel(user1, user2, ch1)
+
+    data = json.dumps({
+        'token': user2['token'],
         'channel_id': ch1['channel_id'],
         'message': 'testing'
     }).encode('utf-8')

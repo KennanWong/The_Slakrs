@@ -125,4 +125,6 @@ dmypy.json
 
 # Other
 *.py~
-./src/auth_data_store.json
+.auth_data_store.json
+.message_data_store.json
+.channel_data_store.json

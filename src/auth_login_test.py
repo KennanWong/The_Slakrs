@@ -18,6 +18,7 @@ def test_login1():
     '''
     Test basic functionality of login
     '''
+    reset_auth_store()
     user1 = reg_user1()
 
     auth.logout({

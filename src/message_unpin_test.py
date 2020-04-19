@@ -73,8 +73,6 @@ def test_invalid_id():
 
     ret = register_and_create()
     user = ret['user']
-
-
     with pytest.raises(InputError):
         message.unpin({
             'token': user['token'],
